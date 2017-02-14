@@ -12,7 +12,6 @@
 @interface TPLCameraPreviewView : UIView
 
 @property (nonatomic, readonly) AVCaptureVideoPreviewLayer *videoPreviewLayer;
-
 @property (nonatomic) AVCaptureSession *session;
 
 
