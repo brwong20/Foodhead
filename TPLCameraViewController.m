@@ -72,7 +72,6 @@ typedef NS_ENUM( NSInteger, AVCamLivePhotoMode ) {
 //UI
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIButton *flashButton;
-@property (nonatomic, strong) NSString *flashImgString;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UILabel *cameraUnavailableLabel;
 
@@ -86,7 +85,6 @@ typedef NS_ENUM( NSInteger, AVCamLivePhotoMode ) {
 @property (nonatomic, strong) UIImageView *focusView;
 
 //Photo properties
-@property (nonatomic) AVCaptureFlashMode flashMode;
 @property (nonatomic) AVCamLivePhotoMode livePhotoMode;
 @property (nonatomic, strong) UILabel *capturingLivePhotoLabel;
 
@@ -260,7 +258,6 @@ static CGFloat previousZoom;
      AVCaptureMovieFileOutput does not support movie recording with AVCaptureSessionPresetPhoto.
      */
     self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-    self.flashMode = AVCaptureFlashModeOff;
     
     // Add video input.
     
@@ -357,7 +354,7 @@ static CGFloat previousZoom;
     CGRect bounds = self.view.bounds;
     
     self.previewView = [[TPLCameraPreviewView alloc]init];
-    self.previewView.bounds = [[UIScreen mainScreen]bounds];
+    self.previewView.bounds = bounds;
     self.previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     self.previewView.videoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
     [self.view addSubview:self.previewView];
@@ -370,9 +367,8 @@ static CGFloat previousZoom;
     
     self.flashButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.captureButton.frame), CGRectGetMaxY(self.captureButton.frame) - self.view.frame.size.height * 0.12, self.view.frame.size.height * 0.12, self.view.frame.size.height * 0.12)];
     self.flashButton.backgroundColor = [UIColor clearColor];
-    self.flashImgString = @"flash_off";
-    [self.flashButton setImage:[[UIImage imageNamed:self.flashImgString]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
-    [self.flashButton addTarget:self action:@selector(toggleFlash) forControlEvents:UIControlEventTouchUpInside];
+    [self.flashButton setImage:[[UIImage imageNamed:@"flash_auto"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    [self.flashButton addTarget:self action:@selector(toggleFlashMode) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.flashButton];
     
     self.orientationButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.captureButton.frame) - self.view.frame.size.height * 0.12, CGRectGetMaxY(self.captureButton.frame) - self.view.frame.size.height * 0.12, self.view.frame.size.height * 0.12, self.view.frame.size.height * 0.12)];
@@ -484,16 +480,6 @@ static CGFloat previousZoom;
              */
             self.photoOutput.livePhotoCaptureEnabled = self.photoOutput.livePhotoCaptureSupported;
             
-            if(currentPosition == AVCaptureDevicePositionFront){
-                self.captureSession.sessionPreset = AVCaptureSessionPresetPhoto;
-            }else{
-                if ([self.captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]){
-                    self.captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-                }else{
-                    self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-                }
-            }
-            
             [self.captureSession commitConfiguration];
         }
         
@@ -555,15 +541,16 @@ static CGFloat previousZoom;
     AVCaptureVideoOrientation videoPreviewLayerVideoOrientation = self.previewView.videoPreviewLayer.connection.videoOrientation;
     
     dispatch_async( self.sessionQueue, ^{
+        
         // Update the photo output's connection to match the video orientation of the video preview layer.
         AVCaptureConnection *photoOutputConnection = [self.photoOutput connectionWithMediaType:AVMediaTypeVideo];
         photoOutputConnection.videoOrientation = videoPreviewLayerVideoOrientation;
         
         // Capture a JPEG photo with flash set to auto and high resolution photo enabled.
         AVCapturePhotoSettings *photoSettings = [AVCapturePhotoSettings photoSettings];
-        photoSettings.flashMode = self.flashMode;
+        photoSettings.flashMode = AVCaptureFlashModeOff;
         photoSettings.highResolutionPhotoEnabled = YES;
-        if (photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 ) {
+        if ( photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 ) {
             photoSettings.previewPhotoFormat = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : photoSettings.availablePreviewPhotoPixelFormatTypes.firstObject };
         }
 //        if ( self.livePhotoMode == AVCamLivePhotoModeOn && self.photoOutput.livePhotoCaptureSupported ) { // Live Photo capture is not supported in movie mode.
@@ -615,15 +602,7 @@ static CGFloat previousZoom;
         } withPhotoData:^(NSData *photoData) {
             //Once photo data is passed back, present preview screen
             if (photoData) {
-                AVCaptureDevice *currentVideoDevice = self.videoDeviceInput.device;
-                AVCaptureDevicePosition currentPosition = currentVideoDevice.position;
-                if(currentPosition == AVCaptureDevicePositionFront){
-                    //Front camera mirrors photo, so flip it here
-                    self.selectedPhoto = [self mirrorImage:photoData];
-                }else{
-                    self.selectedPhoto = [UIImage imageWithData:photoData];
-                }
-                
+                self.selectedPhoto = [UIImage imageWithData:photoData];
                 TPLAssetPreviewController *assetVC = [[TPLAssetPreviewController alloc]init];
                 assetVC.selectedImage = self.selectedPhoto;
                 [self.navigationController pushViewController:assetVC animated:NO];
@@ -638,23 +617,6 @@ static CGFloat previousZoom;
         self.inProgressPhotoCaptureDelegates[@(photoCaptureDelegate.requestedPhotoSettings.uniqueID)] = photoCaptureDelegate;
         [self.photoOutput capturePhotoWithSettings:photoSettings delegate:photoCaptureDelegate];
     } );
-}
-
-- (UIImage *)mirrorImage:(NSData *)originalImageData{
-    UIImage *img = [UIImage imageWithData:originalImageData];
-    UIImage * flippedImage = [UIImage imageWithCGImage:img.CGImage scale:img.scale orientation:UIImageOrientationLeftMirrored];
-    return flippedImage;
-}
-
-- (void)toggleFlash{
-    if([self.flashImgString isEqualToString:@"flash_off"]){
-        self.flashImgString = @"flash";
-        self.flashMode = AVCaptureFlashModeOn;
-    }else{
-        self.flashImgString = @"flash_off";
-        self.flashMode = AVCaptureFlashModeOff;
-    }
-    [self.flashButton setImage:[UIImage imageNamed:self.flashImgString] forState:UIControlStateNormal];
 }
 
 - (void)toggleLivePhotoMode:(UIButton *)livePhotoModeButton
@@ -673,6 +635,7 @@ static CGFloat previousZoom;
         } );
     } );
 }
+
 
 #pragma mark KVO and Notifications
 
@@ -705,8 +668,8 @@ static CGFloat previousZoom;
 {
     if ( context == SessionRunningContext ) {
         BOOL isSessionRunning = [change[NSKeyValueChangeNewKey] boolValue];
-        //BOOL livePhotoCaptureSupported = self.photoOutput.livePhotoCaptureSupported;
-        //BOOL livePhotoCaptureEnabled = self.photoOutput.livePhotoCaptureEnabled;
+        BOOL livePhotoCaptureSupported = self.photoOutput.livePhotoCaptureSupported;
+        BOOL livePhotoCaptureEnabled = self.photoOutput.livePhotoCaptureEnabled;
         
         dispatch_async( dispatch_get_main_queue(), ^{
             // Only enable the ability to change camera if the device has more than one camera.
@@ -727,7 +690,7 @@ static CGFloat previousZoom;
 
 - (void)subjectAreaDidChange:(NSNotification *)notification
 {
-    CGPoint devicePoint = CGPointMake(0.5, 0.5);
+    CGPoint devicePoint = CGPointMake( 0.5, 0.5 );
     [self focusWithMode:AVCaptureFocusModeContinuousAutoFocus exposeWithMode:AVCaptureExposureModeContinuousAutoExposure atDevicePoint:devicePoint monitorSubjectAreaChange:NO];
 }
 
@@ -816,6 +779,8 @@ static CGFloat previousZoom;
         }];
     }
 }
+
+
 
 #pragma mark UI Convenience methods
 
