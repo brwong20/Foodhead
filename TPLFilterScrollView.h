@@ -10,4 +10,6 @@
 
 @interface TPLFilterScrollView : UIScrollView
 
+- (instancetype)initWithFrame:(CGRect)frame andImage:(UIImage *)image;
+
 @end

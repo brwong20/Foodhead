@@ -16,7 +16,8 @@ typedef enum{
 
 @interface FilterView : UIView
 
-@property (nonatomic, strong)UILabel *filterTitle;
+@property (nonatomic, strong) UILabel *filterTitle;
+@property (nonatomic, strong) UIImageView *filterImageView;
 
 + (id)createFilterWithFrame:(CGRect)frame ofType:(FilterViewType)filterType;
 

@@ -8,6 +8,7 @@
 
 #import "TPLAssetPreviewController.h"
 #import "TPLFilterScrollView.h"
+#import "GPUImage.h"
 
 @interface TPLAssetPreviewController ()
 
@@ -15,6 +16,7 @@
 
 //UI Controls
 @property (nonatomic, strong) UIButton *exitButton;
+@property (nonatomic, strong) UIButton *filterButton;
 
 //Filters
 @property (nonatomic, strong) TPLFilterScrollView *filterView;
@@ -43,16 +45,29 @@
     [self.assetImageView setImage:self.selectedImage];
     [self.view addSubview:self.assetImageView];
     
-    self.exitButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 50, 50, 50)];
+    self.filterButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20.0, self.view.frame.size.height * 0.85, 40.0, 40.0)];
+    self.filterButton.backgroundColor = [UIColor clearColor];
+    [self.filterButton setImage:[UIImage imageNamed:@"gallery-save"] forState:UIControlStateNormal];
+    [self.filterButton addTarget:self action:@selector(applyFilter) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.filterButton];
+    
+    self.exitButton = [[UIButton alloc]initWithFrame:CGRectMake(25, 25, 50, 50)];
     self.exitButton.backgroundColor = [UIColor clearColor];
     [self.exitButton setImage:[UIImage imageNamed:@"exit"] forState:UIControlStateNormal];
     [self.exitButton addTarget:self action:@selector(exitPreview) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.exitButton];
+    [self.view insertSubview:self.exitButton belowSubview:self.filterButton];
 }
 
 - (void)setupFilters{
-    self.filterView = [[TPLFilterScrollView alloc]initWithFrame:self.view.frame];
+    self.filterView = [[TPLFilterScrollView alloc]initWithFrame:self.view.frame andImage:self.selectedImage];
     [self.view insertSubview:self.filterView belowSubview:self.exitButton];
+}
+
+//Should be a method of filter scrollview or TPLFilter and apply filter to image based on enum.
+- (void)applyFilter{
+    GPUImageSepiaFilter *sepiaFilter = [[GPUImageSepiaFilter alloc]init];
+    UIImage *filteredImage = [sepiaFilter imageByFilteringImage:self.selectedImage];
+    [self.assetImageView setImage:filteredImage];
 }
 
 - (void)exitPreview{

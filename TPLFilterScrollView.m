@@ -14,6 +14,7 @@
 
 //When scaling this should eventually return from the db all the filter category, name, rating scheme, etc.
 @property (nonatomic, strong) NSArray *filterArr;
+@property (nonatomic, strong) UIImage *selectedImage;
 
 @end
 
@@ -22,7 +23,7 @@ const static int NUM_FILTERS = 4;
 @implementation TPLFilterScrollView
 
 
-- (instancetype)initWithFrame:(CGRect)frame{
+- (instancetype)initWithFrame:(CGRect)frame andImage:(UIImage *)image{
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
@@ -32,6 +33,7 @@ const static int NUM_FILTERS = 4;
         self.scrollsToTop = NO;
         self.delegate = self;
         self.delaysContentTouches = NO;
+        self.selectedImage = image;
         [self loadFilters];
     }
     return self;
@@ -45,7 +47,7 @@ const static int NUM_FILTERS = 4;
             [tasteFilter.filterTitle setText:@"Taste"];
         }
         else if (i % NUM_FILTERS == 2) {
-            [tasteFilter.filterTitle setText:@""];
+            [tasteFilter.filterTitle setText:@"Origin"];
         }
         else if(i % NUM_FILTERS == 3){
             [tasteFilter.filterTitle setText:@"Price"];

@@ -19,7 +19,7 @@
 
 @property (nonatomic, weak) id<TasteFilterDelegate> delegate;
 
-@property (nonatomic, strong)NSNumber *tasteRating;
-@property (nonatomic, strong)UIView *tasteView;
+@property (nonatomic, strong) NSNumber *tasteRating;
+@property (nonatomic, strong) UIView *tasteView;
 
 @end

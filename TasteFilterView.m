@@ -19,6 +19,11 @@
         self.filterTitle.font = [UIFont boldSystemFontOfSize:40.0];
         self.filterTitle.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.filterTitle];
+        
+        self.filterImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height)];
+        self.filterImageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.filterImageView.backgroundColor = [UIColor clearColor];
+        [self addSubview:self.filterImageView];
     }
     
     return self;
