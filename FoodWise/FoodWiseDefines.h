@@ -16,19 +16,22 @@ typedef NS_ENUM(NSInteger, RootViewType) {
 };
 
 //SAMKeychain
-//#define KEYCHAIN_ACCOUNT @"com.Brwong.Foodwise"
-//#define INSTAGRAM_SERVICE @"InstagramService"
+#define KEYCHAIN_ACCOUNT @"com.Brwong.Foodwise"
+#define YUM_SERVICE @"InstagramService"
 
-//Instagram Auth API
-#define INSTAGRAM_CLIENT_ID @"eef6297b1cb846c3ba14a2bce8bec446"
-#define INSTAGRAM_CLIENT_SECRET @"bbe0b3fa31f8418a97b67810da295c56"
-#define INSTAGRAM_AUTH_URL @"https://api.instagram.com/oauth/authorize/?client_id=%@&redirect_uri=%@&response_type=token&scope=public_content+likes"
+//YumDrop API
+#define YUM_PROVIDER_AUTH @"http://yumdrop-dev.scrij.com/api/auth/%@/callback"
+#define YUM_CHECK_SESSION @"http://yumdrop-dev.scrij.com/api/sessions"
+#define YUM_GET_USER_INFO @"http://yumdrop-dev.scrij.com/api/users"
 
-#define REDIRECT_URI @"http://tapletfoodwise.com/giveMeToken/"
 
 //Foursquare API
 #define FOURSQ_CLIENT_ID @"V2K0BSBPNB2VLLTG33NSYRJGJ3ANDGBJQSH2ZNRVEJZ1AW5S"
 #define FOURSQ_SECRET @"N321F5ZABWPKKUSCZ00K1ZXHXD1UMVJX3BZQ4EDYKORQ2O5Y"
+
+//UI
+#define CHART_SECTION_HEIGHT 70.0
+#define CATEGORY_RESTAURANT_CELL_HEIGHT 100.0
 
 
 #endif /* FoodWiseDefines_h */
