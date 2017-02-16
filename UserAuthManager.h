@@ -13,7 +13,7 @@
 
 @protocol UserAuthDelegate <NSObject>
 
-- (void)didAuthWithInstagram;
+- (void)didLoginWithFB:(FBSDKAccessToken *)auth_token;
 
 @end
 
@@ -21,4 +21,13 @@
 
 + (BOOL)isUserLoggedIn;
 
+- (void)loginWithFb:(FBSDKAccessToken *)token
+  completionHandler:(void (^)(id))loginSuccess
+     failureHandler:(void (^)(id))loginFailure;
+
+- (void)checkUserSessionWithHandler:(void (^)(id))sessionHandler
+                     failureHandler:(void (^)(id))sessionFailure;
+
+- (void)retrieveUserInfo:(void (^)(id userInfo))completionHandler
+          failureHandler:(void (^)(id error))failureHandler;
 @end
