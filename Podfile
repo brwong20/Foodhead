@@ -8,5 +8,6 @@ pod 'AFNetworking', '~> 3.0'
 pod 'SDWebImage', '~>3.8'
 pod ‘Mantle’
 pod ‘ReactiveObjC’
+pod ‘SAMKeychain’
 
 end

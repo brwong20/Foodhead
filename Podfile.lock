@@ -18,6 +18,7 @@ PODS:
     - Mantle/extobjc (= 2.0.7)
   - Mantle/extobjc (2.0.7)
   - ReactiveObjC (2.1.2)
+  - SAMKeychain (1.5.2)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
@@ -26,14 +27,16 @@ DEPENDENCIES:
   - AFNetworking (~> 3.0)
   - Mantle
   - ReactiveObjC
+  - SAMKeychain
   - SDWebImage (~> 3.8)
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   Mantle: bc40bb061d8c2c6fb48d5083e04d928c3b7f73d9
   ReactiveObjC: 7b6782ae39f9ac0f57205c3b0c0b69b9dd7048c0
+  SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
 
-PODFILE CHECKSUM: 2c703b46693d8d0d4702cd00dae6957854ead94f
+PODFILE CHECKSUM: af06c2723f42760be127d9a0f3dfed8b20766b76
 
 COCOAPODS: 1.2.0

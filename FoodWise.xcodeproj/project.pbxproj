@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A02D2EE61E53C501003E65F3 /* TPLChartSectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */; };
+		A02D2EE91E53CAD2003E65F3 /* TPLExpandedChartController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */; };
+		A02D2EEC1E53D044003E65F3 /* ExpandedChartTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */; };
+		A02D2EEF1E5508B4003E65F3 /* UsernamePromptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */; };
+		A02D2EF21E5512FC003E65F3 /* BRWSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */; };
+		A02D2EFC1E566012003E65F3 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EFB1E566012003E65F3 /* User.m */; };
 		A033E5A11E43E76300D4B9AC /* NSString+IsEmpty.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */; };
 		A033E5A41E43E7C600D4B9AC /* NSString+Trim.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E59D1E43E74900D4B9AC /* NSString+Trim.m */; };
 		A0529A851E4AA61500150557 /* FilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0529A841E4AA61500150557 /* FilterView.m */; };
@@ -252,6 +258,18 @@
 /* Begin PBXFileReference section */
 		3B8CA362DEA3BC5CAACDCE82 /* Pods_FoodWise.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoodWise.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CCE42996844EEFB9FC8B832 /* Pods-FoodWise.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FoodWise.release.xcconfig"; path = "Pods/Target Support Files/Pods-FoodWise/Pods-FoodWise.release.xcconfig"; sourceTree = "<group>"; };
+		A02D2EE41E53C501003E65F3 /* TPLChartSectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLChartSectionView.h; sourceTree = "<group>"; };
+		A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartSectionView.m; sourceTree = "<group>"; };
+		A02D2EE71E53CAD2003E65F3 /* TPLExpandedChartController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLExpandedChartController.h; sourceTree = "<group>"; };
+		A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLExpandedChartController.m; sourceTree = "<group>"; };
+		A02D2EEA1E53D044003E65F3 /* ExpandedChartTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpandedChartTableViewCell.h; sourceTree = "<group>"; };
+		A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpandedChartTableViewCell.m; sourceTree = "<group>"; };
+		A02D2EED1E5508B4003E65F3 /* UsernamePromptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UsernamePromptViewController.h; sourceTree = "<group>"; };
+		A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UsernamePromptViewController.m; sourceTree = "<group>"; };
+		A02D2EF01E5512FC003E65F3 /* BRWSearchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRWSearchView.h; sourceTree = "<group>"; };
+		A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRWSearchView.m; sourceTree = "<group>"; };
+		A02D2EFA1E566012003E65F3 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		A02D2EFB1E566012003E65F3 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		A033E59C1E43E74900D4B9AC /* NSString+Trim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Trim.h"; sourceTree = "<group>"; };
 		A033E59D1E43E74900D4B9AC /* NSString+Trim.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Trim.m"; sourceTree = "<group>"; };
 		A033E59F1E43E76300D4B9AC /* NSString+IsEmpty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+IsEmpty.h"; path = "../../../Documents/Workspace/Joyspace App/Joyspace/Categories/NSString/NSString+IsEmpty.h"; sourceTree = "<group>"; };
@@ -731,6 +749,19 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		A02D2EE01E53C1A3003E65F3 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				A0E844091E28034000BE98B1 /* ChartsViewController.h */,
+				A0E8440A1E28034000BE98B1 /* ChartsViewController.m */,
+				A0F4CCD61E38408C003D56A9 /* TabledCollectionManager.h */,
+				A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */,
+				A02D2EE71E53CAD2003E65F3 /* TPLExpandedChartController.h */,
+				A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */,
+			);
+			name = Charts;
+			sourceTree = "<group>";
+		};
 		A033E5A21E43E76600D4B9AC /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -753,8 +784,12 @@
 		A0595ED51E457E1E001BB324 /* Login/Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				A05FEF471E37198A00A4FB92 /* LocationPermissionView.h */,
+				A05FEF481E37198A00A4FB92 /* LocationPermissionView.m */,
 				A0D418D61E3695C0004DDC6C /* LoginViewController.h */,
 				A0D418D71E3695C0004DDC6C /* LoginViewController.m */,
+				A02D2EED1E5508B4003E65F3 /* UsernamePromptViewController.h */,
+				A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */,
 			);
 			name = Login/Onboarding;
 			sourceTree = "<group>";
@@ -784,6 +819,8 @@
 				A0529A841E4AA61500150557 /* FilterView.m */,
 				A0529A861E4AA66500150557 /* TasteFilterView.h */,
 				A0529A871E4AA66500150557 /* TasteFilterView.m */,
+				A02D2EF01E5512FC003E65F3 /* BRWSearchView.h */,
+				A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */,
 			);
 			name = Filters;
 			sourceTree = "<group>";
@@ -793,6 +830,8 @@
 			children = (
 				A0F4CCCB1E3836B7003D56A9 /* TPLRestaurant.h */,
 				A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */,
+				A02D2EFA1E566012003E65F3 /* User.h */,
+				A02D2EFB1E566012003E65F3 /* User.m */,
 			);
 			name = "Mantle Objects";
 			sourceTree = "<group>";
@@ -1233,14 +1272,11 @@
 			isa = PBXGroup;
 			children = (
 				A0595ED61E457E31001BB324 /* Camera */,
+				A02D2EE01E53C1A3003E65F3 /* Charts */,
 				A0595ED51E457E1E001BB324 /* Login/Onboarding */,
-				A0E844091E28034000BE98B1 /* ChartsViewController.h */,
-				A0E8440A1E28034000BE98B1 /* ChartsViewController.m */,
+				A0D418DC1E3695FD004DDC6C /* Cells */,
 				A084A6681E3D3FDF008A3DCE /* TPLRestaurantPageViewController.h */,
 				A084A6691E3D3FDF008A3DCE /* TPLRestaurantPageViewController.m */,
-				A0D418DC1E3695FD004DDC6C /* Cells */,
-				A05FEF471E37198A00A4FB92 /* LocationPermissionView.h */,
-				A05FEF481E37198A00A4FB92 /* LocationPermissionView.m */,
 				A0E844021E28034000BE98B1 /* FoodWise */,
 			);
 			name = Views;
@@ -1249,7 +1285,6 @@
 		A0D418DB1E3695D2004DDC6C /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				A0F4CCD51E38405F003D56A9 /* Data Sources */,
 				A084A6651E3D3A3A008A3DCE /* TPLChartsViewModel.h */,
 				A084A6661E3D3A3A008A3DCE /* TPLChartsViewModel.m */,
 				A0ED82891E427BCB0029D96E /* TPLRestaurantPageViewModel.h */,
@@ -1265,6 +1300,10 @@
 				A0E8441E1E2806FE00BE98B1 /* TabledCollectionCell.m */,
 				A0E844201E28071200BE98B1 /* ImageCollectionCell.h */,
 				A0E844211E28071200BE98B1 /* ImageCollectionCell.m */,
+				A02D2EE41E53C501003E65F3 /* TPLChartSectionView.h */,
+				A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */,
+				A02D2EEA1E53D044003E65F3 /* ExpandedChartTableViewCell.h */,
+				A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -1331,15 +1370,6 @@
 				A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */,
 			);
 			name = Networking;
-			sourceTree = "<group>";
-		};
-		A0F4CCD51E38405F003D56A9 /* Data Sources */ = {
-			isa = PBXGroup;
-			children = (
-				A0F4CCD61E38408C003D56A9 /* TabledCollectionManager.h */,
-				A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */,
-			);
-			name = "Data Sources";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1511,6 +1541,7 @@
 				A0A64DF31E52BA05009BCF72 /* GPUImageSaturationFilter.m in Sources */,
 				A0595ED91E45810E001BB324 /* TPLCameraPreviewView.m in Sources */,
 				A0A64DA61E52BA05009BCF72 /* GPUImageFilterGroup.m in Sources */,
+				A02D2EE91E53CAD2003E65F3 /* TPLExpandedChartController.m in Sources */,
 				A0A64D781E52BA05009BCF72 /* GPUImage3x3ConvolutionFilter.m in Sources */,
 				A0A64E0C1E52BA05009BCF72 /* GPUImageThresholdSketchFilter.m in Sources */,
 				A0A64DB41E52BA05009BCF72 /* GPUImageHazeFilter.m in Sources */,
@@ -1538,6 +1569,7 @@
 				A0A64DAE1E52BA05009BCF72 /* GPUImageGaussianSelectiveBlurFilter.m in Sources */,
 				A0A64DC31E52BA05009BCF72 /* GPUImageLanczosResamplingFilter.m in Sources */,
 				A0A64D8C1E52BA05009BCF72 /* GPUImageColorConversion.m in Sources */,
+				A02D2EEC1E53D044003E65F3 /* ExpandedChartTableViewCell.m in Sources */,
 				A0A64DD51E52BA05009BCF72 /* GPUImageMotionBlurFilter.m in Sources */,
 				A0A64E071E52BA05009BCF72 /* GPUImageTextureInput.m in Sources */,
 				A0A64DE61E52BA05009BCF72 /* GPUImagePoissonBlendFilter.m in Sources */,
@@ -1570,6 +1602,7 @@
 				A0A64D811E52BA05009BCF72 /* GPUImageBoxBlurFilter.m in Sources */,
 				A0A64E181E52BA05009BCF72 /* GPUImageVideoCamera.m in Sources */,
 				A0A64D9A1E52BA05009BCF72 /* GPUImageDilationFilter.m in Sources */,
+				A02D2EE61E53C501003E65F3 /* TPLChartSectionView.m in Sources */,
 				A0A64D841E52BA05009BCF72 /* GPUImageBulgeDistortionFilter.m in Sources */,
 				A0F4CCD81E38408C003D56A9 /* TabledCollectionManager.m in Sources */,
 				A0A64DDB1E52BA05009BCF72 /* GPUImageNonMaximumSuppressionFilter.m in Sources */,
@@ -1598,6 +1631,7 @@
 				A0A64DBD1E52BA05009BCF72 /* GPUImageHueBlendFilter.m in Sources */,
 				A0A64DB21E52BA05009BCF72 /* GPUImageHardLightBlendFilter.m in Sources */,
 				A0A64E041E52BA05009BCF72 /* GPUImageStretchDistortionFilter.m in Sources */,
+				A02D2EEF1E5508B4003E65F3 /* UsernamePromptViewController.m in Sources */,
 				A0A64E221E52BA05009BCF72 /* GPUImagePicture+TextureSubimage.m in Sources */,
 				A0A64DFD1E52BA05009BCF72 /* GPUImageSoftEleganceFilter.m in Sources */,
 				A0A64E081E52BA05009BCF72 /* GPUImageTextureOutput.m in Sources */,
@@ -1641,6 +1675,7 @@
 				A0E844081E28034000BE98B1 /* AppDelegate.m in Sources */,
 				A0A64E141E52BA05009BCF72 /* GPUImageTwoPassTextureSamplingFilter.m in Sources */,
 				A0A64DEB1E52BA05009BCF72 /* GPUImageRawDataInput.m in Sources */,
+				A02D2EFC1E566012003E65F3 /* User.m in Sources */,
 				A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */,
 				A0A64DEF1E52BA05009BCF72 /* GPUImageRGBErosionFilter.m in Sources */,
 				A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */,
@@ -1672,6 +1707,7 @@
 				A0A64D9F1E52BA05009BCF72 /* GPUImageEmbossFilter.m in Sources */,
 				A0A64E121E52BA05009BCF72 /* GPUImageTwoInputFilter.m in Sources */,
 				A0A64D831E52BA05009BCF72 /* GPUImageBuffer.m in Sources */,
+				A02D2EF21E5512FC003E65F3 /* BRWSearchView.m in Sources */,
 				A0529A851E4AA61500150557 /* FilterView.m in Sources */,
 				A0A64D7B1E52BA05009BCF72 /* GPUImageAddBlendFilter.m in Sources */,
 				A0A64DD31E52BA05009BCF72 /* GPUImageMonochromeFilter.m in Sources */,
