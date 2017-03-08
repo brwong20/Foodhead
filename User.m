@@ -10,13 +10,14 @@
 
 @implementation User
 
-+ (NSDictionary *)JSONKeyPathsByPropertyKey{
-    return @{@"userId" : @"id",
-             @"firstName" : @"first_name",
-             @"lastName" : @"last_name",
-             @"username" : @"username",
-             @"email" : @"email",
-             @"authToken" : @"auth_token"};
++ (NSDictionary *)JSONKeyPathsByPropertyKey
+{
+    return @{@"userId" : @"user.id",
+             @"firstName" : @"user.first_name",
+             @"lastName" : @"user.last_name",
+             @"username" : @"user.username",
+             @"email" : @"user.email",
+             @"avatarURL": @"user.avatar_url"};
 }
 
 @end

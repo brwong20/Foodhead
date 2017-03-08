@@ -8,6 +8,8 @@
 
 #import "TPLAssetPreviewController.h"
 #import "TPLFilterScrollView.h"
+#import "BRWSearchView.h"
+
 #import "GPUImage.h"
 
 @interface TPLAssetPreviewController ()
@@ -36,7 +38,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
+
 }
 
 - (void)setupUI{
@@ -56,6 +58,14 @@
     [self.exitButton setImage:[UIImage imageNamed:@"exit"] forState:UIControlStateNormal];
     [self.exitButton addTarget:self action:@selector(exitPreview) forControlEvents:UIControlEventTouchUpInside];
     [self.view insertSubview:self.exitButton belowSubview:self.filterButton];
+    
+    BRWSearchView *searchView = [[BRWSearchView alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.1, self.view.frame.size.width * 0.8, 50.0)];
+    searchView.resultCellHeight = 44.0;
+    [self.view addSubview:searchView];
+}
+
+- (void)exitPreview{
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)setupFilters{
@@ -85,10 +95,6 @@
     [lookupImageSource processImage];
     
     return [lookupFilter imageFromCurrentFramebufferWithOrientation:self.selectedImage.imageOrientation];
-}
-
-- (void)exitPreview{
-    [self.navigationController popViewControllerAnimated:NO];
 }
 
 

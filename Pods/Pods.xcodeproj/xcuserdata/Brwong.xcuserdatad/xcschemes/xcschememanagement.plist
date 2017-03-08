@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>CHTCollectionViewWaterfallLayout.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Mantle.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,27 +42,32 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>19FD402EFBCEDB780204C45707C6CF0E</key>
+		<key>2D50E3714204AE4783AC59228F77BBBE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A40F0830B7484B5352390F579F07EA8E</key>
+		<key>5047CD98B706282F824D54AA291BAE61</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AC78C09A2A90D1B21FCB4547AAAB0E7E</key>
+		<key>55F397830E5CA7FED5BA81F6C405876A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>71149CB86CEBE86641657C5BE44B8B7F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A197C081A082042562B6F8F3B345A0A4</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>B0D2BC4789FBEF0D9C6C1391CEEFF838</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>C34AFBB8E8EA7C79D5440D268FAC2C1E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

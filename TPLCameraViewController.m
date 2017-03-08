@@ -15,6 +15,8 @@
 #import "TPLRestaurant.h"
 #import "TPLAssetPreviewController.h"
 
+#import "GPUImage.h"
+
 static void * SessionRunningContext = &SessionRunningContext;
 
 typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
@@ -170,7 +172,6 @@ static CGFloat previousZoom;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     dispatch_async(self.sessionQueue, ^{
         switch (self.setupResult) {
@@ -216,7 +217,6 @@ static CGFloat previousZoom;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
     dispatch_async( self.sessionQueue, ^{
         if ( self.setupResult == AVCamSetupResultSuccess ) {

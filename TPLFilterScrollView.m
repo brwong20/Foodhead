@@ -41,7 +41,8 @@ const static int NUM_FILTERS = 4;
 
 - (void)loadFilters{
     for ( int i = 1; i <= NUM_FILTERS + 2 ; i ++) {
-        FilterView *tasteFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
+        TasteFilterView *tasteFilter = [TasteFilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
+        tasteFilter.delegate = self;
         tasteFilter.backgroundColor = [UIColor clearColor];
         if ( i  % NUM_FILTERS == 1){
             [tasteFilter.filterTitle setText:@"Taste"];
@@ -94,7 +95,7 @@ const static int NUM_FILTERS = 4;
 #pragma mark - TasteFilterDelegate methods
 
 - (void)didRateTaste:(NSNumber *)tasteAmount{
-    
+    NSLog(@"%@", tasteAmount);
 }
 
 @end

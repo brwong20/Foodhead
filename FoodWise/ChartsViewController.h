@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ChartsViewController : UIViewController
 
+@interface ChartsViewController : UIViewController
 
 @end
 

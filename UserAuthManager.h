@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#import "AFNetworking.h"
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+
+#import "User.h"
+#import "AFNetworking.h"
 
 @protocol UserAuthDelegate <NSObject>
 
@@ -19,15 +20,26 @@
 
 @interface UserAuthManager : NSObject
 
-+ (BOOL)isUserLoggedIn;
++ (UserAuthManager *)sharedInstance;
+
+- (User *)getCurrentUser;
+
+- (BOOL)isUserLoggedIn;
 
 - (void)loginWithFb:(FBSDKAccessToken *)token
   completionHandler:(void (^)(id))loginSuccess
      failureHandler:(void (^)(id))loginFailure;
 
-- (void)checkUserSessionWithHandler:(void (^)(id))sessionHandler
-                     failureHandler:(void (^)(id))sessionFailure;
+- (void)loginAnonymously;
 
-- (void)retrieveUserInfo:(void (^)(id userInfo))completionHandler
-          failureHandler:(void (^)(id error))failureHandler;
+//Verifies currently stored access token
+- (void)checkUserSessionActive:(void (^)(id sessionInfo))sessionHandler
+                failureHandler:(void (^)(id error))sessionFailure;
+
+//Get most updated user info. Also used to verify that this was the last user logged in.
+- (void)retrieveCurrentUser:(void (^)(id user))completionHandler
+             failureHandler:(void (^)(id error))failureHandler;
+
+- (void)logoutUser:(void (^)(id completed))completionHandler
+    failureHandler:(void (^)(id error))failureHandler;
 @end

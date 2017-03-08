@@ -8,6 +8,8 @@
 
 #import "TabledCollectionCell.h"
 #import "ImageCollectionCell.h"
+#import "TPLChartCollectionCell.h"
+#import "FoodWiseDefines.h"
 
 
 @implementation IndexedPhotoCollectionView
@@ -20,19 +22,16 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     if (!(self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) return nil;
     
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    flowLayout.minimumLineSpacing = 3.0;
-    CGRect screenSize = [[UIScreen mainScreen]bounds];
-    flowLayout.itemSize = CGSizeMake(160.0, 160.0);
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.flowLayout = [[UICollectionViewFlowLayout alloc]init];
+    self.flowLayout.minimumInteritemSpacing = 10.0;
+    self.flowLayout.itemSize = CGSizeMake(CHART_ROW_HEIGHT * 0.8, CHART_ROW_HEIGHT);
+    self.flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
-    self.collectionView = [[IndexedPhotoCollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
-    [self.collectionView registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:CollectionCellIdentifier];
+    self.collectionView = [[IndexedPhotoCollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.bounces = NO;
-    //self.collectionView.contentInset = UIEdgeInsetsMake(0.0, 3.0, 0.0, 3.0);
-    //[self.collectionView setPagingEnabled:YES];
+    [self.collectionView registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:CollectionCellIdentifier];//Default cell class
     [self.contentView addSubview:self.collectionView];
     
     return self;
@@ -44,10 +43,11 @@
 }
 
 //We pass in an instance (self) of our overarching view controller in order to conform to its delegate & datasource INSTEAD of the table view's
-- (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource,UICollectionViewDelegate>)dataSourceDelegate indexPath:(NSIndexPath *)indexPath{
+- (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource,UICollectionViewDelegate>)dataSourceDelegate indexPath:(NSIndexPath *)indexPath withCustomCell:(nullable Class)class{
     self.collectionView.dataSource = dataSourceDelegate;
     self.collectionView.delegate = dataSourceDelegate;
     self.collectionView.indexPath = indexPath;
+    if (class) [self.collectionView registerClass:class forCellWithReuseIdentifier:CollectionCellIdentifier];
     [self.collectionView setContentOffset:self.collectionView.contentOffset animated:NO];
     [self.collectionView reloadData];
 }

@@ -22,7 +22,9 @@ static NSString *AddPhotoCellIdentifier = @"addPhotoCell";
 @interface TabledCollectionCell : UITableViewCell
 
 @property (nonatomic, strong) IndexedPhotoCollectionView *collectionView;
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 
-- (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource, UICollectionViewDelegate>)dataSourceDelegate indexPath:(NSIndexPath *)indexPath;
+//Defaults to ImageCollectionCell is not custom cell is passed
+- (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource,UICollectionViewDelegate>)dataSourceDelegate indexPath:(NSIndexPath *)indexPath withCustomCell:(nullable Class)class;
 
 @end

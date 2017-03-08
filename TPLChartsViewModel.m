@@ -21,12 +21,59 @@
     if(self){
         self.restaurantDataSrc = store;
         self.restaurantData = [NSMutableArray array];
+        self.completeChartData = [NSMutableArray array];
     }
     return self;
 }
 
+- (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
+    //RACObserve the chart info and populate section titles first to make UI seem faster.
+    [self.restaurantDataSrc retrieveCharts:^(id chartsInfo) {
+        NSArray *charts = chartsInfo[@"charts"];
+        for (int i = 0; i < charts.count; ++i) {
+            [self.completeChartData addObject:[NSNull null]];
+        }
+        
+//Find a way to load this right away
+        for (NSDictionary *chartDetails in charts) {
+            NSString *chartTitle = chartDetails[@"title"];
+            NSNumber *chart_id = chartDetails[@"id"];
+            NSNumber *index = chartDetails[@"order_index"];
+            NSMutableDictionary *incompleteChart = [@{chartTitle : chart_id}mutableCopy];
+            
+            NSMutableArray *arrCopy = [self mutableArrayValueForKey:@"completeChartData"];
+            [arrCopy replaceObjectAtIndex:[index integerValue] withObject:incompleteChart];
+        }
+        
+#warning Consider making an actual Chart model object for easier checking (is chart complete? set properties, etc.) - Fill this Chart with restaurants and have convenience methods to retrieve a rest
+        [self.restaurantDataSrc getRestaurantsForCharts:self.completeChartData atCoordinate:coordinate completionHandler:^(id chartData) {
+            //Set and notify RACObserve we've retrieved all completed chart data.
+            NSMutableArray *arrCopy = [self mutableArrayValueForKey:@"completeChartData"];
+            
+            //Also need to check for ordering here, BUT BEST WAY IS TO JUST OBSERVE ENTIRE PROPERTY CHANGE!!!
+            dispatch_async(dispatch_get_main_queue(), ^{
+                for (int i = 0 ; i < self.completeChartData.count; ++i) {
+                    [arrCopy replaceObjectAtIndex:i withObject:chartData[i]];
+                }
+            });
+        } failureHandler:^(id error) {
+            NSLog(@"Couldn't get restaurants for charts");
+        }];
+    } failureHandler:^(id error) {
+        NSLog(@"Couldn't get chart info");
+    }];
+}
+
+- (void)getRestaurantsAtCoordinate:(CLLocationCoordinate2D)coordinate{
+    [self.restaurantDataSrc getNearbyRestaurantsAtCoordinate:coordinate retrievedPlaces:^(NSArray *places) {
+        //NSLog(@"%@", places);
+    } failureHandler:^(id error) {
+        NSLog(@"%@", error);
+    }];
+}
+
 - (void)getRestaurantsWithCoordinate:(CLLocationCoordinate2D)coordinate{
-    NSArray *categories = @[@"American", @"Sushi", @"Salad", @"Healthy", @"Mexican", @"Cheap"];
+    NSArray *categories = @[@"American", @"Sushi", @"Salad", @"Healthy", @"Mexican", @"Thai"];
     
     NSMutableArray *rest = [[NSMutableArray alloc]initWithCapacity:categories.count];
     for (int i = 0; i < categories.count; ++i) {
@@ -59,6 +106,7 @@
 }
 
 #pragma mark - Helper methods
+
 - (NSArray *)parseJSON:(NSDictionary*)venueDict{
     NSMutableArray *restaurantArr = [NSMutableArray array];
     NSDictionary *response = venueDict[@"response"];
@@ -81,91 +129,5 @@
     
     return rest;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        if (!restaurant.fb_cover_photo) {
-//            NSString *coordinateString = [NSString stringWithFormat:@"%f,%f", restaurant.locationCoordinate.latitude, restaurant.locationCoordinate.longitude];
-//
-//            //Get places id for a restaurant then chain the response to retrieve that restaurant's cover photo - Need a way to make sure the places is id is correct!!!
-//            FBSDKGraphRequest *locationRequest = [[FBSDKGraphRequest alloc]initWithGraphPath:@"search" parameters:@{@"fields" : @"id, name", @"q" : [NSString stringByTrimmingSpecialCharacters:restaurant.name], @"type" : @"place", @"center" : coordinateString, @"distance" : @"1000", @"limit" : @"1"}  HTTPMethod:@"GET"];
-//
-//            //Get first id from parent "place" parameter - this request depends on the locationRequest
-//            FBSDKGraphRequest *pageRequest = [[FBSDKGraphRequest alloc]initWithGraphPath:@"/{result=place:$.data.[0].id}" parameters:@{@"fields" : @"id, name"} HTTPMethod:@"GET"];
-//            //            FBSDKGraphRequest *photoRequest = [[FBSDKGraphRequest alloc]initWithGraphPath:@"/{result=recent_photo:$.data.[0].id}" parameters:@{@"fields" : @"id, images"} HTTPMethod:@"GET"];
-//
-//            FBSDKGraphRequestConnection *connection = [[FBSDKGraphRequestConnection alloc]init];
-//            [connection addRequest:locationRequest
-//                 completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-//                     if (error)
-//                         NSLog(@"%@", error.localizedDescription);//Nothing should happen with result since this request is a dependency which FB will handle
-//                 } batchParameters:@{@"name" : @"place"}];
-//
-//            [connection addRequest:pageRequest
-//                 completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-//                     if (!error) {
-//                         //NSLog(@"%@", result);
-//                         //                        NSString *restaurantName = result[@"name"];
-//                         //                         if (restaurantName Substring restaurant.name) {
-//                         //                             <#statements#>
-//                         //                         }
-//                         NSString *coverPhotoUrl = result[@"cover"][@"source"];
-//                         restaurant.fb_places_id = result[@"id"];
-//                         if (coverPhotoUrl) {
-//                             restaurant.fb_cover_photo = coverPhotoUrl;
-//                             [restaurantArr addObject:restaurant];
-//                             //Our multiple async calls are complete when we've requested each restaurant
-//                             if(restaurantArr.count == venueArray.count){
-//                                 completionHandler(restaurantArr);
-//                             }
-//                         }
-//                     }else{
-//                         NSLog(@"%@", error.description);
-//                         [restaurantArr addObject:restaurant];
-//                         //Our multiple async calls are complete when we've requested each restaurant
-//                         if(restaurantArr.count == venueArray.count){
-//                             completionHandler(restaurantArr);
-//                         }
-//                     }
-//                 } batchParameters:@{@"depends_on" : @"place"}];//Used to batch this request with previous one
-//
-//            //            [connection addRequest:photoRequest completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-//            //                if (result) {
-//            //                    NSLog(@"%@", result);
-//            //                    NSArray *images = result[@"images"];
-//            //                    NSDictionary *prof_pic = [images firstObject];
-//            //
-//            //                    if (prof_pic) {
-//            //                        NSString *src = prof_pic[@"source"];
-//            //                        restaurant.fb_cover_photo = src;
-//            //                    }
-//            //
-//            //                    [restaurantArr addObject:restaurant];
-//            //                    if(restaurantArr.count == venueArray.count){
-//            //                        completionHandler(restaurantArr);
-//            //                    }
-//            //                }else{
-//            //                    NSLog(@"%@", error.description);
-//            //                    [restaurantArr addObject:restaurant];
-//            //                    //Our multiple async calls are complete when we've requested each restaurant
-//            //                    if(restaurantArr.count == venueArray.count){
-//            //                        completionHandler(restaurantArr);
-//            //                    }
-//            //                }
-//            //            } batchParameters:@{@"depends_on" : @"recent_photo"}];
-//
-//            [connection start];
-
 
 @end

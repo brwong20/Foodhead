@@ -9,8 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "TPLRestaurant.h"
 
+@import CoreLocation;
+
 @interface TPLRestaurantPageViewController : UIViewController
 
-@property (nonatomic, strong)TPLRestaurant *selectedRestaurant;
+@property (nonatomic, strong) TPLRestaurant *selectedRestaurant;
+@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
 
 @end
