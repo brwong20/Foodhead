@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "A4E695916144F0BDDF167A3D0B1C4F5A4694045F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "ABB952C5528B9658761B4124166D9D80113C38AE" : 9223372036854775807,
+    "A4E695916144F0BDDF167A3D0B1C4F5A4694045F" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "FA639AE6-B03D-4D13-A928-FA1F711E56B7",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "ABB952C5528B9658761B4124166D9D80113C38AE" : "..\/Documents\/Workspace\/Joyspace%20App",
+    "A4E695916144F0BDDF167A3D0B1C4F5A4694045F" : "Foodhead\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Foodhead",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Foodhead.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/brwong20\/YumDrop.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A4E695916144F0BDDF167A3D0B1C4F5A4694045F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Taplet\/Taplet-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "ABB952C5528B9658761B4124166D9D80113C38AE"
+    }
+  ]
+}
