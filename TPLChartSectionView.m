@@ -7,6 +7,9 @@
 //
 
 #import "TPLChartSectionView.h"
+#import "UIFont+Extension.h"
+#import "FoodWiseDefines.h"
+
 @interface TPLChartSectionView ()
 
 @property (nonatomic, strong) UIButton *arrowButton;
@@ -18,12 +21,12 @@
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor blackColor];
+        self.backgroundColor = APPLICATION_BACKGROUND_COLOR;
         
         self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(frame.size.width * 0.03, 0, frame.size.width * 0.8, frame.size.height)];
         self.titleLabel.textAlignment = NSTextAlignmentLeft;
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:frame.size.height * 0.5];
-        self.titleLabel.textColor = [UIColor whiteColor];
+        self.titleLabel.font = [UIFont fontWithSize:20.0];
+        self.titleLabel.textColor = [UIColor blackColor];
         self.titleLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:self.titleLabel];
         

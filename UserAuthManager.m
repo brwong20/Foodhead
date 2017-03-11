@@ -49,7 +49,7 @@
      failureHandler:(void (^)(id error))loginFailure
 {
     if (token) {
-        [self.sessionManager GET:[NSString stringWithFormat:YUM_PROVIDER_AUTH, FB_PROVIDER_PATH] parameters:@{@"token" : token.tokenString} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.sessionManager GET:[NSString stringWithFormat:API_SESSION_AUTHORIZE, FB_PROVIDER_PATH] parameters:@{@"token" : token.tokenString} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             if(responseObject){
                 NSError *error = nil;
                 self.currentUser = [MTLJSONAdapter modelOfClass:[User class] fromJSONDictionary:responseObject error:&error];
@@ -82,7 +82,7 @@
 {
     NSString *authToken = [SAMKeychain passwordForService:YUM_SERVICE account:KEYCHAIN_ACCOUNT];
     NSDictionary *params = @{AUTH_TOKEN_PARAM : authToken};
-    [self.sessionManager DELETE:YUM_CHECK_SESSION parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager DELETE:API_SESSION_STATUS parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         //Clear all data concerning current user
         [SAMKeychain deletePasswordForService:YUM_SERVICE account:KEYCHAIN_ACCOUNT];
         [[NSUserDefaults standardUserDefaults]removeObjectForKey:LAST_USER_DEFAULT];
@@ -117,7 +117,7 @@
 {
     NSString *authToken = [SAMKeychain passwordForService:YUM_SERVICE account:KEYCHAIN_ACCOUNT];
     [self.sessionManager.requestSerializer setValue:authToken forHTTPHeaderField:AUTH_TOKEN_PARAM];
-    [self.sessionManager GET:YUM_CHECK_SESSION parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager GET:API_SESSION_STATUS parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         //Refresh cached token as well
 //        if (![responseObject[@"authToken"] isEqualToString:authToken]) {
 //            
@@ -140,7 +140,7 @@
 {
     NSString *authToken = [SAMKeychain passwordForService:YUM_SERVICE account:KEYCHAIN_ACCOUNT];
     [self.sessionManager.requestSerializer setValue:authToken forHTTPHeaderField:AUTH_TOKEN_PARAM];
-    [self.sessionManager GET:YUM_GET_USER_INFO parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager GET:API_USER parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSError *error;
         self.currentUser = [MTLJSONAdapter modelOfClass:[User class] fromJSONDictionary:responseObject error:&error];
         if (!error) {

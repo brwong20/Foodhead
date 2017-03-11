@@ -162,7 +162,6 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         dispatch_release(imageCaptureSemaphore);
     }
 #endif
-
 }
 
 #pragma mark -

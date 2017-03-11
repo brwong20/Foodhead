@@ -8,6 +8,13 @@
 
 #import "GPUImage.h"
 
+typedef NS_ENUM(NSInteger, CameraFilterType){
+    CameraFilterTypeOrigin,
+    CameraFilterTypeYum,
+    CameraFilterTypeSweet
+    
+};
+
 @interface CameraScrollFilter : GPUImageView
 
 @property (nonatomic, strong) GPUImageFilter *gpuFilter;
@@ -15,5 +22,9 @@
 
 - (instancetype)initWithFrame:(CGRect)frame withCamera:(GPUImageStillCamera *)stillCam andGPUFilter:(GPUImageFilter *)filter;
 - (instancetype)initWithFrame:(CGRect)frame withCamera:(GPUImageStillCamera *)stillCam andLookupImage:(UIImage *)lookup;
+
+- (instancetype)initWithFrame:(CGRect)frame withCamera:(GPUImageStillCamera *)stillCam andLookupFilter:(id)filter;
+
+- (void)changeCurrentTargetTo:(CameraFilterType)type;
 
 @end

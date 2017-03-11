@@ -8,10 +8,12 @@
 
 #import "BRWSearchView.h"
 
-#warning USE RAC!!! :)
-#import <ReactiveObjC/ReactiveObjC.h>
+#import "TPLRestaurant.h"
+#import "TPLRestaurantManager.h"
 
 @interface BRWSearchView () <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) TPLRestaurantManager *restaurantManager;
 
 @property (nonatomic, strong) UITextField *searchField;
 @property (nonatomic, strong) UITableView *resultsView;
@@ -20,6 +22,8 @@
 
 @end
 
+#define RESULT_CELL_HEIGHT 44.0
+
 @implementation BRWSearchView
 
 - (instancetype)initWithFrame:(CGRect)frame{
@@ -27,6 +31,7 @@
     if (self) {
         [self setupUI:frame];
         self.searchResults = [NSMutableArray array];
+        self.restaurantManager = [[TPLRestaurantManager alloc]init];
     }
     return self;
 }
@@ -37,7 +42,7 @@
     self.clipsToBounds = YES;
     
     self.searchField = [[UITextField alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-    self.searchField.placeholder = @"Find restaurant";
+    self.searchField.placeholder = @"Find restaurant...";
     self.searchField.delegate = self;
     self.searchField.font = [UIFont systemFontOfSize:20.0];
     self.searchField.backgroundColor = [UIColor whiteColor];
@@ -51,23 +56,22 @@
     self.resultsView.delegate = self;
     self.resultsView.dataSource = self;
     self.resultsView.backgroundColor = [UIColor whiteColor];
-    self.resultsView.rowHeight = self.resultCellHeight;
+    self.resultsView.rowHeight = RESULT_CELL_HEIGHT;
     [self.resultsView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     [self addSubview:self.resultsView];
     
 }
-
-#pragma mark UITextFieldDelegate methods
-
 
 #pragma mark UITableViewDataSource methods
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     
-    cell.textLabel.text = [NSString stringWithFormat:@"Search result #%ld", (long)indexPath.row];
+    NSDictionary *resultDict = self.searchResults[indexPath.row];
+    NSString *restName = resultDict[@"name"];
+    cell.textLabel.text = restName;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+
     return cell;
 }
 
@@ -79,7 +83,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSDictionary *result = self.searchResults[indexPath.row];
+    TPLRestaurant *selectedRestaurant = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:result error:nil];
+    [self.delegate didSelectResult:selectedRestaurant];
     
+    //Animate/show something here to show selection
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -92,10 +100,10 @@
 
 #pragma mark - Helper methods
 
-//Expand all the way when user is typing/loading
+#warning Expand all the way when user is typing/loading and show spinner
 
 - (void)changeResultsHeight{
-    CGFloat tableHeight = self.resultCellHeight;
+    CGFloat tableHeight = RESULT_CELL_HEIGHT;
     if(self.searchResults.count <= 6){//TODO: This condition should be its own check based on phone screen height (always put it above the keyboard) and just let user scroll instead.
         tableHeight *= self.searchResults.count;
     }else{
@@ -105,7 +113,7 @@
     //Add extra height to search field's height since it's the same as our default frame height.
     CGFloat frameHeight = self.searchField.frame.size.height + tableHeight;
     
-    [UIView animateWithDuration:0.5 delay:0.0 usingSpringWithDamping:4.0 initialSpringVelocity:2.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:4.0 initialSpringVelocity:2.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect tableFrame = self.resultsView.frame;
         CGRect frame = self.frame;
         frame.size.height = frameHeight;
@@ -117,16 +125,29 @@
 
 - (void)userDidType:(UITextField *)textField{
     if (textField.text.length > 0) {
-        for (int i = 0; i < 6; ++i) {
-            [self.searchResults addObject:@"dummy"];
-        }
+        [self.restaurantManager searchRestaurantsWithQuery:textField.text atLocation:self.currentReview.reviewLocation completionHandler:^(id suggestions) {
+            NSLog(@"%@", suggestions);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.searchResults removeAllObjects];
+                self.searchResults = [[self.searchResults arrayByAddingObjectsFromArray:suggestions]mutableCopy];
+                [self.resultsView reloadData];
+                [self changeResultsHeight];
+            });
+        } failureHandler:^(id error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"Error searching for restaurants");
+                [self.searchResults removeAllObjects];
+                [self changeResultsHeight];
+            });
+        }];
     }else{
         [self.searchResults removeAllObjects];
-        
-        
+        [self changeResultsHeight];
     }
-    [self.resultsView reloadData];
-    [self changeResultsHeight];
+}
+
+- (void)dismissKeyboard{
+    [self.searchField resignFirstResponder];
 }
 
 //- (void)addObservers{

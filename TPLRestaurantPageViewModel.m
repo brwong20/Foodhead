@@ -41,4 +41,14 @@
     }];
 }
 
+- (void)getReviewsForRestaurant:(NSString *)restaurantId
+              completionHandler:(void (^)(id))completionHandler
+                 failureHandler:(void (^)(id))failureHandler{
+    [self.restaurantManager getReviewsForRestaurant:restaurantId completionHandler:^(id reviews) {
+        NSLog(@"%@", reviews);
+    } failureHandler:^(id error) {
+        
+    }];
+}
+
 @end

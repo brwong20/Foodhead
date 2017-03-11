@@ -37,6 +37,15 @@
     return self;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame withCamera:(GPUImageStillCamera *)stillCam andLookupFilter:(id)filter{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.stillCamera = stillCam;
+        [self setupLookup:filter];
+    }
+    return self;
+}
+
 - (void)setupGPUFilter{
     self.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     
@@ -47,17 +56,34 @@
 - (void)setupLookupFilter{
     self.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     
-    GPUImageLookupFilter *lookupFilter = [[GPUImageLookupFilter alloc] init];
-    lookupFilter.intensity = 1.0;
+    @autoreleasepool {
+        GPUImageLookupFilter *lookupFilter = [[GPUImageLookupFilter alloc] init];
+        lookupFilter.intensity = 1.0;
+
+        [self.stillCamera addTarget:lookupFilter atTextureLocation:0];
+        [self.lookupPic addTarget:lookupFilter atTextureLocation:1];
+        [self.lookupPic processImage];
+        
+        [lookupFilter addTarget:self];
+        [lookupFilter useNextFrameForImageCapture];
+        
+        [lookupFilter forceProcessingAtSizeRespectingAspectRatio:self.sizeInPixels];
+        
+        self.lookupFilter = lookupFilter;
+    }
+}
+
+- (void)setupLookup:(id)filter{
     
-    [self.stillCamera addTarget:lookupFilter atTextureLocation:0];
-    [self.lookupPic addTarget:lookupFilter atTextureLocation:1];
-    [self.lookupPic processImage];
+    GPUImageFilterGroup *filt = filter;
     
-    [lookupFilter addTarget:self];
-    [lookupFilter useNextFrameForImageCapture];
+    self.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     
-    self.lookupFilter = lookupFilter;
+    [self.stillCamera addTarget:filter];
+    [filter addTarget:self];
+    [filter useNextFrameForImageCapture];
+    
+    [filt forceProcessingAtSizeRespectingAspectRatio:self.frame.size];
 }
 
 @end

@@ -11,7 +11,7 @@
 @protocol TasteFilterDelegate <NSObject>
 
 @required
-- (void)didRateTaste:(NSNumber *)tasteAmount;
+- (void)didRateOverall:(NSNumber *)overall;
 
 @end
 

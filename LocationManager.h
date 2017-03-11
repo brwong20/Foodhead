@@ -25,7 +25,7 @@
 
 + (LocationManager*) sharedLocationInstance;
 
-- (void)requestLocationAuthorization;
+- (void)checkLocationAuthorization;
 - (CLLocationCoordinate2D)getCurrentLocation;
 
 @end

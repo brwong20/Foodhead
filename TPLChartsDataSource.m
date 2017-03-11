@@ -40,35 +40,35 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
 
 #pragma mark - Places
 
-- (void)retrieveRestaurantsForCategory:(NSString *)category
-                          withCoordinate:(CLLocationCoordinate2D)coordinate
-                       completionHandler:(void (^)(id))completionHandler
-                          failureHandler:(void (^)(id))failureHandler {
-    
-    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
-    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
-    
-    NSString *completeURL = [NSString string];
-    if([category isEqualToString:@"Thai"]){
-        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=37.764908,-122.485663&section=food&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125"];
-    }else{
-        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=%@,%@&query=%@&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125", lat, lng, category];
-    }
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL URLWithString:completeURL] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error){
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-
-        //Pass to completion handler once all calls have finished
-        if(json){
-            completionHandler(json);
-        }
-        
-        if (error) {
-            failureHandler(error);
-        }
-    }];
-    [task resume];
-}
+//- (void)retrieveRestaurantsForCategory:(NSString *)category
+//                          withCoordinate:(CLLocationCoordinate2D)coordinate
+//                       completionHandler:(void (^)(id))completionHandler
+//                          failureHandler:(void (^)(id))failureHandler {
+//    
+//    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+//    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+//    
+//    NSString *completeURL = [NSString string];
+//    if([category isEqualToString:@"Thai"]){
+//        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=37.764908,-122.485663&section=food&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125"];
+//    }else{
+//        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=%@,%@&query=%@&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125", lat, lng, category];
+//    }
+//    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+//    NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL URLWithString:completeURL] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error){
+//        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+//
+//        //Pass to completion handler once all calls have finished
+//        if(json){
+//            completionHandler(json);
+//        }
+//        
+//        if (error) {
+//            failureHandler(error);
+//        }
+//    }];
+//    [task resume];
+//}
 
 - (void)getNearbyRestaurantsAtCoordinate:(CLLocationCoordinate2D)coordinate
                          retrievedPlaces:(void (^) (NSArray *))placesData
@@ -85,7 +85,7 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
     [dict setObject:lat forKey:@"lat"];
     [dict setObject:lng forKey:@"lng"];
     
-    [self.sessionManager GET:YUM_PLACES_GENERAL parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDict = responseObject;
         NSString *workerId = responseDict[@"worker_id"];
         
@@ -106,7 +106,7 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
 - (void)retrieveCharts:(void (^)(id chartData))completionHandler
         failureHandler:(void (^)(id error))failureHandler{
 
-    [self.sessionManager GET:YUM_CHARTS parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager GET:API_CHARTS parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         completionHandler(responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         failureHandler(error);
@@ -132,7 +132,7 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
     
     NSLog(@"GETTING CHARTS");
     
-    [self.sessionManager GET:YUM_PLACES_GENERAL parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *responseDict = responseObject;
         NSString *workerId = responseDict[@"worker_id"];
         
@@ -173,7 +173,7 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
         [dict setObject:[[chartInfo allValues]firstObject] forKey:@"chart_id"];
         
         dispatch_group_enter(group);
-        [self.sessionManager GET:YUM_PLACES_GENERAL parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             /*
             NSDictionary *responseDict = responseObject;
             NSString *workerId = responseDict[@"worker_id"];
@@ -224,7 +224,7 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
            completionHandler:(void (^)(id chartData))completionHandler
               failureHandler:(void (^)(id error))failureHandler
 {
-    NSString *workerURL = [NSString stringWithFormat:YUM_WORKER_GENERAL, workerId];
+    NSString *workerURL = [NSString stringWithFormat:API_WORKER_PLACES, workerId];
     //Timer will always call this async method which will return multiple times if worker is done
     [self.sessionManager GET:workerURL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *workerStatus = responseObject[@"worker_status"];

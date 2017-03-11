@@ -67,6 +67,7 @@
     self.stillCamera.horizontallyMirrorFrontFacingCamera = YES;
     
     self.filterScroll = [[CameraFilterScrollView alloc]initWithFrame:mainScreenFrame andStillCamera:self.stillCamera];
+    self.filterScroll.backgroundColor = [UIColor clearColor];
     //[self.filterScroll setMultipleTouchEnabled:YES];
     //[self.filterScroll setExclusiveTouch:NO];
     
@@ -79,7 +80,7 @@
 - (void)setupCameraControls{
     self.exitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.08 - self.view.frame.size.width * 0.075, self.view.frame.size.height * 0.93 - self.view.frame.size.width * 0.075, self.view.frame.size.width * 0.15, self.view.frame.size.width * 0.15)];
     self.exitButton.backgroundColor = [UIColor clearColor];
-    [self.exitButton setImage:[UIImage imageNamed:@"exit"] forState:UIControlStateNormal];
+    [self.exitButton setImage:[UIImage imageNamed:@"camera_exit_btn"] forState:UIControlStateNormal];
     [self.exitButton addTarget:self action:@selector(exitCamera) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.exitButton];
     
@@ -90,7 +91,7 @@
     
     self.captureButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.15, CGRectGetMidY(self.exitButton.frame) - self.view.frame.size.width * 0.15, self.view.frame.size.width * 0.3, self.view.frame.size.width * 0.3)];
     self.captureButton.backgroundColor = [UIColor clearColor];
-    [self.captureButton setImage:[UIImage imageNamed:@"capture"]forState:UIControlStateNormal];
+    [self.captureButton setImage:[UIImage imageNamed:@"camera_take_btn"]forState:UIControlStateNormal];
     [self.captureButton addTarget:self action:@selector(capturePhoto) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.captureButton];
     
@@ -98,13 +99,13 @@
     
     self.flashButton = [[UIButton alloc]initWithFrame:CGRectMake((CGRectGetMinX(self.exitButton.frame) + CGRectGetMinX(self.captureButton.frame))/2, CGRectGetMinY(self.exitButton.frame), self.view.frame.size.width * 0.15, self.view.frame.size.width * 0.15)];
     self.flashButton.backgroundColor = [UIColor clearColor];
-    [self.flashButton setImage:[UIImage imageNamed:@"flash"] forState:UIControlStateNormal];
+    [self.flashButton setImage:[UIImage imageNamed:@"camera_flash_off"] forState:UIControlStateNormal];
     [self.flashButton addTarget:self action:@selector(toggleFlash) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.flashButton];
     
     self.flipButton = [[UIButton alloc]initWithFrame:CGRectMake((CGRectGetMinX(self.captureButton.frame) + CGRectGetMaxX(self.albumButton.frame))/2, CGRectGetMinY(self.flashButton.frame), self.view.frame.size.width * 0.15, self.view.frame.size.width * 0.15)];
     self.flipButton.backgroundColor = [UIColor clearColor];
-    [self.flipButton setImage:[UIImage imageNamed:@"flip_camera"] forState:UIControlStateNormal];
+    [self.flipButton setImage:[UIImage imageNamed:@"camera_switch"] forState:UIControlStateNormal];
     [self.flipButton addTarget:self action:@selector(flipCamera) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.flipButton];
 }
@@ -122,7 +123,8 @@
     [self.stillCamera capturePhotoAsImageProcessedUpToFilter:currentFilter withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             TPLAssetPreviewController *assetVC = [[TPLAssetPreviewController alloc]init];
-            assetVC.selectedImage = processedImage;
+            self.currentReview.image = processedImage;
+            assetVC.currentReview = self.currentReview;
             [self.navigationController pushViewController:assetVC animated:NO];
         });
     }];

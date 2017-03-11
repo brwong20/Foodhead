@@ -23,7 +23,12 @@
                    completionHandler:(void (^)(id completionHandler))completionHandler
                       failureHandler:(void (^)(id failureHandler))failureHandler;
 
-- (void)submitReviewForRestaurant:(NSString *)restaurantId;
-- (void)getReviewsForRestaurant:(NSString *)restaurantId;
+- (void)submitReviewForRestaurant:(NSString *)restaurantId
+                completionHandler:(void (^)(id completionHandler))completionHandler
+                   failureHandler:(void (^)(id failureHandler))failureHandler;
+
+- (void)getReviewsForRestaurant:(NSString *)restaurantId
+              completionHandler:(void (^)(id completionHandler))completionHandler
+                 failureHandler:(void (^)(id failureHandler))failureHandler;
 
 @end

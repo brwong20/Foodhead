@@ -15,8 +15,6 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *filters;
 
-@property (nonatomic, strong) GPUImagePicture *lookup;//Must retain these lookup tables in order to use them to create GPUImageLookupFilters
-
 @end
 
 static int startingIndex = 0;
@@ -46,8 +44,12 @@ static int numFilters = 3;
     [self addSubview:self.scrollView];
 }
 
-- (void)setupFilters{
+- (void)dealloc{
     [self clearFilterData];
+}
+
+- (void)setupFilters{
+    //[self clearFilterData];
     [self loadFilterData];
     [self presentFilters];
 }
@@ -65,45 +67,24 @@ static int numFilters = 3;
 - (void)loadFilterData{
     self.scrollView.contentSize = CGSizeMake(self.frame.size.width * (numFilters + 2), self.frame.size.height);
     
-    //Custom filter
-    CameraScrollFilter *sweetDum = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"sweet3"]];
+//    //Custom filter
+    CameraScrollFilter *sweetDum = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"sweety3"]];
     sweetDum.lookupFilter.intensity = 1.0;
     [self.filters addObject:sweetDum];
     
     CameraScrollFilter *origin = [[CameraScrollFilter alloc]initWithFrame:self.frame withCamera:self.stillCamera andGPUFilter:[[GPUImageSepiaFilter alloc]init]];
     [self.filters addObject:origin];
     
-    CameraScrollFilter *yum = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"yum4"]];
+    CameraScrollFilter *yum = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"yummer4"]];
     [self.filters addObject:yum];
     
-    CameraScrollFilter *sweet = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"sweet3"]];
+    CameraScrollFilter *sweet = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andLookupImage:[UIImage imageNamed:@"sweety3"]];
     sweet.lookupFilter.intensity = 1.0;
     [self.filters addObject:sweet];
 
     CameraScrollFilter *originDum = [[CameraScrollFilter alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) withCamera:self.stillCamera andGPUFilter:[[GPUImageSepiaFilter alloc]init]];
     [self.filters addObject:originDum];
-    
-    /*
-        GPUImageView *fil3 = [[GPUImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-        fil1.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-        GPUImageLookupFilter *lookupFil = [[GPUImageLookupFilter alloc] init];
-        lookupFilter.intensity = 1.0;
-    
-        [self.stillCamera addTarget:lookupFil atTextureLocation:0];
-        [self.lookup addTarget:lookupFil atTextureLocation:1];
-        [self.lookup processImage];
-        [lookupFilter addTarget:fil3];
-        [lookupFilter useNextFrameForImageCapture];
-    
-        GPUImageView *dum2 = [[GPUImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-        dum2.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-        GPUImageSepiaFilter *gam = [[GPUImageSepiaFilter alloc]init];
-        gam.intensity = 0.0;
-        [self.stillCamera addTarget:gam];
-        [gam addTarget:dum2];
-     */
-    
-    
+
     //Scroll to starting index
     [self.scrollView scrollRectToVisible:CGRectMake([self positionOfPageAtIndex:startingIndex], 0, self.frame.size.width, self.frame.size.height) animated:NO];
 }
@@ -115,7 +96,6 @@ static int numFilters = 3;
         [self updateMask:filter newXPosition:[self positionOfPageAtIndex:i - startingIndex - 2]];
         [self insertSubview:filter belowSubview:self.scrollView];
     }
-    
 }
 
 - (CGFloat)positionOfPageAtIndex:(int)index{

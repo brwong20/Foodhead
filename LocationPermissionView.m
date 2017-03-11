@@ -57,7 +57,7 @@
 
 - (void)requestLocationAuth
 {
-    [[LocationManager sharedLocationInstance]requestLocationAuthorization];
+    [[LocationManager sharedLocationInstance]checkLocationAuthorization];
 }
 
 

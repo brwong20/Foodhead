@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RestaurantReview.h"
 #import "TPLRestaurant.h"
+
+@import CoreLocation;
 
 @interface CameraViewController : UIViewController
 
-@property (nonatomic, strong) TPLRestaurant *selectedRestaurant;
+@property (nonatomic, strong) RestaurantReview *currentReview;
 
 @end

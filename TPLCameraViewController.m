@@ -15,8 +15,6 @@
 #import "TPLRestaurant.h"
 #import "TPLAssetPreviewController.h"
 
-#import "GPUImage.h"
-
 static void * SessionRunningContext = &SessionRunningContext;
 
 typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
@@ -604,7 +602,7 @@ static CGFloat previousZoom;
             if (photoData) {
                 self.selectedPhoto = [UIImage imageWithData:photoData];
                 TPLAssetPreviewController *assetVC = [[TPLAssetPreviewController alloc]init];
-                assetVC.selectedImage = self.selectedPhoto;
+                //assetVC.currentReview
                 [self.navigationController pushViewController:assetVC animated:NO];
             }
         }];

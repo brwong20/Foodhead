@@ -7,6 +7,7 @@
 //
 
 #import "GeneralRestaurantInfoView.h"
+#import "FoodWiseDefines.h"
 
 @implementation GeneralRestaurantInfoView
 
@@ -14,7 +15,7 @@
     //Modularize into own class
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor blackColor];
+        self.backgroundColor = APPLICATION_BACKGROUND_COLOR;
         [self setupUI:frame];
     }
     return self;

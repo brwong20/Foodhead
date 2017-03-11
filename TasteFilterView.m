@@ -111,14 +111,14 @@
     }else{
         self.tasteRating = @(5);
     }
-    [self.delegate didRateTaste:self.tasteRating];
+    [self.delegate didRateOverall:self.tasteRating];
     [self highlightButtonsUpTo:self.tasteRating.integerValue];
 }
 
 - (void)highlightButtonsUpTo:(NSUInteger)num{
     //Reset all colors first
     for (UIButton *tasteButton in self.buttonArray) {
-        [tasteButton setBackgroundColor:[UIColor clearColor]];
+        [tasteButton setBackgroundColor:[UIColor whiteColor]];
     }
     
     //Fill based on rating

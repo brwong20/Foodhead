@@ -23,7 +23,7 @@
     if (self) {
         
         //Based on number of days, we have to dyanamically create labels and resize height
-        self.backgroundColor = [UIColor blackColor];
+        self.backgroundColor = APPLICATION_BACKGROUND_COLOR;
         [self populateHoursForDays];
         
     }

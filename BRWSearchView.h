@@ -7,19 +7,25 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TPLRestaurant.h"
+#import "RestaurantReview.h"
+
+@import CoreLocation;
 
 @protocol BRWSearchViewDelegate <NSObject>
 
-- (void)didSelectResult:(id)result;
+@required
+
+- (void)didSelectResult:(TPLRestaurant *)result;
 
 @end
 
 @interface BRWSearchView : UIView
 
-@property (nonatomic) CGFloat resultCellHeight;
+@property (nonatomic, assign) RestaurantReview *currentReview;
 
 @property (nonatomic, weak) id<BRWSearchViewDelegate> delegate;
 
-//How can i generalize this? Just tell users to pass in/update their datasource in from their view controller?
+- (void)dismissKeyboard;
 
 @end

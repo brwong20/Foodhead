@@ -60,15 +60,8 @@
     //Get section instead and check if a dict exists
     TPLRestaurant *restaurant = [self getRestaurantAtIndexPath:indexPath inCollectionView:collectionView];
     collectionCell.nameLabel.text = restaurant.name;
-    [collectionCell.coverImage sd_setImageWithURL:[NSURL URLWithString:restaurant.thumbnail] placeholderImage:[UIImage new] options:SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-//        if (cacheType == SDImageCacheTypeNone) {
-//            collectionCell.coverImage.alpha = 0;
-//            [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-//                collectionCell.coverImage.alpha = 1;
-//            }completion:nil];
-//        }else{
-//            collectionCell.coverImage.alpha = 1.0;
-//        }
+    [collectionCell.coverImage sd_setImageWithURL:[NSURL URLWithString:restaurant.thumbnail] placeholderImage:[UIImage new] options:SDWebImageHighPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+
     }];
     return collectionCell;
 }
@@ -76,7 +69,7 @@
 //Keeps track of each offset for each distinct row of embedded collection views
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     TabledCollectionCell *photoCell = (TabledCollectionCell*)cell;
-    photoCell.collectionView.backgroundColor = [UIColor blackColor];
+    photoCell.collectionView.backgroundColor = [UIColor clearColor];
     photoCell.collectionView.decelerationRate = UIScrollViewDecelerationRateFast;//Slows down the scroll speed
     [photoCell setCollectionViewDataSourceDelegate:self indexPath:indexPath withCustomCell:[TPLChartCollectionCell class]];
     

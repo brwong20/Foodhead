@@ -27,6 +27,22 @@
 		A02D2F2C1E5CF276003E65F3 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F2B1E5CF276003E65F3 /* CameraViewController.m */; };
 		A033E5A11E43E76300D4B9AC /* NSString+IsEmpty.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */; };
 		A033E5A41E43E7C600D4B9AC /* NSString+Trim.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E59D1E43E74900D4B9AC /* NSString+Trim.m */; };
+		A04B99621E70016E004AE07A /* PriceFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99611E70016E004AE07A /* PriceFilterView.m */; };
+		A04B99661E7096E6004AE07A /* Shader1.fsh in Resources */ = {isa = PBXBuildFile; fileRef = A04B99641E7096E6004AE07A /* Shader1.fsh */; };
+		A04B99671E7096E6004AE07A /* Shader2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = A04B99651E7096E6004AE07A /* Shader2.fsh */; };
+		A04B996C1E7204AA004AE07A /* UIFont+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B996B1E7204AA004AE07A /* UIFont+Extension.m */; };
+		A04B99821E720A43004AE07A /* Montserrat-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99731E720843004AE07A /* Montserrat-Light.otf */; };
+		A04B99831E720A43004AE07A /* Montserrat-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99741E720843004AE07A /* Montserrat-Medium.otf */; };
+		A04B99841E720A43004AE07A /* Montserrat-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99751E720843004AE07A /* Montserrat-Regular.otf */; };
+		A04B99851E720A43004AE07A /* Montserrat-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99761E720843004AE07A /* Montserrat-SemiBold.otf */; };
+		A04B99861E720A51004AE07A /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99801E72087A004AE07A /* Nunito-Regular.ttf */; };
+		A04B99871E720A61004AE07A /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997B1E72087A004AE07A /* Nunito-Bold.ttf */; };
+		A04B99881E720A61004AE07A /* Nunito-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997F1E72087A004AE07A /* Nunito-Medium.ttf */; };
+		A04B99891E720A61004AE07A /* Nunito-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99811E72087A004AE07A /* Nunito-SemiBold.ttf */; };
+		A04B998A1E720A71004AE07A /* Montserrat-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99711E720843004AE07A /* Montserrat-Bold.otf */; };
+		A04B998B1E720B6C004AE07A /* Nunito-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997E1E72087A004AE07A /* Nunito-Light.ttf */; };
+		A04B998F1E7265D0004AE07A /* RestaurantSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B998E1E7265D0004AE07A /* RestaurantSearchViewController.m */; };
+		A04B99931E72676F004AE07A /* RestaurantReview.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99921E72676F004AE07A /* RestaurantReview.m */; };
 		A04D6CD61E5E162700D16DE6 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A04D6CD51E5E162700D16DE6 /* SWRevealViewController.m */; };
 		A04D6CE21E5E2B2B00D16DE6 /* ImageRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04D6CE11E5E2B2B00D16DE6 /* ImageRatingView.m */; };
 		A0529A851E4AA61500150557 /* FilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0529A841E4AA61500150557 /* FilterView.m */; };
@@ -252,6 +268,7 @@
 		A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */; };
 		A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */; };
 		A0F4CCD81E38408C003D56A9 /* TabledCollectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */; };
+		C4811BDA920F39627F0B8191 /* Pods_Foodhead.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA12B69485225EB1396599E /* Pods_Foodhead.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -312,6 +329,33 @@
 		A033E59D1E43E74900D4B9AC /* NSString+Trim.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Trim.m"; sourceTree = "<group>"; };
 		A033E59F1E43E76300D4B9AC /* NSString+IsEmpty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+IsEmpty.h"; path = "../../../Documents/Workspace/Joyspace App/Joyspace/Categories/NSString/NSString+IsEmpty.h"; sourceTree = "<group>"; };
 		A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+IsEmpty.m"; path = "../../../Documents/Workspace/Joyspace App/Joyspace/Categories/NSString/NSString+IsEmpty.m"; sourceTree = "<group>"; };
+		A04B995A1E6F94AC004AE07A /* FoodWiseDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FoodWiseDefines.h; sourceTree = "<group>"; };
+		A04B99601E70016E004AE07A /* PriceFilterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriceFilterView.h; sourceTree = "<group>"; };
+		A04B99611E70016E004AE07A /* PriceFilterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriceFilterView.m; sourceTree = "<group>"; };
+		A04B99641E7096E6004AE07A /* Shader1.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader1.fsh; sourceTree = "<group>"; };
+		A04B99651E7096E6004AE07A /* Shader2.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader2.fsh; sourceTree = "<group>"; };
+		A04B996A1E7204AA004AE07A /* UIFont+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+Extension.h"; sourceTree = "<group>"; };
+		A04B996B1E7204AA004AE07A /* UIFont+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+Extension.m"; sourceTree = "<group>"; };
+		A04B99701E720843004AE07A /* Montserrat-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Black.otf"; sourceTree = "<group>"; };
+		A04B99711E720843004AE07A /* Montserrat-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.otf"; sourceTree = "<group>"; };
+		A04B99721E720843004AE07A /* Montserrat-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBold.otf"; sourceTree = "<group>"; };
+		A04B99731E720843004AE07A /* Montserrat-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Light.otf"; sourceTree = "<group>"; };
+		A04B99741E720843004AE07A /* Montserrat-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.otf"; sourceTree = "<group>"; };
+		A04B99751E720843004AE07A /* Montserrat-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.otf"; sourceTree = "<group>"; };
+		A04B99761E720843004AE07A /* Montserrat-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.otf"; sourceTree = "<group>"; };
+		A04B99771E720843004AE07A /* Montserrat-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Thin.otf"; sourceTree = "<group>"; };
+		A04B997A1E72087A004AE07A /* Nunito-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Black.ttf"; sourceTree = "<group>"; };
+		A04B997B1E72087A004AE07A /* Nunito-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Bold.ttf"; sourceTree = "<group>"; };
+		A04B997C1E72087A004AE07A /* Nunito-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-ExtraBold.ttf"; sourceTree = "<group>"; };
+		A04B997D1E72087A004AE07A /* Nunito-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-ExtraLight.ttf"; sourceTree = "<group>"; };
+		A04B997E1E72087A004AE07A /* Nunito-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Light.ttf"; sourceTree = "<group>"; };
+		A04B997F1E72087A004AE07A /* Nunito-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Medium.ttf"; sourceTree = "<group>"; };
+		A04B99801E72087A004AE07A /* Nunito-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Regular.ttf"; sourceTree = "<group>"; };
+		A04B99811E72087A004AE07A /* Nunito-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-SemiBold.ttf"; sourceTree = "<group>"; };
+		A04B998D1E7265D0004AE07A /* RestaurantSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestaurantSearchViewController.h; sourceTree = "<group>"; };
+		A04B998E1E7265D0004AE07A /* RestaurantSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestaurantSearchViewController.m; sourceTree = "<group>"; };
+		A04B99911E72676F004AE07A /* RestaurantReview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestaurantReview.h; sourceTree = "<group>"; };
+		A04B99921E72676F004AE07A /* RestaurantReview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestaurantReview.m; sourceTree = "<group>"; };
 		A04D6CD41E5E162700D16DE6 /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
 		A04D6CD51E5E162700D16DE6 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
 		A04D6CE01E5E2B2B00D16DE6 /* ImageRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRatingView.h; sourceTree = "<group>"; };
@@ -335,7 +379,6 @@
 		A0595F051E47BD19001BB324 /* TPLFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLFilterScrollView.m; sourceTree = "<group>"; };
 		A0595F0B1E47C92B001BB324 /* TPLAssetPreviewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLAssetPreviewController.h; sourceTree = "<group>"; };
 		A0595F0C1E47C92B001BB324 /* TPLAssetPreviewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLAssetPreviewController.m; sourceTree = "<group>"; };
-		A05FEF431E3714C700A4FB92 /* Foodhead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Foodhead.entitlements; sourceTree = "<group>"; };
 		A05FEF471E37198A00A4FB92 /* LocationPermissionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationPermissionView.h; sourceTree = "<group>"; };
 		A05FEF481E37198A00A4FB92 /* LocationPermissionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationPermissionView.m; sourceTree = "<group>"; };
 		A06AFC6D1E3FBEE1006ED71E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -718,7 +761,6 @@
 		A0D418D71E3695C0004DDC6C /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		A0D418E11E3698B0004DDC6C /* UserAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserAuthManager.h; sourceTree = "<group>"; };
 		A0D418E21E3698B0004DDC6C /* UserAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserAuthManager.m; sourceTree = "<group>"; };
-		A0D418E41E36AA87004DDC6C /* FoodheadDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FoodheadDefines.h; sourceTree = "<group>"; };
 		A0E844001E28034000BE98B1 /* Foodhead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Foodhead.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0E844041E28034000BE98B1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A0E844061E28034000BE98B1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -746,6 +788,9 @@
 		A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartsDataSource.m; sourceTree = "<group>"; };
 		A0F4CCD61E38408C003D56A9 /* TabledCollectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabledCollectionManager.h; sourceTree = "<group>"; };
 		A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabledCollectionManager.m; sourceTree = "<group>"; };
+		CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.debug.xcconfig"; sourceTree = "<group>"; };
+		DDA12B69485225EB1396599E /* Pods_Foodhead.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Foodhead.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.release.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -763,6 +808,7 @@
 				A0E8442A1E283B0800BE98B1 /* FBSDKShareKit.framework in Frameworks */,
 				A0E844281E283B0200BE98B1 /* FBSDKLoginKit.framework in Frameworks */,
 				A0E844241E283AEF00BE98B1 /* Bolts.framework in Frameworks */,
+				C4811BDA920F39627F0B8191 /* Pods_Foodhead.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -782,8 +828,18 @@
 				A0E844251E283B0200BE98B1 /* FBSDKCoreKit.framework */,
 				A0E844261E283B0200BE98B1 /* FBSDKLoginKit.framework */,
 				A0E844231E283AEF00BE98B1 /* Bolts.framework */,
+				DDA12B69485225EB1396599E /* Pods_Foodhead.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08669A2478414E9BFB0E44CC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */,
+				E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		A02D2EE01E53C1A3003E65F3 /* Main Page */ = {
@@ -888,6 +944,7 @@
 		A033E5A21E43E76600D4B9AC /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				A04B996D1E7204B0004AE07A /* UIFont */,
 				A033E5A31E43E77100D4B9AC /* NSString */,
 			);
 			name = Categories;
@@ -902,6 +959,54 @@
 				A033E59D1E43E74900D4B9AC /* NSString+Trim.m */,
 			);
 			name = NSString;
+			sourceTree = "<group>";
+		};
+		A04B996D1E7204B0004AE07A /* UIFont */ = {
+			isa = PBXGroup;
+			children = (
+				A04B996A1E7204AA004AE07A /* UIFont+Extension.h */,
+				A04B996B1E7204AA004AE07A /* UIFont+Extension.m */,
+			);
+			name = UIFont;
+			sourceTree = "<group>";
+		};
+		A04B996F1E720816004AE07A /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				A04B99791E720872004AE07A /* Nunito */,
+				A04B99781E720847004AE07A /* Monsterrat */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
+		A04B99781E720847004AE07A /* Monsterrat */ = {
+			isa = PBXGroup;
+			children = (
+				A04B99701E720843004AE07A /* Montserrat-Black.otf */,
+				A04B99711E720843004AE07A /* Montserrat-Bold.otf */,
+				A04B99721E720843004AE07A /* Montserrat-ExtraBold.otf */,
+				A04B99731E720843004AE07A /* Montserrat-Light.otf */,
+				A04B99741E720843004AE07A /* Montserrat-Medium.otf */,
+				A04B99751E720843004AE07A /* Montserrat-Regular.otf */,
+				A04B99761E720843004AE07A /* Montserrat-SemiBold.otf */,
+				A04B99771E720843004AE07A /* Montserrat-Thin.otf */,
+			);
+			name = Monsterrat;
+			sourceTree = "<group>";
+		};
+		A04B99791E720872004AE07A /* Nunito */ = {
+			isa = PBXGroup;
+			children = (
+				A04B99811E72087A004AE07A /* Nunito-SemiBold.ttf */,
+				A04B997A1E72087A004AE07A /* Nunito-Black.ttf */,
+				A04B997B1E72087A004AE07A /* Nunito-Bold.ttf */,
+				A04B997C1E72087A004AE07A /* Nunito-ExtraBold.ttf */,
+				A04B997D1E72087A004AE07A /* Nunito-ExtraLight.ttf */,
+				A04B997E1E72087A004AE07A /* Nunito-Light.ttf */,
+				A04B997F1E72087A004AE07A /* Nunito-Medium.ttf */,
+				A04B99801E72087A004AE07A /* Nunito-Regular.ttf */,
+			);
+			name = Nunito;
 			sourceTree = "<group>";
 		};
 		A04D6CD31E5E162700D16DE6 /* SWRevealViewController */ = {
@@ -933,6 +1038,8 @@
 				A02D2F2B1E5CF276003E65F3 /* CameraViewController.m */,
 				A0595F0B1E47C92B001BB324 /* TPLAssetPreviewController.h */,
 				A0595F0C1E47C92B001BB324 /* TPLAssetPreviewController.m */,
+				A04B998D1E7265D0004AE07A /* RestaurantSearchViewController.h */,
+				A04B998E1E7265D0004AE07A /* RestaurantSearchViewController.m */,
 				A0595F071E47BE8C001BB324 /* Filters */,
 			);
 			name = Camera;
@@ -995,6 +1102,8 @@
 		A0A64B381E52BA04009BCF72 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A04B99641E7096E6004AE07A /* Shader1.fsh */,
+				A04B99651E7096E6004AE07A /* Shader2.fsh */,
 				A0A64B391E52BA04009BCF72 /* lookup.png */,
 				A0A64B3A1E52BA04009BCF72 /* lookup_amatorka.png */,
 				A0A64B3B1E52BA04009BCF72 /* lookup_miss_etikate.png */,
@@ -1389,6 +1498,8 @@
 				A0529A871E4AA66500150557 /* TasteFilterView.m */,
 				A02D2EF01E5512FC003E65F3 /* BRWSearchView.h */,
 				A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */,
+				A04B99601E70016E004AE07A /* PriceFilterView.h */,
+				A04B99611E70016E004AE07A /* PriceFilterView.m */,
 			);
 			name = "Review Filters";
 			sourceTree = "<group>";
@@ -1436,6 +1547,8 @@
 				A0D418E01E36982F004DDC6C /* Login/Sign Up */,
 				A0F4CCC81E3811F0003D56A9 /* LocationManager.h */,
 				A0F4CCC91E3811F0003D56A9 /* LocationManager.m */,
+				A04B99911E72676F004AE07A /* RestaurantReview.h */,
+				A04B99921E72676F004AE07A /* RestaurantReview.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1491,6 +1604,7 @@
 				A0D418DA1E3695CB004DDC6C /* Views */,
 				A0E844011E28034000BE98B1 /* Products */,
 				06D2B6CFAD0F0144B7C8FCB4 /* Frameworks */,
+				08669A2478414E9BFB0E44CC /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1510,7 +1624,6 @@
 				A0E844141E28034000BE98B1 /* Info.plist */,
 				A0E844031E28034000BE98B1 /* Supporting Files */,
 			);
-			name = Foodhead;
 			path = Foodhead;
 			sourceTree = "<group>";
 		};
@@ -1519,12 +1632,12 @@
 			children = (
 				A04D6CD31E5E162700D16DE6 /* SWRevealViewController */,
 				A0A6499D1E52BA03009BCF72 /* GPUImage */,
+				A04B996F1E720816004AE07A /* Fonts */,
 				A033E5A21E43E76600D4B9AC /* Categories */,
 				A0E844061E28034000BE98B1 /* AppDelegate.h */,
 				A0E844071E28034000BE98B1 /* AppDelegate.m */,
-				A0D418E41E36AA87004DDC6C /* FoodheadDefines.h */,
+				A04B995A1E6F94AC004AE07A /* FoodWiseDefines.h */,
 				A0E844041E28034000BE98B1 /* main.m */,
-				A05FEF431E3714C700A4FB92 /* Foodhead.entitlements */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1547,9 +1660,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0E844171E28034000BE98B1 /* Build configuration list for PBXNativeTarget "Foodhead" */;
 			buildPhases = (
+				B170C7F40EE513A83803A72B /* [CP] Check Pods Manifest.lock */,
 				A0E843FC1E28034000BE98B1 /* Sources */,
 				A0E843FD1E28034000BE98B1 /* Frameworks */,
 				A0E843FE1E28034000BE98B1 /* Resources */,
+				33435853DF16A1FB67EAA8AF /* [CP] Embed Pods Frameworks */,
+				93F9ECA1DC75D5DDD8CEBB86 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1637,6 +1753,7 @@
 				A0A64CB41E52BA05009BCF72 /* .travis.yml in Resources */,
 				A0A64E2C1E52BA05009BCF72 /* GPUImage.podspec in Resources */,
 				A0A64E2D1E52BA05009BCF72 /* License.txt in Resources */,
+				A04B99671E7096E6004AE07A /* Shader2.fsh in Resources */,
 				A0A64CB31E52BA05009BCF72 /* .gitignore in Resources */,
 				A0A64D761E52BA05009BCF72 /* lookup_soft_elegance_2.png in Resources */,
 				A0A64D751E52BA05009BCF72 /* lookup_soft_elegance_1.png in Resources */,
@@ -1646,11 +1763,70 @@
 				A0A64CB51E52BA05009BCF72 /* build.sh in Resources */,
 				A0A64E1F1E52BA05009BCF72 /* Info.plist in Resources */,
 				A0A64D731E52BA05009BCF72 /* lookup_amatorka.png in Resources */,
+				A04B99661E7096E6004AE07A /* Shader1.fsh in Resources */,
 				A0E844101E28034000BE98B1 /* Assets.xcassets in Resources */,
+				A04B998B1E720B6C004AE07A /* Nunito-Light.ttf in Resources */,
+				A04B99871E720A61004AE07A /* Nunito-Bold.ttf in Resources */,
+				A04B99881E720A61004AE07A /* Nunito-Medium.ttf in Resources */,
+				A04B99891E720A61004AE07A /* Nunito-SemiBold.ttf in Resources */,
+				A04B99861E720A51004AE07A /* Nunito-Regular.ttf in Resources */,
+				A04B99821E720A43004AE07A /* Montserrat-Light.otf in Resources */,
+				A04B99831E720A43004AE07A /* Montserrat-Medium.otf in Resources */,
+				A04B99841E720A43004AE07A /* Montserrat-Regular.otf in Resources */,
+				A04B998A1E720A71004AE07A /* Montserrat-Bold.otf in Resources */,
+				A04B99851E720A43004AE07A /* Montserrat-SemiBold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		33435853DF16A1FB67EAA8AF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93F9ECA1DC75D5DDD8CEBB86 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B170C7F40EE513A83803A72B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A0E843FC1E28034000BE98B1 /* Sources */ = {
@@ -1737,9 +1913,11 @@
 				A0A64DDB1E52BA05009BCF72 /* GPUImageNonMaximumSuppressionFilter.m in Sources */,
 				A0A64DDF1E52BA05009BCF72 /* GPUImageOutput.m in Sources */,
 				A0A64E051E52BA05009BCF72 /* GPUImageSubtractBlendFilter.m in Sources */,
+				A04B99931E72676F004AE07A /* RestaurantReview.m in Sources */,
 				A0A64E0F1E52BA05009BCF72 /* GPUImageToonFilter.m in Sources */,
 				A04D6CE21E5E2B2B00D16DE6 /* ImageRatingView.m in Sources */,
 				A0A64DAB1E52BA05009BCF72 /* GPUImageGammaFilter.m in Sources */,
+				A04B998F1E7265D0004AE07A /* RestaurantSearchViewController.m in Sources */,
 				A0A64E061E52BA05009BCF72 /* GPUImageSwirlFilter.m in Sources */,
 				A0A64E1E1E52BA05009BCF72 /* GPUImageZoomBlurFilter.m in Sources */,
 				A0A64DF41E52BA05009BCF72 /* GPUImageScreenBlendFilter.m in Sources */,
@@ -1795,6 +1973,7 @@
 				A0A64E0A1E52BA05009BCF72 /* GPUImageThresholdEdgeDetectionFilter.m in Sources */,
 				A0A64E0E1E52BA05009BCF72 /* GPUImageToneCurveFilter.m in Sources */,
 				A0A64D991E52BA05009BCF72 /* GPUImageDifferenceBlendFilter.m in Sources */,
+				A04B996C1E7204AA004AE07A /* UIFont+Extension.m in Sources */,
 				A0A64DFE1E52BA05009BCF72 /* GPUImageSoftLightBlendFilter.m in Sources */,
 				A0A64DD21E52BA05009BCF72 /* GPUImageMissEtikateFilter.m in Sources */,
 				A0A64D921E52BA05009BCF72 /* GPUImageColourFASTFeatureDetector.m in Sources */,
@@ -1873,6 +2052,7 @@
 				A0A64DED1E52BA05009BCF72 /* GPUImageRGBClosingFilter.m in Sources */,
 				A0A64DE01E52BA05009BCF72 /* GPUImageOverlayBlendFilter.m in Sources */,
 				A04D6CD61E5E162700D16DE6 /* SWRevealViewController.m in Sources */,
+				A04B99621E70016E004AE07A /* PriceFilterView.m in Sources */,
 				A0A64DC11E52BA05009BCF72 /* GPUImageKuwaharaFilter.m in Sources */,
 				A0A64DAD1E52BA05009BCF72 /* GPUImageGaussianBlurPositionFilter.m in Sources */,
 				A08B82411E5FCB5A00132F6B /* CameraFilterScrollView.m in Sources */,
@@ -1989,6 +2169,7 @@
 		};
 		A0E844181E28034000BE98B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -2023,6 +2204,7 @@
 		};
 		A0E844191E28034000BE98B1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;

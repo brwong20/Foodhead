@@ -2,7 +2,7 @@
 platform :ios, '9.0'
 use_frameworks!
 
-target 'FoodWise' do
+target 'Foodhead' do
 
 pod 'AFNetworking', '~> 3.0'
 pod 'SDWebImage', '~>3.8'

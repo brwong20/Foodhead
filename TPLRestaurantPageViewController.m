@@ -47,10 +47,12 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
+    self.restaurantPhotos = [NSMutableArray array];
     
     self.pageViewModel = [[TPLRestaurantPageViewModel alloc]init];
     [self loadRestaurantDetails];
+    [self loadRestaurantReviews];
     [self setupNavBar];
     [self setupUI];
 }
@@ -68,17 +70,31 @@ static NSString *photoCellId = @"photoCell";
 //}
 
 - (void)loadRestaurantDetails{
-    NSString *restId = [self.selectedRestaurant.restaurantId stringValue];
+    NSString *restId = self.selectedRestaurant.foursqId;
     [self.pageViewModel retrieveRestaurantDetailsFor:restId  atLocation:self.currentLocation completionHandler:^(id data) {
         NSLog(@"%@", data);
         NSDictionary *result = data[@"result"];
         TPLDetailedRestaurant *detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:result error:nil];
         [self.selectedRestaurant mergeValuesForKeysFromModel:detailedRestaurant];
-        NSLog(@"%@", self.selectedRestaurant);
+        NSArray *imgs = result[@"instagram_images"];
+        
+        if (imgs.count < 5) {
+            imgs = result[@"images"];
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
+            self.restaurantPhotos = [[self.restaurantPhotos arrayByAddingObjectsFromArray:imgs]mutableCopy];
             [self.detailsTableView reloadData];
         });
     } failureHandler:^(id error) {
+        
+    }];
+}
+
+- (void)loadRestaurantReviews{
+    [self.pageViewModel getReviewsForRestaurant:[self.selectedRestaurant.restaurantId stringValue] completionHandler:^(id completionHandler) {
+        
+    } failureHandler:^(id failureHandler) {
         
     }];
 }
@@ -108,7 +124,7 @@ static NSString *photoCellId = @"photoCell";
     self.detailsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, frameSize.width, frameSize.height) style:UITableViewStylePlain];
     self.detailsTableView.delegate = self;
     self.detailsTableView.dataSource = self;
-    self.detailsTableView.backgroundColor = [UIColor blackColor];
+    self.detailsTableView.backgroundColor = APPLICATION_BACKGROUND_COLOR;
     self.detailsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     [self.view addSubview:self.detailsTableView];
     
@@ -119,17 +135,6 @@ static NSString *photoCellId = @"photoCell";
     [self.submitButton.titleLabel setFont:[UIFont boldSystemFontOfSize:24.0]];
     [self.submitButton addTarget:self action:@selector(submitReview) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.submitButton];
-}
-
-- (void)getFSQRestuarantInfo:(NSString *)restaurantId{
-    NSString *completeUrl = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/%@?client_id=%@&client_secret=%@&v=%@", restaurantId,FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125"];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    
-    NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL URLWithString:completeUrl] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"%@", json);
-    }];
-    [task resume];
 }
 
 #pragma mark - Helper Methods
@@ -201,8 +206,8 @@ static NSString *photoCellId = @"photoCell";
         }
         case 3:{
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.backgroundColor = [UIColor blackColor];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.backgroundColor = APPLICATION_BACKGROUND_COLOR;
             //Custom disclosure cell.accessoryView =
             cell.textLabel.text = @"Menu";
             break;
@@ -288,9 +293,12 @@ static NSString *photoCellId = @"photoCell";
     }else{
         collectionCell.backgroundColor = [UIColor redColor];
     }
+    
     //Get section instead and check if a dict exists
     if (self.restaurantPhotos.count > 0) {
-        
+        NSDictionary *imgInfo = self.restaurantPhotos[indexPath.row];
+        NSString *imgURL = imgInfo[@"url"];
+        [collectionCell.coverImageView sd_setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:[UIImage new] options:SDWebImageHighPriority completed:nil];
     }
     return collectionCell;
 }
@@ -300,11 +308,8 @@ static NSString *photoCellId = @"photoCell";
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{    NSInteger itemCount = 5;
-    if(self.restaurantPhotos.count > 0){
-        
-    }
-    return itemCount;
+{
+    return 5;
 }
 
 #pragma mark - UICollectionViewDelegate methods
@@ -328,6 +333,12 @@ static NSString *photoCellId = @"photoCell";
 
 #pragma mark - View Model
 
-//RACObserve and retrieve data to update mantle object 
+//RACObserve and retrieve data to update mantle object
+
+- (void)bindViewModel{
+    
+    
+    
+}
 
 @end
