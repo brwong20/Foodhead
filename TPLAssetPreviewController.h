@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RestaurantReview.h"
+#import "TPLRestaurant.h"
+
+@import CoreLocation;
+
 @interface TPLAssetPreviewController : UIViewController
 
-@property (nonatomic, strong) UIImage *selectedImage;
+@property (nonatomic, strong) RestaurantReview *currentReview;
 
 @end

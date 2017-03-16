@@ -10,6 +10,9 @@
 #import "UserAuthManager.h"
 #import "LoginViewController.h"
 #import "ChartsViewController.h"
+#import "SWRevealViewController.h"
+#import "SlideOutViewController.h"
+#import "User.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 
@@ -20,19 +23,21 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[FBSDKApplicationDelegate sharedInstance] application:application
+    BOOL fbLaunched = [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
 
     //Must create window here ourselves if not using storyboard
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     
     //Check if user has a valid login or if they skipped - need an NSUserDefault for skipped?
-    if(![UserAuthManager isUserLoggedIn]){
-        [self changeRootViewControllerFor:RootViewTypeLogin];
-    }else{
+    UserAuthManager *authManager = [UserAuthManager sharedInstance];
+    if ([authManager isUserLoggedIn]) {
         [self changeRootViewControllerFor:RootViewTypeCharts];
+    }else{
+        [self changeRootViewControllerFor:RootViewTypeLogin];
     }
-    return YES;
+
+    return fbLaunched;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -52,34 +57,29 @@
 }
 
 - (void)changeRootViewControllerFor:(RootViewType)type{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UIViewController *root;
+    UIViewController *root = nil;
     
     if(type == RootViewTypeLogin){
-        root = (LoginViewController*)[storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        root = [[LoginViewController alloc]init];
     }
     else if (type == RootViewTypeCharts)
     {
-        root = (ChartsViewController*)[storyboard instantiateViewControllerWithIdentifier:@"mainView"];
+        ChartsViewController *chartsVC = [[ChartsViewController alloc]init];
+        UINavigationController *chartsNav = [[UINavigationController alloc]initWithRootViewController:chartsVC];
+        
+        SlideOutViewController *sidePanelVC = [[SlideOutViewController alloc]init];
+        
+        CGRect screenBounds = [[UIScreen mainScreen]bounds];
+        
+        SWRevealViewController *mainRevealVC = [[SWRevealViewController alloc]initWithRearViewController:sidePanelVC frontViewController:chartsNav];
+        mainRevealVC.toggleAnimationType = SWRevealToggleAnimationTypeEaseOut;
+        mainRevealVC.toggleAnimationDuration = 0.3;
+        mainRevealVC.rearViewRevealWidth = screenBounds.size.width - SLIDED_PANEL_WIDTH;
+        mainRevealVC.draggableBorderWidth = screenBounds.size.width/7;//Bounds the pan gesture to a specific width
+        root = mainRevealVC;
     }
-    
-    //Fade-out transition
-    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:root];
-    
-    if(type == RootViewTypeCharts){
-//        UIView *snapshot = [self.window snapshotViewAfterScreenUpdates:YES];
-//        [navController.view addSubview:snapshot];
-//        
-//        //TODO: Need to change animation for sign out.
-//        [UIView animateWithDuration:0.5 animations:^{
-//            snapshot.layer.opacity = 0;
-//            snapshot.layer.transform = CATransform3DMakeScale(1.5, 1.5, 1.5);
-//        } completion:^(BOOL finished) {
-//            [snapshot removeFromSuperview];
-//        }];
-    }
-    
-    [self.window setRootViewController:navController];
+
+    [self.window setRootViewController:root];
     [self.window makeKeyAndVisible];
 }
 

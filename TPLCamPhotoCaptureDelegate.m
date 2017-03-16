@@ -107,30 +107,33 @@
         return;
     }
     
-    [PHPhotoLibrary requestAuthorization:^( PHAuthorizationStatus status ) {
-        if ( status == PHAuthorizationStatusAuthorized ) {
-            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                PHAssetCreationRequest *creationRequest = [PHAssetCreationRequest creationRequestForAsset];
-                [creationRequest addResourceWithType:PHAssetResourceTypePhoto data:self.photoData options:nil];
-                
-                if ( self.livePhotoCompanionMovieURL ) {
-                    PHAssetResourceCreationOptions *livePhotoCompanionMovieResourceOptions = [[PHAssetResourceCreationOptions alloc] init];
-                    livePhotoCompanionMovieResourceOptions.shouldMoveFile = YES;
-                    [creationRequest addResourceWithType:PHAssetResourceTypePairedVideo fileURL:self.livePhotoCompanionMovieURL options:livePhotoCompanionMovieResourceOptions];
-                }
-            } completionHandler:^( BOOL success, NSError * _Nullable error ) {
-                if ( ! success ) {
-                    NSLog( @"Error occurred while saving photo to photo library: %@", error );
-                }
-                
-                [self didFinish];
-            }];
-        }
-        else {
-            NSLog( @"Not authorized to save photo" );
-            [self didFinish];
-        }
-    }];
+    [self didFinish];
+    
+    //Album permission request and saving logic - prompt when user first wants to save img
+//    [PHPhotoLibrary requestAuthorization:^( PHAuthorizationStatus status ) {
+//        if ( status == PHAuthorizationStatusAuthorized ) {
+//            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+//                PHAssetCreationRequest *creationRequest = [PHAssetCreationRequest creationRequestForAsset];
+//                [creationRequest addResourceWithType:PHAssetResourceTypePhoto data:self.photoData options:nil];
+//                
+//                if ( self.livePhotoCompanionMovieURL ) {
+//                    PHAssetResourceCreationOptions *livePhotoCompanionMovieResourceOptions = [[PHAssetResourceCreationOptions alloc] init];
+//                    livePhotoCompanionMovieResourceOptions.shouldMoveFile = YES;
+//                    [creationRequest addResourceWithType:PHAssetResourceTypePairedVideo fileURL:self.livePhotoCompanionMovieURL options:livePhotoCompanionMovieResourceOptions];
+//                }
+//            } completionHandler:^( BOOL success, NSError * _Nullable error ) {
+//                if ( ! success ) {
+//                    NSLog( @"Error occurred while saving photo to photo library: %@", error );
+//                }
+//                
+//                
+//            }];
+//        }
+//        else {
+//            NSLog( @"Not authorized to save photo" );
+//            [self didFinish];
+//        }
+//    }];
 }
 
 @end

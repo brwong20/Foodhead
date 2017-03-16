@@ -47,10 +47,8 @@
 }
 
 //Only request when app is in use for now since we only need the current location when opening the map. This also saves battery life!
-- (void)requestLocationAuthorization
+- (void)checkLocationAuthorization
 {
-    
-#warning Be careful with checking if request is denied - should NEVER come before we request for first time!
     switch (self.authorizedStatus) {
         case kCLAuthorizationStatusNotDetermined: {
             if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
@@ -91,6 +89,7 @@
     self.locationManager.delegate = nil;
 }
 
+#warning Needs to update and get CURRENT location in case user backgrounds app and changes location
 - (CLLocationCoordinate2D)getCurrentLocation{
     return self.currentLocation;
 }

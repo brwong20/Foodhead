@@ -11,5 +11,4 @@
 
 @interface TPLCameraViewController : UIViewController
 
-
 @end

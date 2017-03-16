@@ -11,15 +11,12 @@
 @protocol TasteFilterDelegate <NSObject>
 
 @required
-- (void)didRateTaste:(NSNumber *)tasteAmount;
+- (void)didRateOverall:(NSNumber *)overall;
 
 @end
 
 @interface TasteFilterView : FilterView
 
 @property (nonatomic, weak) id<TasteFilterDelegate> delegate;
-
-@property (nonatomic, strong)NSNumber *tasteRating;
-@property (nonatomic, strong)UIView *tasteView;
 
 @end

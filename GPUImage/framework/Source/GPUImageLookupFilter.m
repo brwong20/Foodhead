@@ -96,6 +96,7 @@ NSString *const kGPUImageLookupFragmentShaderString = SHADER_STRING
 		return nil;
     }
 
+    
     intensityUniform = [filterProgram uniformIndex:@"intensity"];
     self.intensity = 1.0f;
 

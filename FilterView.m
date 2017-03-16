@@ -8,6 +8,7 @@
 
 #import "FilterView.h"
 #import "TasteFilterView.h"
+#import "PriceFilterView.h"
 
 @implementation FilterView
 
@@ -15,11 +16,10 @@
 {
     switch (filterType) {
         case FilterViewTypePrice:
-            
+            return [[PriceFilterView alloc]initWithFrame:frame];
             break;
-        case FilterViewTypeTaste:{
+        case FilterViewTypeTaste:
             return [[TasteFilterView alloc] initWithFrame:frame];
-        }
             break;
         case FilterViewTypeHealth:
 

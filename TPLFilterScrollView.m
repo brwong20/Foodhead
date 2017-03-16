@@ -9,20 +9,25 @@
 #import "TPLFilterScrollView.h"
 #import "FilterView.h"
 #import "TasteFilterView.h"
+#import "PriceFilterView.h"
+#import "BRWSearchView.h"
 
-@interface TPLFilterScrollView() <UIScrollViewDelegate, TasteFilterDelegate>
+@interface TPLFilterScrollView() <UIScrollViewDelegate, TasteFilterDelegate, PriceFilterDelegate>
 
 //When scaling this should eventually return from the db all the filter category, name, rating scheme, etc.
 @property (nonatomic, strong) NSArray *filterArr;
 
+@property (nonatomic, strong) NSNumber *price;
+@property (nonatomic, strong) NSNumber *overall;
+@property (nonatomic, strong) NSNumber *healthiness;
+
 @end
 
-const static int NUM_FILTERS = 4;
+const static int NUM_FILTERS = 3;
 
 @implementation TPLFilterScrollView
 
-
-- (instancetype)initWithFrame:(CGRect)frame{
+- (instancetype)initWithFrame:(CGRect)frame andImage:(UIImage *)image{
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
@@ -32,32 +37,36 @@ const static int NUM_FILTERS = 4;
         self.scrollsToTop = NO;
         self.delegate = self;
         self.delaysContentTouches = NO;
-        [self loadFilters];
     }
     return self;
 }
 
 - (void)loadFilters{
+    [self setContentSize:CGSizeMake(self.frame.size.width * (NUM_FILTERS + 2), self.frame.size.height)];
     for ( int i = 1; i <= NUM_FILTERS + 2 ; i ++) {
-        FilterView *tasteFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
-        tasteFilter.backgroundColor = [UIColor clearColor];
+        FilterView *filterView = nil;
         if ( i  % NUM_FILTERS == 1){
-            [tasteFilter.filterTitle setText:@"Taste"];
+            TasteFilterView *tasteFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
+            tasteFilter.delegate = self;
+            tasteFilter.backgroundColor = [UIColor clearColor];
+            filterView = tasteFilter;
         }
         else if (i % NUM_FILTERS == 2) {
-            [tasteFilter.filterTitle setText:@""];
+            PriceFilterView *priceFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypePrice];
+            priceFilter.delegate = self;
+            priceFilter.backgroundColor = [UIColor clearColor];
+            filterView = priceFilter;
+            //[tasteFilter.filterTitle setText:@"Origin"];
         }
         else if(i % NUM_FILTERS == 3){
-            [tasteFilter.filterTitle setText:@"Price"];
+
         }
         else{
-            [tasteFilter.filterTitle setText:@"Healthiness"];
+        
         }
-        [self addSubview:tasteFilter];
+        [self addSubview:filterView];
     }
-    [self setContentOffset:CGPointMake(self.frame.size.width, 0)];//Default start position
-    //Always have 5 screens (2 + number screens we want) so we have fake beginning + end frames on each side. Resize content size here to fit all frames
-    [self setContentSize:CGSizeMake(self.frame.size.width * (NUM_FILTERS + 2), self.frame.size.height)];
+    [self setContentOffset:CGPointMake(self.frame.size.width, 0)];
 }
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -91,8 +100,32 @@ const static int NUM_FILTERS = 4;
 
 #pragma mark - TasteFilterDelegate methods
 
-- (void)didRateTaste:(NSNumber *)tasteAmount{
-    
+- (void)didRateOverall:(NSNumber *)overall{
+    self.overall = overall;
+    if ([self.scrollDelegate respondsToSelector:@selector(didUpdateOverall:)]) {
+        [self.scrollDelegate didUpdateOverall:overall];
+    }
+}
+
+#pragma mark - PriceFilterDelegate methods
+
+- (void)priceWasUpdated:(NSNumber *)price{
+    self.price = price;
+    if ([self.scrollDelegate respondsToSelector:@selector(didUpdatePrice:)]) {
+        [self.scrollDelegate didUpdatePrice:price];
+    }
+}
+
+- (void)keypadWillShow:(NSNotification *)notif{
+    if ([self.scrollDelegate respondsToSelector:@selector(pricePadWillShow:)]) {
+        [self.scrollDelegate pricePadWillShow:notif];
+    }
+}
+
+- (void)keypadWillHide:(NSNotification *)notif{
+    if ([self.scrollDelegate respondsToSelector:@selector(pricePadWillHide:)]) {
+        [self.scrollDelegate pricePadWillHide:notif];
+    }
 }
 
 @end

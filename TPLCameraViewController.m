@@ -170,7 +170,6 @@ static CGFloat previousZoom;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     dispatch_async(self.sessionQueue, ^{
         switch (self.setupResult) {
@@ -216,7 +215,6 @@ static CGFloat previousZoom;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
     dispatch_async( self.sessionQueue, ^{
         if ( self.setupResult == AVCamSetupResultSuccess ) {
@@ -604,7 +602,7 @@ static CGFloat previousZoom;
             if (photoData) {
                 self.selectedPhoto = [UIImage imageWithData:photoData];
                 TPLAssetPreviewController *assetVC = [[TPLAssetPreviewController alloc]init];
-                assetVC.selectedImage = self.selectedPhoto;
+                //assetVC.currentReview
                 [self.navigationController pushViewController:assetVC animated:NO];
             }
         }];
