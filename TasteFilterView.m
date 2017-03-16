@@ -7,11 +7,13 @@
 //
 
 #import "TasteFilterView.h"
+#import "UIFont+Extension.h"
 
 @interface TasteFilterView ()
 
-@property (nonatomic, strong) NSNumber *tasteRating;
-@property (nonatomic, strong) UIView *tasteView;
+@property (nonatomic, strong) NSNumber *overallRating;
+@property (nonatomic, strong) UILabel *overallTitle;
+@property (nonatomic, strong) UIImageView *sepLine;
 
 @property (nonatomic, strong) UIButton *taste1;
 @property (nonatomic, strong) UIButton *taste2;
@@ -27,65 +29,53 @@
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        self.filterTitle = [[UILabel alloc]initWithFrame:CGRectMake(frame.size.width/2 - 150.0, 100.0, 300.0, 50.0)];
-        self.filterTitle.backgroundColor = [UIColor clearColor];
-        self.filterTitle.textColor = [UIColor whiteColor];
-        self.filterTitle.font = [UIFont boldSystemFontOfSize:40.0];
-        self.filterTitle.textAlignment = NSTextAlignmentCenter;
-        [self addSubview:self.filterTitle];
+        self.backgroundColor = [UIColor clearColor];
         
-        self.filterImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height)];
-        self.filterImageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.filterImageView.backgroundColor = [UIColor clearColor];
-        [self addSubview:self.filterImageView];
+        self.overallTitle = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - self.frame.size.width * 0.2, self.frame.size.height - self.frame.size.height * 0.07, self.frame.size.width * 0.4, self.frame.size.height * 0.05)];
+        self.overallTitle.backgroundColor = [UIColor clearColor];
+        self.overallTitle.textAlignment = NSTextAlignmentCenter;
+        self.overallTitle.font = [UIFont nun_lightFontWithSize:frame.size.height * 0.04];
+        self.overallTitle.text = @"Overall";
+        self.overallTitle.textColor = [UIColor whiteColor];
+        [self addSubview:self.overallTitle];
         
-        self.taste1 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width * 0.15, frame.size.height * 0.8, 50.0, 50.0)];
-        self.taste1.layer.cornerRadius = self.taste1.frame.size.height/2;
-        self.taste1.backgroundColor = [UIColor whiteColor];
-        self.taste1.layer.borderColor = [UIColor redColor].CGColor;
-        self.taste1.layer.borderWidth = 2.0;
-        [self.taste1 setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.taste1 setTitle:@"1" forState:UIControlStateNormal];
-        [self.taste1 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:self.taste1];
+        self.sepLine = [[UIImageView alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - self.frame.size.width * 0.43, CGRectGetMinY(self.overallTitle.frame) - self.frame.size.height * 0.02, self.frame.size.width * 0.86, 5.0)];
+        self.sepLine.backgroundColor = [UIColor clearColor];
+        [self.sepLine setImage:[UIImage imageNamed:@"separate_line"]];
+        [self addSubview:self.sepLine];
         
-        self.taste2 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width * 0.3, frame.size.height * 0.8, 50.0, 50.0)];
-        self.taste2.layer.cornerRadius = self.taste2.frame.size.height/2;
-        self.taste2.backgroundColor = [UIColor whiteColor];
-        self.taste2.layer.borderColor = [UIColor yellowColor].CGColor;
-        self.taste2.layer.borderWidth = 2.0;
-        [self.taste2 setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.taste2 setTitle:@"2" forState:UIControlStateNormal];
-        [self.taste2 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:self.taste2];
-        
-        self.taste3 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width * 0.45, frame.size.height * 0.8, 50.0, 50.0)];
-        self.taste3.layer.cornerRadius = self.taste3.frame.size.height/2;
-        self.taste3.backgroundColor = [UIColor whiteColor];
-        self.taste3.layer.borderColor = [UIColor yellowColor].CGColor;
-        self.taste3.layer.borderWidth = 2.0;
-        [self.taste3 setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.taste3 setTitle:@"3" forState:UIControlStateNormal];
+        self.taste3 = [[UIButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - self.frame.size.width * 0.07, CGRectGetMinY(self.sepLine.frame) - self.frame.size.height * 0.12, self.frame.size.width * 0.14, self.frame.size.width * 0.14)];
+        self.taste3.adjustsImageWhenHighlighted = NO;
+        self.taste3.backgroundColor = [UIColor clearColor];
+        [self.taste3 setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
         [self.taste3 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.taste3];
         
-        self.taste4 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width * 0.6, frame.size.height * 0.8, 50.0, 50.0)];
-        self.taste4.layer.cornerRadius = self.taste4.frame.size.height/2;
-        self.taste4.backgroundColor = [UIColor whiteColor];
-        self.taste4.layer.borderColor = [UIColor yellowColor].CGColor;
-        self.taste4.layer.borderWidth = 2.0;
-        [self.taste4 setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.taste4 setTitle:@"4" forState:UIControlStateNormal];
+        self.taste2 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.taste3.frame) - self.frame.size.width * 0.14, CGRectGetMinY(self.sepLine.frame) - self.frame.size.height * 0.12, self.frame.size.width * 0.14, self.frame.size.width * 0.14)];
+        self.taste2.backgroundColor = [UIColor clearColor];
+        self.taste2.adjustsImageWhenHighlighted = NO;
+        [self.taste2 setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
+        [self.taste2 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:self.taste2];
+        
+        self.taste1 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.taste2.frame) - self.frame.size.width * 0.14, CGRectGetMinY(self.sepLine.frame) - self.frame.size.height * 0.12, self.frame.size.width * 0.14, self.frame.size.width * 0.14)];
+        self.taste1.adjustsImageWhenHighlighted = NO;
+        self.taste1.backgroundColor = [UIColor clearColor];
+        [self.taste1 setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
+        [self.taste1 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:self.taste1];
+        
+        self.taste4 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.taste3.frame), CGRectGetMinY(self.sepLine.frame) - self.frame.size.height * 0.12, self.frame.size.width * 0.14, self.frame.size.width * 0.14)];
+        self.taste4.adjustsImageWhenHighlighted = NO;
+        self.taste4.backgroundColor = [UIColor clearColor];
+        [self.taste4 setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
         [self.taste4 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.taste4];
         
-        self.taste5 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width * 0.75, frame.size.height * 0.8, 50.0, 50.0)];
-        self.taste5.layer.cornerRadius = self.taste5.frame.size.height/2;
-        self.taste5.backgroundColor = [UIColor whiteColor];
-        self.taste5.layer.borderColor = [UIColor greenColor].CGColor;
-        self.taste5.layer.borderWidth = 2.0;
-        [self.taste5 setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.taste5 setTitle:@"5" forState:UIControlStateNormal];
+        self.taste5 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.taste4.frame), CGRectGetMinY(self.sepLine.frame) - self.frame.size.height * 0.12, self.frame.size.width * 0.14, self.frame.size.width * 0.14)];
+        self.taste5.adjustsImageWhenHighlighted = NO;
+        self.taste5.backgroundColor = [UIColor clearColor];
+        [self.taste5 setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
         [self.taste5 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.taste5];
         
@@ -101,30 +91,31 @@
 
 - (void)didSelectTasteRating:(UIButton *)ratingButton{
     if ([ratingButton isEqual:self.taste1]) {
-        self.tasteRating = @(1);
+        self.overallRating = @(1);
     }else if ([ratingButton isEqual:self.taste2]){
-        self.tasteRating = @(2);
+        self.overallRating = @(2);
     }else if ([ratingButton isEqual:self.taste3]){
-        self.tasteRating = @(3);
+        self.overallRating = @(3);
     }else if ([ratingButton isEqual:self.taste4]){
-        self.tasteRating = @(4);
+        self.overallRating = @(4);
     }else{
-        self.tasteRating = @(5);
+        self.overallRating = @(5);
     }
-    [self.delegate didRateOverall:self.tasteRating];
-    [self highlightButtonsUpTo:self.tasteRating.integerValue];
+    [self.delegate didRateOverall:self.overallRating];
+    [self highlightButtonsUpTo:self.overallRating.integerValue];
 }
 
 - (void)highlightButtonsUpTo:(NSUInteger)num{
     //Reset all colors first
     for (UIButton *tasteButton in self.buttonArray) {
-        [tasteButton setBackgroundColor:[UIColor whiteColor]];
+        [tasteButton setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
     }
     
     //Fill based on rating
     for (int i = 0; i < num; ++i) {
         UIButton *tasteButton = self.buttonArray[i];
-        [tasteButton setBackgroundColor:[UIColor cyanColor]];
+        [tasteButton setImage:[UIImage imageNamed:@"overall_flow"] forState:UIControlStateNormal];
+
     }
 }
 

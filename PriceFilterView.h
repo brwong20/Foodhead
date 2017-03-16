@@ -24,6 +24,7 @@
 - (void)showKeypad;
 - (void)dismissKeypad;
 
+//If we have a given price, use this to populate price digit labels. 
 - (void)setPrice:(NSNumber *)price;
 
 @end

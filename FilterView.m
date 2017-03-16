@@ -9,6 +9,7 @@
 #import "FilterView.h"
 #import "TasteFilterView.h"
 #import "PriceFilterView.h"
+#import "HealthFilterView.h"
 
 @implementation FilterView
 
@@ -22,7 +23,7 @@
             return [[TasteFilterView alloc] initWithFrame:frame];
             break;
         case FilterViewTypeHealth:
-
+            return [[HealthFilterView alloc]initWithFrame:frame];
             break;
         default:
             break;
