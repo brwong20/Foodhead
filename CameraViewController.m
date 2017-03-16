@@ -12,7 +12,7 @@
 
 #import "GPUImage.h"
 
-@interface CameraViewController ()<CameraFilterScrollDelegate>
+@interface CameraViewController ()<CameraFilterScrollDelegate, UITabBarDelegate>
 
 @property (nonatomic, strong) UIView *screenView;
 
@@ -139,6 +139,14 @@
 
 - (void)flipCamera{
     [self.stillCamera rotateCamera];
+}
+
+#pragma mark - UITabBarController delegate method
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item{
+    
+    //NSNotification to take pic
+    
 }
 
 @end

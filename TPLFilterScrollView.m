@@ -10,19 +10,17 @@
 #import "FilterView.h"
 #import "TasteFilterView.h"
 #import "PriceFilterView.h"
-#import "BRWSearchView.h"
+#import "HealthFilterView.h"
 
-@interface TPLFilterScrollView() <UIScrollViewDelegate, TasteFilterDelegate, PriceFilterDelegate>
+@interface TPLFilterScrollView() <UIScrollViewDelegate, TasteFilterDelegate, PriceFilterDelegate, HealthFilterDelegate>
 
 //When scaling this should eventually return from the db all the filter category, name, rating scheme, etc.
-@property (nonatomic, strong) NSArray *filterArr;
-
-@property (nonatomic, strong) NSNumber *price;
-@property (nonatomic, strong) NSNumber *overall;
-@property (nonatomic, strong) NSNumber *healthiness;
+@property (nonatomic, strong) NSMutableArray *filterArr;
+@property (nonatomic, strong) FilterView *visibleFilter;
 
 @end
 
+const static int startingIndex = 1;
 const static int NUM_FILTERS = 3;
 
 @implementation TPLFilterScrollView
@@ -37,71 +35,87 @@ const static int NUM_FILTERS = 3;
         self.scrollsToTop = NO;
         self.delegate = self;
         self.delaysContentTouches = NO;
+        self.decelerationRate = 30.0;
     }
     return self;
 }
 
 - (void)loadFilters{
     [self setContentSize:CGSizeMake(self.frame.size.width * (NUM_FILTERS + 2), self.frame.size.height)];
-    for ( int i = 1; i <= NUM_FILTERS + 2 ; i ++) {
-        FilterView *filterView = nil;
-        if ( i  % NUM_FILTERS == 1){
-            TasteFilterView *tasteFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
-            tasteFilter.delegate = self;
-            tasteFilter.backgroundColor = [UIColor clearColor];
-            filterView = tasteFilter;
-        }
-        else if (i % NUM_FILTERS == 2) {
-            PriceFilterView *priceFilter = [FilterView createFilterWithFrame:CGRectMake((i - 1) * self.frame.size.width, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypePrice];
-            priceFilter.delegate = self;
-            priceFilter.backgroundColor = [UIColor clearColor];
-            filterView = priceFilter;
-            //[tasteFilter.filterTitle setText:@"Origin"];
-        }
-        else if(i % NUM_FILTERS == 3){
+    
+    //Setup filter 'roulette' then place them into their respective positions
+    self.filterArr = [NSMutableArray array];
 
-        }
-        else{
-        
-        }
-        [self addSubview:filterView];
+    HealthFilterView *healthFake = [HealthFilterView createFilterWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeHealth];
+    //healthFake.backgroundColor = [UIColor lightGrayColor];
+    [self.filterArr addObject:healthFake];
+    
+    PriceFilterView *priceFilter = [FilterView createFilterWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypePrice];
+    priceFilter.delegate = self;
+    [self.filterArr addObject:priceFilter];
+    
+    TasteFilterView *tasteFilter = [FilterView createFilterWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeTaste];
+    tasteFilter.delegate = self;
+    [self.filterArr addObject:tasteFilter];
+    
+    HealthFilterView *healthFilter = [HealthFilterView createFilterWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypeHealth];
+    healthFilter.delegate = self;
+    [self.filterArr addObject:healthFilter];
+    
+    PriceFilterView *priceFake = [FilterView createFilterWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height) ofType:FilterViewTypePrice];
+    //priceFake.backgroundColor = [UIColor lightGrayColor];
+    [self.filterArr addObject:priceFake];
+    
+    for (int i = 0; i < self.filterArr.count; ++i) {
+        FilterView *filter = self.filterArr[i];
+        CGRect filtFrame = filter.frame;
+        filtFrame.origin.x = [self positionOfPageAtIndex:(i-1)];
+        filter.frame = filtFrame;
+        [self addSubview:filter];
     }
-    [self setContentOffset:CGPointMake(self.frame.size.width, 0)];
+    
+    [self setContentOffset:CGPointMake([self positionOfPageAtIndex:startingIndex], 0.0)];
 }
 
-- (void) scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (scrollView == self) {
-        if (scrollView.contentOffset.x < self.frame.size.width/INT_MAX){//If user scrolls before first "real image"
-            
-            /*BUG: Scrolls to last real(then auto scrolls to first real) when we're supposed to be on first real if they don't scroll all the way...
-             
-             One Solution: If user scrolls more than halfway backward (will show last pic), set to last real pic. Else if they scroll less than half, do NOTHING.
-             
-             ->  This is why I divided by INT_MAX in order to make the halfway scroll boundary super small (makes it seem like user has scrolled to the full image). When they hit this boundary, we will perform our shift trick.
-             */
-            
-            [self scrollToLastRealImage];
-        }
-        else if (scrollView.contentOffset.x > (NUM_FILTERS + 1) * scrollView.frame.size.width){
-            [self scrollToFirstRealImage];
-        }
+#warning Need better cutoff or some other logic to make infinite scroll less choppy at ends
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (scrollView.contentOffset.x < self.frame.size.width/INT_MAX) {
+        [self scrollRectToVisible:CGRectMake([self positionOfPageAtIndex:NUM_FILTERS - 1], 0, self.frame.size.width, self.frame.size.height) animated:NO];
+    }else if (scrollView.contentOffset.x > (NUM_FILTERS + 1) * scrollView.frame.size.width - 10.0){
+        [self scrollRectToVisible:CGRectMake([self positionOfPageAtIndex:0], 0, self.frame.size.width, self.frame.size.height) animated:NO];
     }
+    [self updateCurrentFilter];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    if (![self.visibleFilter isKindOfClass:[PriceFilterView class]]) {
+        PriceFilterView *priceFilter = self.filterArr[1];
+        [priceFilter dismissKeypad];
+    }
+}
+
+- (CGFloat)positionOfPageAtIndex:(int)index{
+    return self.frame.size.width * (CGFloat)index + self.frame.size.width;
+}
+
+- (void)updateCurrentFilter{
+    CGFloat index = self.contentOffset.x / self.frame.size.width;
+    self.visibleFilter = self.filterArr[(int)index];
 }
 
 //Important we make these unanimated so user doesn't notice the trick
-- (void)scrollToFirstRealImage{
-    [self setContentOffset:CGPointMake(self.frame.size.width, self.contentOffset.y) animated:NO];
-}
-
-- (void)scrollToLastRealImage{
-    [self setContentOffset:CGPointMake(self.contentOffset.x + (self.frame.size.width * NUM_FILTERS), self.contentOffset.y) animated:NO];
-}
+//- (void)scrollToFirstRealImage{
+//    [self setContentOffset:CGPointMake(self.frame.size.width, self.contentOffset.y) animated:NO];
+//}
+//
+//- (void)scrollToLastRealImage{
+//    [self setContentOffset:CGPointMake(self.contentOffset.x + (self.frame.size.width * NUM_FILTERS + 1), self.contentOffset.y) animated:NO];
+//}
 
 
 #pragma mark - TasteFilterDelegate methods
 
 - (void)didRateOverall:(NSNumber *)overall{
-    self.overall = overall;
     if ([self.scrollDelegate respondsToSelector:@selector(didUpdateOverall:)]) {
         [self.scrollDelegate didUpdateOverall:overall];
     }
@@ -110,7 +124,9 @@ const static int NUM_FILTERS = 3;
 #pragma mark - PriceFilterDelegate methods
 
 - (void)priceWasUpdated:(NSNumber *)price{
-    self.price = price;
+    //Get fake price and update so our fake filter matches with real price input
+    PriceFilterView *priceFake = [self.filterArr lastObject];
+    [priceFake setPrice:price];
     if ([self.scrollDelegate respondsToSelector:@selector(didUpdatePrice:)]) {
         [self.scrollDelegate didUpdatePrice:price];
     }
@@ -125,6 +141,15 @@ const static int NUM_FILTERS = 3;
 - (void)keypadWillHide:(NSNotification *)notif{
     if ([self.scrollDelegate respondsToSelector:@selector(pricePadWillHide:)]) {
         [self.scrollDelegate pricePadWillHide:notif];
+    }
+}
+
+#pragma mark - HealthFilterDelegate methods
+
+- (void)didRateHealth:(NSNumber *)healthiness{
+    NSLog(@"HEALTH: %@", healthiness);
+    if ([self.scrollDelegate respondsToSelector:@selector(didUpdateHealthiness:)]) {
+        [self.scrollDelegate didUpdateHealthiness:healthiness];
     }
 }
 

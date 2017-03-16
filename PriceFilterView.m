@@ -9,14 +9,14 @@
 #import "PriceFilterView.h"
 #import "FoodWiseDefines.h"
 #import "UIFont+Extension.h"
+#import "LayoutBounds.h"
 
 @interface PriceFilterView ()<UITextFieldDelegate, UIGestureRecognizerDelegate>
-
-@property (nonatomic, assign) BOOL keyboardShowing;//Prevents keyboard notification from being observed twice
 
 //Prompt labels
 @property (nonatomic, strong) UILabel *promptLabel;
 @property (nonatomic, strong) UILabel *detailLabel;
+@property (nonatomic, strong) UIImageView *sepLine;
 
 //Current price container
 @property (nonatomic, strong) UIView *priceContainer;
@@ -57,36 +57,41 @@
 - (void)setupPriceContainer:(CGRect)frame{
     CGRect viewRect = frame;
     
-    self.keyboardShowing = NO;
-    
-    self.promptLabel = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.2, viewRect.size.height * 0.85, viewRect.size.width * 0.4, viewRect.size.height * 0.12)];
+    self.backgroundColor = [UIColor clearColor];
+
+    self.promptLabel = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.2, viewRect.size.height - viewRect.size.height * 0.07, viewRect.size.width * 0.4, viewRect.size.height * 0.05)];
     self.promptLabel.backgroundColor = [UIColor clearColor];
     self.promptLabel.textAlignment = NSTextAlignmentCenter;
-    self.promptLabel.font = [UIFont fontWithSize:30.0];
+    self.promptLabel.font = [UIFont nun_lightFontWithSize:frame.size.height * 0.04];
     self.promptLabel.text = @"Price";
     self.promptLabel.textColor = [UIColor whiteColor];
     [self addSubview:self.promptLabel];
     
-    self.dollarSign = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width * 0.03, viewRect.size.height/2.75, viewRect.size.width * 0.07, viewRect.size.height * 0.07)];
-    self.dollarSign.text = @"$";
-    self.dollarSign.textAlignment = NSTextAlignmentCenter;
-    self.dollarSign.font = [UIFont lightFontWithSize:self.frame.size.height * 0.1];
-    self.dollarSign.textColor = [UIColor whiteColor];
-    self.dollarSign.backgroundColor = [UIColor clearColor];
-    [self addSubview:self.dollarSign];
+    self.sepLine = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.43, CGRectGetMinY(self.promptLabel.frame) - frame.size.height * 0.02, frame.size.width * 0.86, 5.0)];
+    self.sepLine.backgroundColor = [UIColor clearColor];
+    [self.sepLine setImage:[UIImage imageNamed:@"separate_line"]];
+    [self addSubview:self.sepLine];
+    
+    self.detailLabel = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.3, CGRectGetMinY(self.sepLine.frame) - viewRect.size.height * 0.05, viewRect.size.width * 0.6, viewRect.size.height * 0.03)];
+    self.detailLabel.backgroundColor = [UIColor clearColor];
+    self.detailLabel.textColor = [UIColor whiteColor];
+    self.detailLabel.textAlignment = NSTextAlignmentCenter;
+    self.detailLabel.font = [UIFont nun_semiboldFontWithSize:self.frame.size.height * 0.02];
+    self.detailLabel.text = @"(per person, tax & tip included)";
+    [self addSubview:self.detailLabel];
     
     //Putting our labels in this makes aligning them with the priceContainer easier.
-    self.digitContainer = [[UIView alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.37, CGRectGetMidY(self.dollarSign.frame) - viewRect.size.height * 0.06, viewRect.size.width * 0.74, viewRect.size.height * 0.12)];
+    self.digitContainer = [[UIView alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.37, CGRectGetMinY(self.detailLabel.frame) - viewRect.size.height * 0.12, viewRect.size.width * 0.74, viewRect.size.height * 0.12)];
     self.digitContainer.backgroundColor = [UIColor clearColor];
     [self addSubview:self.digitContainer];
     
-    self.detailLabel = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.3, CGRectGetMaxY(self.digitContainer.frame), viewRect.size.width * 0.6, viewRect.size.height * 0.1)];
-    self.detailLabel.backgroundColor = [UIColor clearColor];
-    self.detailLabel.textColor = [UIColor lightGrayColor];
-    self.detailLabel.textAlignment = NSTextAlignmentCenter;
-    self.detailLabel.font = [UIFont semiboldFontWithSize:14.0];
-    self.detailLabel.text = @"(per person, tax & tip included)";
-    [self addSubview:self.detailLabel];
+    self.dollarSign = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width * 0.03, CGRectGetMidY(self.digitContainer.frame) - viewRect.size.height * 0.035, viewRect.size.width * 0.1, viewRect.size.height * 0.07)];
+    self.dollarSign.text = @"$";
+    self.dollarSign.textAlignment = NSTextAlignmentCenter;
+    self.dollarSign.font = [UIFont nun_fontWithSize:self.frame.size.height * 0.04];
+    self.dollarSign.textColor = [UIColor whiteColor];
+    self.dollarSign.backgroundColor = [UIColor clearColor];
+    [self addSubview:self.dollarSign];
     
     UITapGestureRecognizer *keypadGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showKeypad)];
     keypadGesture.numberOfTapsRequired = 1;
@@ -108,7 +113,7 @@
     self.digitOne.tag = 1;
     //self.digitOne.userInteractionEnabled = NO;
     self.digitOne.textAlignment = NSTextAlignmentCenter;
-    self.digitOne.font = [UIFont lightFontWithSize:self.digitContainer.frame.size.height * 0.7];
+    self.digitOne.font = [UIFont nun_lightFontWithSize:self.digitContainer.frame.size.height * 0.67];
     self.digitOne.tintColor = [UIColor clearColor];
     self.digitOne.layer.cornerRadius = self.digitOne.frame.size.height * 0.15;
     self.digitOne.backgroundColor = [UIColor whiteColor];
@@ -120,7 +125,7 @@
     self.digitFour.tag = 4;
     //self.digitFour.userInteractionEnabled = NO;
     self.digitFour.textAlignment = NSTextAlignmentCenter;
-    self.digitFour.font = [UIFont lightFontWithSize:self.digitContainer.frame.size.height * 0.7];
+    self.digitFour.font = [UIFont nun_lightFontWithSize:self.digitContainer.frame.size.height * 0.67];
     self.digitFour.tintColor = [UIColor clearColor];
     self.digitFour.layer.cornerRadius = self.digitOne.frame.size.height * 0.15;
     self.digitFour.backgroundColor = [UIColor whiteColor];
@@ -131,7 +136,7 @@
     self.digitTwo.tag = 2;
     //self.digitTwo.userInteractionEnabled = NO;
     self.digitTwo.textAlignment = NSTextAlignmentCenter;
-    self.digitTwo.font = [UIFont lightFontWithSize:self.digitContainer.frame.size.height * 0.7];
+    self.digitTwo.font = [UIFont nun_lightFontWithSize:self.digitContainer.frame.size.height * 0.67];
     self.digitTwo.tintColor = [UIColor clearColor];
     self.digitTwo.layer.cornerRadius = self.digitOne.frame.size.height * 0.15;
     self.digitTwo.backgroundColor = [UIColor whiteColor];
@@ -142,7 +147,7 @@
     self.digitThree.tag = 3;
     //self.digitThree.userInteractionEnabled = NO;
     self.digitThree.textAlignment = NSTextAlignmentCenter;
-    self.digitThree.font = [UIFont lightFontWithSize:self.digitContainer.frame.size.height * 0.7];
+    self.digitThree.font = [UIFont nun_lightFontWithSize:self.digitContainer.frame.size.height * 0.67];
     self.digitThree.tintColor = [UIColor clearColor];
     self.digitThree.layer.cornerRadius = self.digitOne.frame.size.height * 0.15;
     self.digitThree.backgroundColor = [UIColor whiteColor];
@@ -155,6 +160,8 @@
     self.period.backgroundColor = [UIColor whiteColor];
     self.period.layer.cornerRadius = self.period.frame.size.height/2;
     [self.digitContainer addSubview:self.period];
+
+    //[LayoutBounds drawBoundsForAllLayers:self];
 }
 
 - (void)showKeypad{
@@ -188,20 +195,50 @@
     }
     [UIView animateWithDuration:animDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect priceFrame = self.promptLabel.frame;
-        priceFrame.origin.y = padFrame.origin.y - self.promptLabel.frame.size.height * 1.05;
+        CGRect containerFrame = self.digitContainer.frame;
+        CGRect dollarFrame = self.dollarSign.frame;
+        CGRect lineFrame = self.sepLine.frame;
+        CGRect detailFrame = self.detailLabel.frame;
+        
+        priceFrame.origin.y -= padFrame.size.height;
+        containerFrame.origin.y -= padFrame.size.height;
+        dollarFrame.origin.y -= padFrame.size.height;
+        detailFrame.origin.y -= padFrame.size.height;
+        lineFrame.origin.y -= padFrame.size.height;
+
         self.promptLabel.frame = priceFrame;
+        self.digitContainer.frame = containerFrame;
+        self.dollarSign.frame = dollarFrame;
+        self.sepLine.frame = lineFrame;
+        self.detailLabel.frame = detailFrame;
     } completion:nil];
 }
      
 - (void)keyboardWillHide:(NSNotification *)notif{
+    CGRect padFrame = [notif.userInfo[UIKeyboardFrameEndUserInfoKey]CGRectValue];
     CGFloat animDuration = [notif.userInfo[UIKeyboardAnimationCurveUserInfoKey]floatValue];
     if ([self.delegate respondsToSelector:@selector(keypadWillHide:)]) {
         [self.delegate keypadWillHide:notif];
     }
     [UIView animateWithDuration:animDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect priceFrame = self.promptLabel.frame;
-        priceFrame.origin.y = self.frame.size.height * 0.85;
+        CGRect containerFrame = self.digitContainer.frame;
+        CGRect dollarFrame = self.dollarSign.frame;
+        CGRect lineFrame = self.sepLine.frame;
+        CGRect detailFrame = self.detailLabel.frame;
+        
+        priceFrame.origin.y += padFrame.size.height;
+        containerFrame.origin.y += padFrame.size.height;
+        dollarFrame.origin.y += padFrame.size.height;
+        detailFrame.origin.y += padFrame.size.height;
+        lineFrame.origin.y += padFrame.size.height;
+        
+        
         self.promptLabel.frame = priceFrame;
+        self.digitContainer.frame = containerFrame;
+        self.detailLabel.frame = detailFrame;
+        self.dollarSign.frame = dollarFrame;
+        self.sepLine.frame = lineFrame;
     } completion:nil];
 }
 
@@ -272,6 +309,27 @@
         
         return YES;
     }
+}
+
+- (void)setPrice:(NSNumber *)price{
+    NSString *priceStr = [price stringValue];
+    priceStr = [priceStr stringByReplacingOccurrencesOfString:@"." withString:@""];
+    NSUInteger start = 4 - priceStr.length;//Must start on appropriate digit if not 4 (e.g. 3 digits, must start filling in from second not first)
+    
+    for (int i = 0; i < priceStr.length; ++i) {
+        NSString *digit = [NSString stringWithFormat:@"%c", [priceStr characterAtIndex:i]];
+        if (start == 0) {
+            self.digitOne.text = digit;
+        }else if (start == 1){
+            self.digitTwo.text = digit;
+        }else if (start == 2){
+            self.digitThree.text = digit;
+        }else{
+            self.digitFour.text = digit;
+        }
+        ++start;
+    }
+    
 }
 
 @end
