@@ -10,5 +10,6 @@ pod ‘Mantle’
 pod ‘ReactiveObjC’
 pod ‘SAMKeychain’
 pod 'CHTCollectionViewWaterfallLayout'
+pod 'TTTAttributedLabel'
 
 end

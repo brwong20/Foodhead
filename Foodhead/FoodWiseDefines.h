@@ -85,28 +85,39 @@ typedef NS_ENUM(NSInteger, RootViewType) {
 --------------*/
 
 //Charts
-#define CHART_ROW_HEIGHT 230.0
-#define CHART_SECTION_HEIGHT 70.0
+#define CHART_ROW_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.33
+#define CHART_ITEM_SIZE [[UIScreen mainScreen]bounds].size.height * 0.24
+#define CHART_SECTION_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.05
+
 #define CATEGORY_RESTAURANT_CELL_HEIGHT 100.0
-#define SLIDED_PANEL_WIDTH 44.0
+#define CHART_PADDING_PERCENTAGE 0.04
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 6
-#define RESTAURANT_INFO_PADDING 10.0
+#define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.15
 #define METRIC_CELL_HEIGHT 60.0
-#define RESTAURANT_INFO_CELL_HEIGHT 130.0
-#define RESTAURANT_PHOTO_COLLECTION_HEIGHT 200.0
-#define RESTAURANT_HOURS_CELL_HEIGHT 150.0
+#define RESTAURANT_LOCATION_CELL_HEIGHT 140.0
+#define RESTAURANT_HOURS_CELL_HEIGHT 70.0
+#define HOUR_CELL_SPACING 0.55
+
+
+//Search
+#define SEARCH_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.11
+#define MAX_RESULT_COUNT 3
 
 /*Helper Macros
  -------------*/
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-#define NAV_BAR_FONT_NAME @"Nunito-Bold"
+#define CHART_TAB_TAG 1
+#define CAMERA_TAB_TAG 2
+#define PROFILE_TAB_TAG 3
 
 #define APPLICATION_BACKGROUND_COLOR [UIColor whiteColor];
 #define APPLICATION_FONT_COLOR   UIColorFromRGB(0x274B64)
 #define APPLICATION_BLUE_COLOR   UIColorFromRGB(0x17A1FF)
-#define APPLICATION_GREEN_COLOR  UIColorFromRGB(0x7AD313)
+#define APPLICATION_ORANGE_COLOR  UIColorFromRGB(0xFF9484)
+
+#define APPLICATION_FRAME   [UIScreen mainScreen].bounds
 
 #endif /* FoodWiseDefines_h */

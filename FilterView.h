@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+
+#warning Should eventually give us back a dynamically updated Review object with all sub filters reviews so we don't have to delegate to scroll view
+
 typedef enum{
     FilterViewTypeTaste,
     FilterViewTypePrice,

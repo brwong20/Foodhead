@@ -11,6 +11,8 @@
 #import "BRWSearchView.h"
 #import "TPLRestaurantManager.h"
 #import "RestaurantSearchViewController.h"
+#import "AppDelegate.h"
+#import "LayoutBounds.h"
 
 #import "GPUImage.h"
 
@@ -38,14 +40,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    [self.tabBarController.tabBar setHidden:YES];
     
     [self setupUI];
-    [self setupFilters];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
 }
 
 - (void)setupUI{
@@ -54,34 +51,38 @@
     [self.assetImageView setImage:self.currentReview.image];
     [self.view addSubview:self.assetImageView];
     
-//    self.saveButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20.0, self.view.frame.size.height * 0.9, 40.0, 40.0)];
-//    self.saveButton.backgroundColor = [UIColor clearColor];
-//    [self.saveButton setImage:[UIImage imageNamed:@"save_shot_btn"] forState:UIControlStateNormal];
-//    //[self.filterButton addTarget:self action:@selector(applyFilter) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:self.saveButton];
+    //Custom rating filters
+    self.filterView = [[TPLFilterScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height * 0.94)  andImage:self.currentReview.image];
+    [self.filterView loadFilters];
+    self.filterView.scrollDelegate = self;
+    [self.view addSubview:self.filterView];
     
-    self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.86, self.view.frame.size.width * 0.14, self.view.frame.size.width * 0.14)];
+    self.saveButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.height * 0.03, CGRectGetMaxY(self.filterView.frame), self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.06)];
+    self.saveButton.backgroundColor = [UIColor clearColor];
+    [self.saveButton setImage:[UIImage imageNamed:@"save_shot_btn"] forState:UIControlStateNormal];
+    [self.saveButton addTarget:self action:@selector(saveImage) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.saveButton];
+    
+    self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.9 - self.view.frame.size.height * 0.03, CGRectGetMaxY(self.filterView.frame), self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.06)];
     self.submitButton.backgroundColor = [UIColor clearColor];
     [self.submitButton setImage:[UIImage imageNamed:@"next_step_btn"] forState:UIControlStateNormal];
     [self.submitButton addTarget:self action:@selector(submitReview) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.submitButton];
+    [self.view insertSubview:self.submitButton aboveSubview:self.filterView];
     
-    self.exitButton = [[UIButton alloc]initWithFrame:CGRectMake(10, 15, 50, 50)];
+    self.exitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.1 - self.view.frame.size.height * 0.03, CGRectGetMaxY(self.filterView.frame), self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.06)];
     self.exitButton.backgroundColor = [UIColor clearColor];
     [self.exitButton setImage:[UIImage imageNamed:@"exit"] forState:UIControlStateNormal];
     [self.exitButton addTarget:self action:@selector(exitPreview) forControlEvents:UIControlEventTouchUpInside];
-    [self.view insertSubview:self.exitButton belowSubview:self.saveButton];
+    [self.view insertSubview:self.exitButton aboveSubview:self.filterView];
+
 }
 
 - (void)exitPreview{
-    [self.navigationController popViewControllerAnimated:NO];
-}
-
-- (void)setupFilters{
-    self.filterView = [[TPLFilterScrollView alloc]initWithFrame:self.view.frame andImage:self.currentReview.image];
-    [self.filterView loadFilters];
-    self.filterView.scrollDelegate = self;
-    [self.view insertSubview:self.filterView belowSubview:self.exitButton];
+    [UIView animateWithDuration:0.2 animations:^{
+        AppDelegate *appDel = (AppDelegate*)[[UIApplication sharedApplication]delegate];
+        appDel.tabBarController.tabBar.alpha = 1.0;
+        [self.navigationController popViewControllerAnimated:NO];
+    }];
 }
 
 - (void)submitReview{
@@ -92,6 +93,12 @@
 
 
 //Should be a method of filter scrollview or TPLFilter and apply filter to image based on enum.
+
+- (void)saveImage{
+    UIImageWriteToSavedPhotosAlbum(self.currentReview.image, nil, nil, nil);
+}
+
+/*
 - (void)applyFilter{
     GPUImagePicture *original = [[GPUImagePicture alloc]initWithImage:self.currentReview.image];
     UIImage *swtFilterImg = [self filterImage:original withLookUpImgName:@"yummer4"];
@@ -113,6 +120,7 @@
     
     return [lookupFilter imageFromCurrentFramebufferWithOrientation:self.currentReview.image.imageOrientation];
 }
+*/
 
 #pragma mark ScrollViewDelegate methods
 
@@ -123,27 +131,34 @@
     [UIView animateWithDuration:animDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect submitFrame = self.submitButton.frame;
         CGRect saveFrame = self.saveButton.frame;
-
-        submitFrame.origin.y = padFrame.origin.y - self.submitButton.frame.size.height * 1.05;
-        saveFrame.origin.y = padFrame.origin.y - self.saveButton.frame.size.height * 1.05;
+        CGRect exitFrame = self.exitButton.frame;
         
+        submitFrame.origin.y -= padFrame.size.height;
+        saveFrame.origin.y -= padFrame.size.height;
+        exitFrame.origin.y -= padFrame.size.height;
+
         self.submitButton.frame = submitFrame;
         self.saveButton.frame = saveFrame;
+        self.exitButton.frame = exitFrame;
     } completion:nil];
 }
 
 - (void)pricePadWillHide:(NSNotification *)notif{
+    CGRect padFrame = [notif.userInfo[UIKeyboardFrameEndUserInfoKey]CGRectValue];
     CGFloat animDuration = [notif.userInfo[UIKeyboardAnimationCurveUserInfoKey]floatValue];
     
     [UIView animateWithDuration:animDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect submitFrame = self.submitButton.frame;
         CGRect saveFrame = self.saveButton.frame;
+        CGRect exitFrame = self.exitButton.frame;
         
-        submitFrame.origin.y = self.view.frame.size.height * 0.86;
-        saveFrame.origin.y = self.view.frame.size.height * 0.86;
-        
+        submitFrame.origin.y += padFrame.size.height;
+        saveFrame.origin.y += padFrame.size.height;
+        exitFrame.origin.y += padFrame.size.height;
+
         self.submitButton.frame = submitFrame;
         self.saveButton.frame = saveFrame;
+        self.exitButton.frame = exitFrame;
     } completion:nil];
 }
 

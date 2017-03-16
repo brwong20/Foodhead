@@ -25,6 +25,7 @@ PODS:
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
+  - TTTAttributedLabel (2.0.0)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
@@ -33,6 +34,7 @@ DEPENDENCIES:
   - ReactiveObjC
   - SAMKeychain
   - SDWebImage (~> 3.8)
+  - TTTAttributedLabel
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
@@ -41,7 +43,8 @@ SPEC CHECKSUMS:
   ReactiveObjC: 7b6782ae39f9ac0f57205c3b0c0b69b9dd7048c0
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
-PODFILE CHECKSUM: 5453785f9c49e246414a376579ef2a48fbe636a4
+PODFILE CHECKSUM: 949b99acb5ef2844990c756c9ef8bda6a141e9bb
 
 COCOAPODS: 1.2.0
