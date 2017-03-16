@@ -59,10 +59,7 @@
     TPLChartCollectionCell *collectionCell = (TPLChartCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:CollectionCellIdentifier forIndexPath:indexPath];
     //Get section instead and check if a dict exists
     TPLRestaurant *restaurant = [self getRestaurantAtIndexPath:indexPath inCollectionView:collectionView];
-    collectionCell.nameLabel.text = restaurant.name;
-    [collectionCell.coverImage sd_setImageWithURL:[NSURL URLWithString:restaurant.thumbnail] placeholderImage:[UIImage new] options:SDWebImageHighPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-
-    }];
+    [collectionCell populateRestauarantInfo:restaurant];
     return collectionCell;
 }
 
