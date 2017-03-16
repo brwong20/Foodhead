@@ -19,7 +19,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-FoodWise.xcscheme</key>
+		<key>Pods-Foodhead.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -39,25 +39,20 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TTTAttributedLabel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2D50E3714204AE4783AC59228F77BBBE</key>
+		<key>6C654150B91B456DF5439EE04962BFB8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5047CD98B706282F824D54AA291BAE61</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>55F397830E5CA7FED5BA81F6C405876A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>71149CB86CEBE86641657C5BE44B8B7F</key>
+		<key>8F9BA7AD4198876072CD951243816C13</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -67,12 +62,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A3363A5F5E9A7D93655436ADDD234834</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>B0D2BC4789FBEF0D9C6C1391CEEFF838</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>BA4D5F255FE9C99B96644F97264735C7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>CF671F7E57B92905F1CC91D036D6B4A7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DBD15A6CD49CF04026F04E502C7E3CAE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
