@@ -8,7 +8,6 @@
 #import "ChartsViewController.h"
 #import "LoginViewController.h"
 #import "LocationManager.h"
-#import "LocationPermissionView.h"
 #import "FoodWiseDefines.h"
 #import "TabledCollectionManager.h"
 #import "TPLRestaurant.h"
@@ -22,8 +21,9 @@
 #import "UIFont+Extension.h"
 #import "RestaurantReview.h"
 #import "TabCameraViewController.h"
+#import "LocationPermissionView.h"
 
-@interface ChartsViewController () <LocationManagerDelegate, TabledCollectionDelegate>
+@interface ChartsViewController () <LocationManagerDelegate, TabledCollectionDelegate, LocationPermissionViewDelegate>
 
 //Authentication
 @property (nonatomic, strong) UserAuthManager *authManager;
@@ -33,6 +33,7 @@
 @property (nonatomic, strong) UIButton *searchButton;
 
 //Location
+@property (nonatomic, strong) LocationPermissionView *permissionView;
 @property (nonatomic, strong) LocationManager *locationManager;
 
 //Charts UI
@@ -55,24 +56,31 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.tabBarController.delegate = self;
+
     [self setupNavBar];
     [self setupUI];
     [self verifyCurrentUser];
     
     self.locationManager = [LocationManager sharedLocationInstance];
-    self.locationManager.locationDelegate = self;
-    [self.locationManager checkLocationAuthorization];
-    //Need NSUSERDEFAULT to check for this - this accounts for when user sees this screen for first time and still disables - use alert view every time after
-    //    LocationPermissionView *locationView = [[LocationPermissionView alloc]initWithFrame:[UIScreen mainScreen].bounds];
-    //    [self.view addSubview:locationView];
+    
+    //User skipped to get in here so show permissions
+    if (self.locationManager.authorizedStatus == kCLAuthorizationStatusNotDetermined) {
+        self.permissionView = [[LocationPermissionView alloc]initWithFrame:self.view.frame];
+        self.permissionView.delegate = self;//This becomes a problem with singleton bc delegate is set in here - make sure to check this - reconsider singleton???
+        [self.view addSubview:self.permissionView];
+    }else if(self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse){
+        self.locationManager.locationDelegate = self;
+        [self.locationManager getCurrentLocation];//Callback gives us current coord
+    }else if (self.locationManager.authorizedStatus == kCLAuthorizationStatusDenied){
+        //Show error in charts background
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    self.tabBarController.delegate = self;//Must reset delegate
     
-    //[self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 #pragma mark - Status bar
@@ -137,7 +145,7 @@ static NSString *cellId = @"tabledCollectionCell";
             UIAlertController *invalidUserAlert = [UIAlertController alertControllerWithTitle:@"Invalid Login" message:@"There was a problem verifying who you are. Please try logging in again!" preferredStyle:UIAlertControllerStyleAlert];
             [self presentViewController:invalidUserAlert animated:YES completion:^{
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
-                [appDelegate changeRootViewControllerFor:RootViewTypeLogin];
+                [appDelegate changeRootViewControllerFor:RootViewTypeLogin withAnimation:NO];
             }];
         }
     } failureHandler:^(id error) {
@@ -150,7 +158,7 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectTabledCollectionCellAtIndexPath:(NSIndexPath *)indexPath withItem:(TPLRestaurant *)item{
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = item;
-    restPageVC.currentLocation = [self.locationManager getCurrentLocation];
+    restPageVC.currentLocation = [LocationManager sharedLocationInstance].currentLocation;
     [self.navigationController pushViewController:restPageVC animated:YES];
 }
 
@@ -158,6 +166,18 @@ static NSString *cellId = @"tabledCollectionCell";
     TPLExpandedChartController *chartVC = [[TPLExpandedChartController alloc]init];
     chartVC.chartInfo = chartInfo;
     [self.navigationController pushViewController:chartVC animated:YES];
+}
+
+#pragma mark - LocationPermissionViewDelegate methods
+
+- (void)didAuthorizeLocation:(CLAuthorizationStatus)status{
+    [self.permissionView removeFromSuperview];
+    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        self.locationManager.locationDelegate = self;
+        [self.locationManager getCurrentLocation];
+    }else{
+        //Show error in charts background
+    }
 }
 
 #pragma mark - LocationManager delegate methods
@@ -168,29 +188,16 @@ static NSString *cellId = @"tabledCollectionCell";
 #pragma mark - UITabBarControllerDelegate methods
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
-    UINavigationController *nav = (UINavigationController *)viewController;
-    UIViewController *root = [[nav viewControllers]firstObject];
-    
-    if ([root isKindOfClass:[TabCameraViewController class]]) {
-        TabCameraViewController *camVC = (TabCameraViewController *) root;
-        camVC.tabBarController.delegate = camVC;//Always keep delegate in appropriate VC.
-    }
-    else if ([root isKindOfClass:[ChartsViewController class]]){
-        [self.tableView setContentOffset:CGPointMake(0, -self.tableView.contentInset.top) animated:YES];//Scroll to top only if tableview is visible
-    }
+//    UINavigationController *nav = (UINavigationController *)viewController;
+//    UIViewController *root = [[nav viewControllers]firstObject];
+//    
+//    if ([root isKindOfClass:[TabCameraViewController class]]) {
+//        TabCameraViewController *camVC = (TabCameraViewController *) root;
+//        camVC.tabBarController.delegate = camVC;//Always keep delegate in appropriate VC.
+//    }
+//    else if ([root isKindOfClass:[ChartsViewController class]]){
+//        [self.tableView setContentOffset:CGPointMake(0, -self.tableView.contentInset.top) animated:YES];//Scroll to top only if tableview is visible
+//    }
 }
-
-//- (void)locationPermissionDenied{
-//    UIAlertController *locationController = [UIAlertController alertControllerWithTitle:@"Enable Location" message:@"We're going to need your location to recommend you the best spots! Enable location services in your settings." preferredStyle:UIAlertControllerStyleAlert];
-//    UIAlertAction *settingsButton = [UIAlertAction actionWithTitle:@"Settings" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
-//    }];
-//    UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-//
-//    [locationController addAction:settingsButton];
-//    [locationController addAction:cancelButton];
-//
-//    [self presentViewController:locationController animated:YES completion:nil];
-//}
 
 @end

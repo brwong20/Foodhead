@@ -9,7 +9,7 @@ pod 'SDWebImage', '~>3.8'
 pod ‘Mantle’
 pod ‘ReactiveObjC’
 pod ‘SAMKeychain’
-pod 'CHTCollectionViewWaterfallLayout'
 pod 'TTTAttributedLabel'
+pod 'SVProgressHUD'
 
 end

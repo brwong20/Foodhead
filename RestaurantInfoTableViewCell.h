@@ -7,17 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TPLRestaurant.h"
 
 @protocol RestaurantInfoCellDelegate <NSObject>
 
 - (void)didTapShareButton;
+- (void)didTapLocation;
 
 @end
 
 @interface RestaurantInfoTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) UILabel *restaurantName;
-@property (nonatomic, strong) UILabel *addressLabel;
-@property (nonatomic, strong) UITextView *restaurantLink;
+@property (nonatomic, weak) id<RestaurantInfoCellDelegate> delegate;
+
+- (void)populateInfo:(TPLRestaurant *)restaurant;
 
 @end

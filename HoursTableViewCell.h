@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TPLRestaurant.h"
 
 @interface HoursTableViewCell : UITableViewCell
 
-- (void)convertHoursToLabels:(NSDictionary *)hours;
+- (void)populateHours:(TPLRestaurant *)restaurant;
 
 @end

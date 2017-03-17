@@ -14,7 +14,7 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic, strong) UITabBarController *tabBarController;
 
-- (void)changeRootViewControllerFor:(RootViewType)type;
+- (void)changeRootViewControllerFor:(RootViewType)type withAnimation:(BOOL)animation;
 
 @end
 

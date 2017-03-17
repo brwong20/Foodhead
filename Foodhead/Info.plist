@@ -52,6 +52,19 @@
 	<string>Record video.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Edit and upload photos</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Nunito-SemiBold.ttf</string>
+		<string>Nunito-Light.ttf</string>
+		<string>Nunito-Medium.ttf</string>
+		<string>Nunito-Bold.ttf</string>
+		<string>Nunito-Regular.ttf</string>
+		<string>Monsterrat-Bold.otf</string>
+		<string>Monsterrat-Medium.otf</string>
+		<string>Montserrat-Regular.otf</string>
+		<string>Monsterrat-SemiBold.otf</string>
+		<string>Monsterrat-Light.otf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
 	<key>UILaunchStoryboardName</key>
@@ -66,18 +79,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Nunito-SemiBold.ttf</string>
-		<string>Nunito-Light.ttf</string>
-		<string>Nunito-Medium.ttf</string>
-		<string>Nunito-Bold.ttf</string>
-		<string>Nunito-Regular.ttf</string>
-		<string>Monsterrat-Bold.otf</string>
-		<string>Monsterrat-Medium.otf</string>
-		<string>Montserrat-Regular.otf</string>
-		<string>Monsterrat-SemiBold.otf</string>
-		<string>Monsterrat-Light.otf</string>
-	</array>
 </dict>
 </plist>

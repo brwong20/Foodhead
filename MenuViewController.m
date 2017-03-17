@@ -8,7 +8,12 @@
 
 #import "MenuViewController.h"
 
-@interface MenuViewController ()
+@import WebKit;
+
+@interface MenuViewController () <WKNavigationDelegate>
+
+@property (nonatomic, strong) WKWebView *webView;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 
 @end
 
@@ -16,22 +21,41 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    //self.navigationController.navigationBar.
+    
+    self.webView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.webView.navigationDelegate = self;
+    self.webView.allowsBackForwardNavigationGestures = YES;
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.menuLink]]];
+    [self.view addSubview:self.webView];
+    
+    self.activityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - 22.0, self.view.frame.size.height/2, 44.0, 44.0)];
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+    self.activityIndicator.color = [UIColor grayColor];
+    [self.view addSubview:self.activityIndicator];
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)exitMenu
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+//Activity indic
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
+{
+    [self.view addSubview:self.activityIndicator];
+    [self.activityIndicator startAnimating];
 }
-*/
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
+{
+    [self.activityIndicator stopAnimating];
+    [self.activityIndicator removeFromSuperview];
+}
+
+
 
 @end

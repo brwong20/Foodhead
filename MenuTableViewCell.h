@@ -10,4 +10,7 @@
 
 @interface MenuTableViewCell : UITableViewCell
 
+@property (nonatomic, strong) UILabel *menuLabel;
+@property (nonatomic, strong) UIImageView *arrowImg;
+
 @end

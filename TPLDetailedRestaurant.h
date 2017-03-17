@@ -12,15 +12,20 @@
 
 @property (nonatomic, copy) NSString *address;
 @property (nonatomic, copy) NSString *city;
+@property (nonatomic, copy) NSString *state;
+@property (nonatomic, copy) NSString *zipCode;
 @property (nonatomic, copy) NSString *phoneNumber;
-@property (nonatomic, copy) NSString *menuURL;
+@property (nonatomic, copy) NSString *mobileMenu;
+@property (nonatomic, copy) NSString *menu;
+@property (nonatomic, copy) NSString *website;
 
 @property (nonatomic, copy) NSNumber *distance;
-//@property (nonatomic, copy) NSNumber *num_foursq_ratings;
 
 @property (nonatomic, copy) NSArray *hours;
 @property (nonatomic, copy) NSArray *categories;
-@property (nonatomic, copy) NSArray *foursq_images;
-@property (nonatomic, copy) NSArray *instagram_images;
+@property (nonatomic, copy) NSArray *images;
+
+@property (nonatomic, assign)BOOL openNow;
+
 
 @end
