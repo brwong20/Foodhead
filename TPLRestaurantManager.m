@@ -76,6 +76,22 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     }];
 }
 
+- (void)getMoreMediaForRestaurant:(NSString *)restaurantId
+                              page:(NSString *)pageNumber
+                 completionHandler:(void (^)(id))completionHandler
+                    failureHandler:(void (^)(id))failureHandler{
+    NSString *getURL = [NSString stringWithFormat:API_PLACE_MEDIA, restaurantId];
+    [self.sessionManager GET:getURL parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"%@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"No more media");
+    }];
+    
+}
+
+
+#pragma mark - Autocomplete
+
 - (void)searchRestaurantsWithQuery:(NSString *)queryStr
                         atLocation:(CLLocationCoordinate2D)coordinate
                  completionHandler:(void (^)(id results))completionHandler

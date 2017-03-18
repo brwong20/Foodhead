@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, RootViewType) {
 #define API_PLACES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places"
 #define API_PLACE_DETAIL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@"
 #define API_PLACE_SUGGESTIONS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/suggestions"
+#define API_PLACE_MEDIA @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@/images"
 
 //Charts
 #define API_CHARTS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/charts"
@@ -85,12 +86,13 @@ typedef NS_ENUM(NSInteger, RootViewType) {
 --------------*/
 
 //Charts
-#define CHART_ROW_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.33
-#define CHART_ITEM_SIZE [[UIScreen mainScreen]bounds].size.height * 0.24
-#define CHART_SECTION_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.05
+#define CHART_ROW_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.32
+#define CHART_ITEM_SIZE [[UIScreen mainScreen]bounds].size.height * 0.28
+#define CHART_SECTION_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.07
 
 #define CATEGORY_RESTAURANT_CELL_HEIGHT 100.0
 #define CHART_PADDING_PERCENTAGE 0.04
+#define CHART_SPACING 0.05
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 6

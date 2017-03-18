@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Chart.h"
 
 @import CoreLocation;
 
@@ -17,7 +18,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectTabledCollectionCellAtIndexPath:(NSIndexPath *)indexPath withItem:(id)item;
 
 //When user selects section arrow (nested delegate method which is called from TPLChartSectionView)
-- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(NSDictionary *)chartInfo;
+- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(Chart *)chartInfo;
 
 @end
 
