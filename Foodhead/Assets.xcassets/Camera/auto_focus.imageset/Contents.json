@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "mark_line.png",
+      "filename" : "auto_focus.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "mark_line@2x.png",
+      "filename" : "auto_focus@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "mark_line@3x.png",
+      "filename" : "auto_focus@3x.png",
       "scale" : "3x"
     }
   ],

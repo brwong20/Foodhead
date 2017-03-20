@@ -8,10 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-
-#warning Should eventually give us back a dynamically updated Review object with all sub filters reviews so we don't have to delegate to scroll view
-
 typedef enum{
+    FilterViewBlank,
     FilterViewTypeTaste,
     FilterViewTypePrice,
     FilterViewTypeHealth,
@@ -19,8 +17,7 @@ typedef enum{
 
 @interface FilterView : UIView
 
-@property (nonatomic, strong) UILabel *filterTitle;
-@property (nonatomic, strong) UIImageView *filterImageView;
+@property (nonatomic, assign) FilterViewType filterType;
 
 + (id)createFilterWithFrame:(CGRect)frame ofType:(FilterViewType)filterType;
 

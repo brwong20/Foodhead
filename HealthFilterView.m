@@ -49,28 +49,28 @@
         self.health2.backgroundColor = [UIColor clearColor];
         self.health2.adjustsImageWhenHighlighted = NO;
         [self.health2 setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
-        [self.health2 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self.health2 addTarget:self action:@selector(didSelectHealthRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.health2];
         
         self.health3 = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width/2, frame.size.height * 0.8, frame.size.width * 0.14, frame.size.width * 0.14)];
         self.health3.backgroundColor = [UIColor clearColor];
         self.health3.adjustsImageWhenHighlighted = NO;
         [self.health3 setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
-        [self.health3 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self.health3 addTarget:self action:@selector(didSelectHealthRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.health3];
         
         self.health1 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.health2.frame) - frame.size.width * 0.14, frame.size.height * 0.8, frame.size.width * 0.14, frame.size.width * 0.14)];
         self.health1.backgroundColor = [UIColor clearColor];
         self.health1.adjustsImageWhenHighlighted = NO;
         [self.health1 setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
-        [self.health1 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self.health1 addTarget:self action:@selector(didSelectHealthRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.health1];
         
         self.health4 = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.health3.frame), frame.size.height * 0.8, frame.size.width * 0.14, frame.size.width * 0.14)];
         self.health4.backgroundColor = [UIColor clearColor];
         self.health4.adjustsImageWhenHighlighted = NO;
         [self.health4 setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
-        [self.health4 addTarget:self action:@selector(didSelectTasteRating:) forControlEvents:UIControlEventTouchUpInside];
+        [self.health4 addTarget:self action:@selector(didSelectHealthRating:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.health4];
         
         self.buttonArray = [NSMutableArray array];
@@ -82,31 +82,61 @@
     return self;
 }
 
-- (void)didSelectTasteRating:(UIButton *)ratingButton{
+- (void)didSelectHealthRating:(UIButton *)ratingButton{
+    BOOL shouldEmpty = NO;
     if ([ratingButton isEqual:self.health1]) {
-        self.healthiness = @(10);
+        if ([self.healthiness isEqual: @(1)] ) {
+            shouldEmpty = YES;
+        }else{
+            self.healthiness = @(1);
+        }
     }else if ([ratingButton isEqual:self.health2]){
-        self.healthiness = @(20);
+        if ([self.healthiness isEqual: @(2)] ) {
+            shouldEmpty = YES;
+        }else{
+            self.healthiness = @(2);
+        }
     }else if ([ratingButton isEqual:self.health3]){
-        self.healthiness = @(30);
+        if ([self.healthiness isEqual: @(3)] ) {
+            shouldEmpty = YES;
+        }else{
+            self.healthiness = @(3);
+        }
     }else if ([ratingButton isEqual:self.health4]){
-        self.healthiness = @(40);
+        if ([self.healthiness isEqual: @(4)] ) {
+            shouldEmpty = YES;
+        }else{
+            self.healthiness = @(4);
+        }
     }
     
+    if (shouldEmpty) {
+        [self removeAllRatings];
+        self.healthiness = nil;
+    }else{
+        [self highlightButtonsUpTo:[self.buttonArray indexOfObject:ratingButton] + 1];
+    }
     [self.delegate didRateHealth:self.healthiness];
-    [self highlightButtonsUpTo:[self.buttonArray indexOfObject:ratingButton] + 1];
+}
+
+- (void)setHealth:(NSNumber *)healthiness{
+    [self highlightButtonsUpTo:[healthiness integerValue]];
 }
 
 - (void)highlightButtonsUpTo:(NSUInteger)num{
     //Reset all colors first
-    for (UIButton *tasteButton in self.buttonArray) {
-        [tasteButton setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
-    }
+    [self removeAllRatings];
     
     //Fill based on rating
     for (int i = 0; i < num; ++i) {
         UIButton *tasteButton = self.buttonArray[i];
         [tasteButton setImage:[UIImage imageNamed:@"apple_flow"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)removeAllRatings{
+    for (UIButton *tasteButton in self.buttonArray) {
+        [tasteButton setImage:[UIImage imageNamed:@"apple_flow_empty"] forState:UIControlStateNormal];
     }
 }
 

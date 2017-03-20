@@ -11,5 +11,6 @@ pod ‘ReactiveObjC’
 pod ‘SAMKeychain’
 pod 'TTTAttributedLabel'
 pod 'SVProgressHUD'
+pod ‘IDMPhotoBrowser'
 
 end

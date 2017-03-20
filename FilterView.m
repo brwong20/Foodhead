@@ -15,21 +15,35 @@
 
 + (id)createFilterWithFrame:(CGRect)frame ofType:(FilterViewType)filterType
 {
+    FilterView *filter;
     switch (filterType) {
-        case FilterViewTypePrice:
-            return [[PriceFilterView alloc]initWithFrame:frame];
+        case FilterViewTypePrice:{
+            PriceFilterView *priceFilter = [[PriceFilterView alloc]initWithFrame:frame];
+            filter = (PriceFilterView *)priceFilter;
+            filter.filterType = filterType;
             break;
-        case FilterViewTypeTaste:
-            return [[TasteFilterView alloc] initWithFrame:frame];
+        }
+        case FilterViewTypeTaste:{
+            TasteFilterView *tasteFilter = [[TasteFilterView alloc] initWithFrame:frame];
+            filter = (TasteFilterView *)tasteFilter;
+            filter.filterType = filterType;
             break;
-        case FilterViewTypeHealth:
-            return [[HealthFilterView alloc]initWithFrame:frame];
+        }
+        case FilterViewTypeHealth:{
+            HealthFilterView *healthFilter = [[HealthFilterView alloc]initWithFrame:frame];
+            filter = (HealthFilterView *)healthFilter;
+            filter.filterType = filterType;
             break;
+        }
+        case FilterViewBlank:{
+            filter = [[FilterView alloc]initWithFrame:frame];
+            filter.filterType = filterType;
+            break;
+        }
         default:
             break;
     }
-    
-    return nil;
+    return filter;
 }
 
 @end
