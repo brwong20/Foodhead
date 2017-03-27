@@ -20,8 +20,6 @@
 
 //Dependency injection in case we want to test view model constructor exclusively
 - (instancetype)initWithStore:(TPLChartsDataSource *)store;
-- (void)getRestaurantsWithCoordinate:(CLLocationCoordinate2D)coordinate;
-- (void)getRestaurantsAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate;
 
 

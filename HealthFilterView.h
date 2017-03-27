@@ -17,6 +17,8 @@
 
 @interface HealthFilterView : FilterView
 
+- (void)setHealth:(NSNumber *)healthiness;
+
 @property (nonatomic, weak) id<HealthFilterDelegate> delegate;
 
 @end

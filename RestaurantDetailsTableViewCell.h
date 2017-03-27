@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TPLRestaurant.h"
 
 @interface RestaurantDetailsTableViewCell : UITableViewCell
+
+- (void)setInfoForRestaurant:(TPLRestaurant *)restaurant;
 
 @end

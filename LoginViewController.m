@@ -11,18 +11,23 @@
 #import "AppDelegate.h"
 #import "UsernamePromptViewController.h"
 #import "FoodWiseDefines.h"
+#import "LayoutBounds.h"
+#import "PermissionViewController.h"
+#import "LocationManager.h"
+
+#import <SVProgressHUD/SVProgressHUD.h>
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 
-@interface LoginViewController () <UIWebViewDelegate, FBSDKLoginButtonDelegate>
+@interface LoginViewController () <UIWebViewDelegate>
 
 @property (nonatomic, strong) UILabel *loginTitle;
 
 @property (nonatomic, strong) UserAuthManager *authManager;
 @property (nonatomic, strong) UIWebView *webView;
 
-@property (nonatomic, strong) FBSDKLoginButton *fbLoginButton;
+@property (nonatomic, strong) UIButton *fbLoginButton;
 @property (nonatomic, strong) UIButton *skipLoginButton;
 
 @end
@@ -37,13 +42,13 @@
 }
 
 - (void)setupUI{
+    [self.navigationController.navigationBar setHidden:YES];
     self.view.backgroundColor = [UIColor lightGrayColor];
     
-    //FB provides default
-    self.fbLoginButton = [[FBSDKLoginButton alloc]init];
-    self.fbLoginButton.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height * 0.5);
-    self.fbLoginButton.readPermissions = @[@"public_profile", @"email", @"user_friends"];
-    self.fbLoginButton.delegate = self;
+    self.fbLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.25, self.view.frame.size.height/2.5, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.2)];
+    [self.fbLoginButton setTitle:@"FB LOGIN" forState:UIControlStateNormal];
+    self.fbLoginButton.backgroundColor = [UIColor cyanColor];
+    [self.fbLoginButton addTarget:self action:@selector(loginButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.fbLoginButton];
     
     self.skipLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.25, self.view.frame.size.height * 0.8 - self.view.frame.size.height * 0.1, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.2)];
@@ -51,13 +56,20 @@
     [self.skipLoginButton setTitle:@"Skip" forState:UIControlStateNormal];
     [self.skipLoginButton addTarget:self action:@selector(didPressSkip) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.skipLoginButton];
+    
+//    UIButton *instaButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 200.0, 50.0)];
+//    instaButton.backgroundColor = [UIColor purpleColor];
+//    instaButton.center = CGPointMake(self.view.frame.size.width/2, CGRectGetMaxY(self.fbLoginButton.frame) + 30.0);
+//    [instaButton setTitle:@"Insta" forState:UIControlStateNormal];
+//    [instaButton addTarget:self action:@selector(instaLogin) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:instaButton];
 }
 
 
 //To be called from callback when we recieve auth token or user skips
 - (void)loginWasSuccessful{
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    [appDelegate changeRootViewControllerFor:RootViewTypeCharts];
+    [appDelegate changeRootViewControllerFor:RootViewTypeCharts withAnimation:YES];
 }
 
 - (void)didPressSkip{
@@ -65,16 +77,70 @@
     [self loginWasSuccessful];
 }
 
+
+- (void)loginButtonClicked{
+    FBSDKLoginManager *manager = [[FBSDKLoginManager alloc]init];
+    [manager logInWithReadPermissions:@[@"public_profile", @"email", @"user_friends"] fromViewController:self handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+        if (error) {
+            NSLog(@"%@", error.description);
+        }else if (result.isCancelled){
+            //Cancelled
+        }else{
+            //Logged in
+            [SVProgressHUD show];
+            [self.authManager loginWithFb:[result token] completionHandler:^(User *userResponse) {
+                if(userResponse){
+                    NSLog(@"LOGIN RESPONSE: %@", userResponse);
+                    
+                    User *currentUser = userResponse;
+                    if (!currentUser.username) {//New user
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [SVProgressHUD dismiss];
+                            UsernamePromptViewController *userPrompt = [[UsernamePromptViewController alloc]init];
+                            userPrompt.currentUser = currentUser;
+                            [self.navigationController pushViewController:userPrompt animated:YES];
+                        });
+                    }else{//User has already signed up before, but deleted app or signed on different phone so just ask them for permissions if the device isn't authorized
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [SVProgressHUD dismiss];
+                            //Not possible right now since no log out
+//                            if ([LocationManager sharedLocationInstance].authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+//                                [self loginWasSuccessful];
+//                            }else{
+                                PermissionViewController *permissionView = [[PermissionViewController alloc]init];
+                                [self.navigationController pushViewController:permissionView animated:YES];
+//                            }
+                        });
+                    }
+                }
+            } failureHandler:^(id error) {
+                NSLog(@"Failed FB LOGIN: %@", error);
+            }];
+        }
+    }];
+    
+    
+    
+}
+
 #pragma mark - UIWebViewDelegate methods
 
-
-// Grab the access token when insta calls our redirect URI
+//- (void)instaLogin{
+//    NSString *instaURL = @"https://api.instagram.com/oauth/authorize/?client_id=000aae551418404b91d05cf81a21ea55&redirect_uri=http://Foodheadapp.com&response_type=token&scope=public_content";
+//    
+//    UIWebView *webView = [[UIWebView alloc]initWithFrame:self.view.frame];
+//    webView.delegate = self;
+//    NSURLRequest *req = [NSURLRequest requestWithURL:[NSURL URLWithString:instaURL]];
+//    
+//    [self.view addSubview:webView];
+//    [webView loadRequest:req];
+//}
+//
+//// Grab the access token when insta calls our redirect URI
 //- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 //    //Check here if host is insta or FB, pull out auth_token then store in keychain
 //    NSURL *responseURL = [request URL];
 //    NSString *responseString = [responseURL absoluteString];
-//    
-//#warning TODO: Delete auth_token from keychain when user logs out in profile page 
 //    
 //    //Parse out auth_token
 //    NSRange access_token_range = [responseString rangeOfString:@"access_token="];
@@ -96,26 +162,5 @@
 //    //If auth token is valid, dismiss VC. If not present view and dismiss webview
 //    return YES;
 //}
-
-#pragma mark - FBSDKLoginButtonDelegate methods
-
-- (void)loginButton:(FBSDKLoginButton *)loginButton
-            didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result
-              error:(NSError *)error{
-    
-#warning Need to present some kind of placeholder screen for login so they don't see Facebook logout button
-    
-    [self.authManager loginWithFb:[result token] completionHandler:^(id authResponse) {
-        if(authResponse){
-            NSLog(@"LOGIN RESPONSE: %@", authResponse);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //Check if user is logging in for the first time by retrieving user info. If no username, prompt for it. If not, just pass to charts
-                [self loginWasSuccessful];
-            });
-        }
-    } failureHandler:^(id error) {
-        NSLog(@"Failed FB LOGIN: %@", error);
-    }];
-}
 
 @end

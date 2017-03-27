@@ -15,11 +15,17 @@
              @"address" : @"address",
              @"city" : @"city",
              @"phoneNumber" : @"phone",
-             @"menuURL" : @"menu_mobile_url",
+             @"hours" : @"hours",
+             @"menu" : @"menu_url",
+             @"mobileMenu" : @"menu_mobile_url",
              @"distance" : @"distance",
-             @"foursq_images" : @"images",
-             @"instagram_images" : @"instagram_images",
-             @"categories" : @"categories"
+             @"images" : @"images",
+             @"categories" : @"categories",
+             @"website" : @"url",
+             @"zipCode" : @"location_postal_code",
+             @"city" : @"city",
+             @"state" : @"location_state",
+             @"openNow" : @"is_open_now"
              };
 }
 

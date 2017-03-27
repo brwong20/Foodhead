@@ -13,6 +13,8 @@
 #import "TPLChartsViewModel.h"
 #import "TPLChartSectionView.h"
 #import "FoodWiseDefines.h"
+#import "LocationManager.h"
+#import "LayoutBounds.h"
 
 #import "UIImageView+AFNetworking.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -33,6 +35,8 @@
 //View Model
 @property (nonatomic, strong) TPLChartsViewModel *viewModel;
 
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+
 @end
 
 @implementation TabledCollectionManager
@@ -43,13 +47,41 @@
     if (self){
         self.cellIdentifier = cellId;
         self.tableView = tableview;
-        self.contentOffsetDictionary = [NSMutableDictionary dictionary];
         [tableview registerClass:[TabledCollectionCell class] forCellReuseIdentifier:cellId];
+        //[self setupRefreshControl];
+        self.contentOffsetDictionary = [NSMutableDictionary dictionary];
         self.viewModel = [[TPLChartsViewModel alloc]initWithStore:[[TPLChartsDataSource alloc]init]];
         [self bindViewModel];
+        
+        //[LayoutBounds drawBoundsForAllLayers:self.tableView];
     }
     return self;
 }
+
+//- (void)setupRefreshControl{
+//    self.refreshControl = [[UIRefreshControl alloc]init];
+//    self.refreshControl.backgroundColor = [UIColor lightGrayColor];
+//    self.refreshControl.tintColor = [UIColor redColor];
+//    [self.refreshControl addTarget:self action:@selector(refreshCharts:) forControlEvents:UIControlEventValueChanged];
+//    self.tableView.refreshControl = self.refreshControl;
+//}
+
+#pragma mark - Refresh
+
+//- (void)refreshCharts:(id)sender{
+//    [self.refreshControl beginRefreshing];
+//
+//    //Charts headers always the same right now. Only need to refresh restaurants!
+//    for (NSMutableDictionary *chartDict in self.collectionData) {
+//        //Replace all removed objects with index.
+//        NSString *chartKey = [[chartDict allKeys]firstObject];
+//        [chartDict removeObjectForKey:chartKey];
+//        [chartDict setObject:@([self.collectionData indexOfObject:chartDict]) forKey:chartKey];
+//
+//    }
+//
+//    [[LocationManager sharedLocationInstance]updateCurrentLocation];
+//}
 
 
 #pragma mark - UICollectionViewDataSource methods
@@ -79,12 +111,9 @@
 {
     NSInteger itemCount = 0;
     NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-    NSMutableDictionary *categoryDict = self.collectionData[tableCellIndex.section];
-    
-    //If value isn't an array, we know we haven't retrieved restaurants for a chart yet
-    if ([[[categoryDict allValues]firstObject] isKindOfClass:[NSArray class]]) {
-        NSArray *restaurants = [[categoryDict allValues]firstObject];
-        itemCount = restaurants.count;
+    Chart *chart = self.collectionData[tableCellIndex.section];
+    if (chart.places) {
+        itemCount = chart.places.count;
     }
     return itemCount;
 }
@@ -116,13 +145,12 @@
 #pragma mark - UITableViewDelegate methods
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    NSDictionary *categoryDict = [self.collectionData objectAtIndex:section];
+    Chart *chart = [self.collectionData objectAtIndex:section];
 
     TPLChartSectionView *sectionView = [[TPLChartSectionView alloc]initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, CHART_SECTION_HEIGHT)];
     sectionView.delegate = self;
     sectionView.section = section;
-    NSString *categoryName = [[categoryDict allKeys]firstObject];//Only one dictionary in each index so this is ok for now
-    sectionView.titleLabel.text = categoryName;
+    sectionView.titleLabel.text = chart.name;
     
     return sectionView;
 }
@@ -157,8 +185,9 @@
 #pragma mark - ChartsSectionView delegate methods
 
 - (void)didSelectSection:(NSUInteger)section{
+    Chart *chart = [self.collectionData objectAtIndex:section];
     if ([self.delegate respondsToSelector:@selector(tableView:didSelectSectionWithChart:)]) {
-        [self.delegate tableView:self.tableView didSelectSectionWithChart:[self.collectionData objectAtIndex:section]];
+        [self.delegate tableView:self.tableView didSelectSectionWithChart:chart];
     }
 }
 
@@ -168,9 +197,8 @@
 - (TPLRestaurant *)getRestaurantAtIndexPath:(NSIndexPath *)indexPath
                            inCollectionView:(UICollectionView*)collectionView{
     NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-    NSMutableDictionary *categoryDict = self.collectionData[tableCellIndex.section];
-    NSArray *values = [categoryDict allValues];
-    NSArray *restaurantArr = [values firstObject];//Each key will only have one value which is an array of restaurants... FIND MORE CONCISE WAY TO DO THIS!!
+    Chart *chart = self.collectionData[tableCellIndex.section];
+    NSArray *restaurantArr = chart.places;
     NSDictionary *restaurantDict = restaurantArr[indexPath.row];//Using embedded collection cell index path
     TPLRestaurant *restaurant = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:restaurantDict error:nil];
     return restaurant;
@@ -181,11 +209,6 @@
     TabledCollectionCell *tableCell = (TabledCollectionCell*)cellContentView.superview;
     NSIndexPath *tableCellIndex = [self.tableView indexPathForRowAtPoint:tableCell.center];//Used row b/c cellForRowAtIndexPath returns nil if cell isn't visible yet!
     return tableCellIndex;
-}
-
-- (void)getRestaurantsAtLocation:(CLLocationCoordinate2D)coordinate{
-    [self.viewModel getRestaurantsWithCoordinate:coordinate];
-    //[self.viewModel getRestaurantsAtCoordinate:coordinate];
 }
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
@@ -203,26 +226,14 @@
      subscribeNext:^(id _) {
          @strongify(self){
              dispatch_async(dispatch_get_main_queue(), ^{
-                 self.collectionData = self.viewModel.completeChartData;//Chart Details are complete at this point. Format: {Chart Title : Chart Data}
+                 if ([self.refreshControl isRefreshing]) {
+                     [self.refreshControl endRefreshing];
+                 }
+                 self.collectionData = self.viewModel.completeChartData;
                  [self collectionViewReloadData];
              });
          }
      }];
-
-    /*
-    @weakify(self);
-    [[[RACObserve(self.viewModel, restaurantData) deliverOnMainThread]
-      filter:^BOOL(id  _Nullable value) {
-        return (self.viewModel.restaurantData.count == 6);
-    }]
-     subscribeNext:^(id _) {
-        @strongify(self){
-            NSLog(@"CALLED");
-            self.collectionData = self.viewModel.restaurantData;
-            [self collectionViewReloadDataWith:nil];
-        }
-    }];
-    */
 }
 
 @end

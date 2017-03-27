@@ -36,9 +36,9 @@
     //Check if user has a valid login or if they skipped - need an NSUserDefault for skipped?
     UserAuthManager *authManager = [UserAuthManager sharedInstance];
     if ([authManager isUserLoggedIn]) {
-        [self changeRootViewControllerFor:RootViewTypeCharts];
+        [self changeRootViewControllerFor:RootViewTypeCharts withAnimation:NO];
     }else{
-        [self changeRootViewControllerFor:RootViewTypeLogin];
+        [self changeRootViewControllerFor:RootViewTypeLogin withAnimation:NO];
     }
     return fbLaunched;
 }
@@ -55,14 +55,17 @@
                                                           openURL:url
                                                 sourceApplication:sourceApplication
                                                        annotation:annotation];
-    
-    return YES;
 }
 
-- (void)changeRootViewControllerFor:(RootViewType)type{
+- (void)changeRootViewControllerFor:(RootViewType)type withAnimation:(BOOL)animation{
     UIViewController *root = nil;
     if(type == RootViewTypeLogin){
-        root = [[LoginViewController alloc]init];
+        LoginViewController *loginVC = [[LoginViewController alloc]init];
+        UINavigationController *loginNav = [[UINavigationController alloc]initWithRootViewController:loginVC];
+        root = loginNav;
+        
+        [self.window setRootViewController:root];
+        [self.window makeKeyAndVisible];
     }
     else if (type == RootViewTypeCharts)
     {
@@ -97,9 +100,17 @@
         self.window.backgroundColor = [UIColor whiteColor];
         root = self.tabBarController;
         [self.window makeKeyAndVisible];
+        
+        if(animation){
+            [UIView transitionWithView:self.window duration:0.3 options:UIViewAnimationOptionTransitionCurlDown animations:^{
+                [self.window setRootViewController:root];
+                [self.window makeKeyAndVisible];
+            } completion:nil];
+        }else{
+            [self.window setRootViewController:root];
+            [self.window makeKeyAndVisible];
+        }
     }
-    [self.window setRootViewController:root];
-    [self.window makeKeyAndVisible];
 }
 
 @end

@@ -9,11 +9,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>CHTCollectionViewWaterfallLayout.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Mantle.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -39,6 +34,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SVProgressHUD.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>TTTAttributedLabel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -47,22 +47,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>6C654150B91B456DF5439EE04962BFB8</key>
+		<key>49FB582251828CF41EE22FE9831E3310</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8F9BA7AD4198876072CD951243816C13</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A197C081A082042562B6F8F3B345A0A4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A3363A5F5E9A7D93655436ADDD234834</key>
+		<key>A94672849A0EC41CA0F0D383ACA207F9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,7 +62,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BA4D5F255FE9C99B96644F97264735C7</key>
+		<key>C9A45C28CD49D6469A889CD5FE9964AD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -82,7 +72,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DBD15A6CD49CF04026F04E502C7E3CAE</key>
+		<key>D0441F682B27DCF22010B43E677C2B74</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D418AA133ED068868C38BFAB950F0BD0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E8E87DC349130B487E490CE8BE50B935</key>
 		<dict>
 			<key>primary</key>
 			<true/>

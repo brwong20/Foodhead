@@ -13,19 +13,7 @@
 
 @implementation TPLRestaurant
 
-+ (NSDictionary *)JSONKeyPathsByPropertyKey{
-//    return @{
-//             @"venue_id" : @"venue.id",
-//             @"name" : @"venue.name",
-//             @"foursq_rating" : @"venue.rating",
-//             @"num_foursq_ratings" : @"venue.ratingSignals",
-//             @"foursq_price_tier" : @"venue.price.tier",
-//             @"phone_number" : @"venue.contact.formattedPhone",
-//             @"locationCoordinate" : @"venue.location",
-//             @"foursq_featured_photos" : @"venue.featuredPhotos.items",
-//             @"fb_places_id" : @"venue.contact.facebook"
-//    };
-    
++ (NSDictionary *)JSONKeyPathsByPropertyKey{    
     return @{
              @"restaurantId" : @"id",
              @"foursqId" : @"four_square_id",
@@ -34,7 +22,11 @@
              @"latitude" : @"lat",
              @"longitude" : @"lng",
              @"foursq_rating" : @"rating",
-             @"thumbnail" : @"avatar"
+             @"thumbnail" : @"avatar",
+             @"suggestion_address" : @"location_address",
+             @"suggestion_city" : @"location_city",
+             @"suggestion_zip" : @"location_postal_code",
+             @"suggestion_state" : @"location_state"
              };
     
 }

@@ -11,8 +11,6 @@
 @interface LocationManager() <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
-@property (nonatomic, assign) CLAuthorizationStatus authorizedStatus;
 
 @end
 
@@ -34,7 +32,6 @@
 - (instancetype)init
 {
     self = [super init];
-    
     if (self) {
         self.locationManager = [[CLLocationManager alloc]init];
         //self.locationManager.distanceFilter = 1000.0;
@@ -42,7 +39,6 @@
         self.authorizedStatus = [CLLocationManager authorizationStatus];
         self.locationManager.delegate = self;
     }
-    
     return self;
 }
 
@@ -58,8 +54,8 @@
         }
         case kCLAuthorizationStatusRestricted:
         case kCLAuthorizationStatusDenied: {
-            if([self.locationDelegate respondsToSelector:@selector(locationPermissionDenied)]){
-                [self.locationDelegate locationPermissionDenied];
+            if([self.locationDelegate respondsToSelector:@selector(locationWasAuthorizedWithStatus:)]){
+                [self.locationDelegate locationWasAuthorizedWithStatus:kCLAuthorizationStatusDenied];
             }
             break;
         }
@@ -68,9 +64,8 @@
             break;
         }
     }
-    
-    
 }
+
 
 //These modularized location updates allow us to get the current location again if need be.
 - (void)startUpdatingLocation
@@ -89,34 +84,36 @@
     self.locationManager.delegate = nil;
 }
 
+- (void)updateCurrentLocation{
+    self.locationManager.delegate = self;
+    [self startUpdatingLocation];
+}
+
 #warning Needs to update and get CURRENT location in case user backgrounds app and changes location
-- (CLLocationCoordinate2D)getCurrentLocation{
-    return self.currentLocation;
+- (void)getCurrentLocation{
+    [self startUpdatingLocation];
 }
 
 #pragma mark - CLLocationDelegate methods
 
-//Delegate method called when the location manager is initialized AND/OR user authorizes location
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     self.authorizedStatus = status;
     switch (status) {
-        case kCLAuthorizationStatusNotDetermined: {
-            if([self.locationDelegate respondsToSelector:@selector(locationPermissionDenied)]){
-                [self.locationDelegate locationPermissionDenied];
-            }
+        case kCLAuthorizationStatusNotDetermined:
             break;
-        }
         case kCLAuthorizationStatusRestricted:
         case kCLAuthorizationStatusDenied: {
-            if([self.locationDelegate respondsToSelector:@selector(locationPermissionDenied)]){
-                [self.locationDelegate locationPermissionDenied];
+            if([self.locationDelegate respondsToSelector:@selector(locationWasAuthorizedWithStatus:)]){
+                [self.locationDelegate locationWasAuthorizedWithStatus:kCLAuthorizationStatusDenied];
             }
             break;
         }
         case kCLAuthorizationStatusAuthorizedAlways:
         case kCLAuthorizationStatusAuthorizedWhenInUse:{
-            [self startUpdatingLocation];
+            if ([self.locationDelegate respondsToSelector:@selector(locationWasAuthorizedWithStatus:)]) {
+                [self.locationDelegate locationWasAuthorizedWithStatus:kCLAuthorizationStatusAuthorizedWhenInUse];
+            }
             break;
         }
     }

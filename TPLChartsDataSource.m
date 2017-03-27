@@ -8,6 +8,8 @@
 
 #import "TPLChartsDataSource.h"
 #import "FoodWiseDefines.h"
+#import "Chart.h"
+#import "Places.h"
 
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -40,68 +42,6 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
 
 #pragma mark - Places
 
-//- (void)retrieveRestaurantsForCategory:(NSString *)category
-//                          withCoordinate:(CLLocationCoordinate2D)coordinate
-//                       completionHandler:(void (^)(id))completionHandler
-//                          failureHandler:(void (^)(id))failureHandler {
-//    
-//    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
-//    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
-//    
-//    NSString *completeURL = [NSString string];
-//    if([category isEqualToString:@"Thai"]){
-//        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=37.764908,-122.485663&section=food&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125"];
-//    }else{
-//        completeURL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?client_id=%@&client_secret=%@&v=%@&ll=%@,%@&query=%@&venuePhotos=1&limit=20", FOURSQ_CLIENT_ID, FOURSQ_SECRET, @"20170125", lat, lng, category];
-//    }
-//    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-//    NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL URLWithString:completeURL] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error){
-//        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-//
-//        //Pass to completion handler once all calls have finished
-//        if(json){
-//            completionHandler(json);
-//        }
-//        
-//        if (error) {
-//            failureHandler(error);
-//        }
-//    }];
-//    [task resume];
-//}
-
-- (void)getNearbyRestaurantsAtCoordinate:(CLLocationCoordinate2D)coordinate
-                         retrievedPlaces:(void (^) (NSArray *))placesData
-                          failureHandler:(void (^)(id))failureHandler {
-    //    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
-    //    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
-    
-    self.retrievedPlaces = placesData;
-    
-    NSString *lat = [[NSNumber numberWithDouble:37.713521]stringValue];
-    NSString *lng = [[NSNumber numberWithDouble:-122.470192]stringValue];
-    
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setObject:lat forKey:@"lat"];
-    [dict setObject:lng forKey:@"lng"];
-    
-    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDict = responseObject;
-        NSString *workerId = responseDict[@"worker_id"];
-        
-        //Need to wait for worker to query 4SQ
-        if (workerId.length > 0) {
-            //[self startObservingWorker];
-            //[self runWorkerRecursively:workerId withParams:dict];
-        }else{
-            self.retrievedPlaces(responseObject);
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        failureHandler(error);
-        NSLog(@"Error with general restaurant query: %@", error.localizedDescription);
-    }];
-}
-
 //Get chart info to use with places API
 - (void)retrieveCharts:(void (^)(id chartData))completionHandler
         failureHandler:(void (^)(id error))failureHandler{
@@ -114,109 +54,75 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
     
 }
 
-//TODO:: Reload table view for each time a worker completes to make charts look faster
-- (void)getRestaurantsForChart:(NSString *)chartId
-                   atCoordinate:(CLLocationCoordinate2D)coordinate
-              completionHandler:(void (^)(id chartData))completionHandler
-                 failureHandler:(void (^)(id error))failureHandler
-{
-    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
-    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
-    
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setObject:lat forKey:@"lat"];
-    [dict setObject:lng forKey:@"lng"];
-    [dict setObject:chartId forKey:@"chart_id"];
-    
-    self.chartsCompletion = completionHandler;
-    
-    NSLog(@"GETTING CHARTS");
-    
-    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *responseDict = responseObject;
-        NSString *workerId = responseDict[@"worker_id"];
-        
-        NSLog(@"Getting chart for : %@", dict[@"chart_id"]);
-        
-        //Need to wait for worker to query 4SQ
-        if (workerId.length > 0) {
-            //[self startObservingWorker];
-            [self runWorkerRecursively:workerId withParams:dict completionHandler:^(id chartData) {
-                //Might have something to do with using the same completion handler... ONLY return recursive result to this completion handler and handle all worker refreshing in here... Can also try max one operation on NSOperationQueue???
-                self.chartsCompletion(chartData);
-            } failureHandler:^(id error) {
-                
-            }];
-        }else{
-            self.chartsCompletion(responseObject);
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        failureHandler(error);
-        NSLog(@"Error with charts query: %@", error.localizedDescription);
-    }];
-}
-
 - (void)getRestaurantsForCharts:(NSMutableArray *)charts
                   atCoordinate:(CLLocationCoordinate2D)coordinate
-             completionHandler:(void (^)(id chartData))completionHandler
+             completionHandler:(void (^)(id completeChart))completionHandler
                 failureHandler:(void (^)(id error))failureHandler
 {
-    //__block NSMutableArray *chartDataArr = [NSMutableArray array];
-    __block dispatch_group_t group = dispatch_group_create();
-    for(NSMutableDictionary *chartInfo in charts){
+    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+    queue.maxConcurrentOperationCount = 1;
+    queue.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+    
+    NSMutableArray *blockOperations = [NSMutableArray array];
+    
+    for(Chart *chart in charts){
         NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
         NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
         
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict setObject:lat forKey:@"lat"];
         [dict setObject:lng forKey:@"lng"];
-        [dict setObject:[[chartInfo allValues]firstObject] forKey:@"chart_id"];
-        
-        dispatch_group_enter(group);
-        [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            /*
-            NSDictionary *responseDict = responseObject;
-            NSString *workerId = responseDict[@"worker_id"];
-            
-            NSLog(@"Getting restaurants for chart_id:%@ WITH worker_id: %@", task.originalRequest.URL.absoluteString, workerId);
-            
-            //Need to wait for worker to query 4SQ
-            
-#warning Must get ordering CORRECT here (use a key and value) then just replace the view model's dictionaries by matching keys
-            if (workerId.length > 0) {
-                [self runWorkerRecursively:workerId withParams:dict completionHandler:^(id chartData) {
-                    [chartDataArr addObject:chartData];
-                    NSLog(@"Retrieved from worker");
-                    dispatch_group_leave(group);
-                } failureHandler:^(id error) {
-                    
-                }];
-            }else{
-            
-            }
-            */
-            NSMutableDictionary *completedChart = [NSMutableDictionary dictionary];
-            NSString *chartName = [[chartInfo allKeys]firstObject];
-            [completedChart setObject:responseObject forKey:chartName];
-            //Replace incomplete chart with completed (data retrieved)
-            [charts replaceObjectAtIndex:[charts indexOfObject:chartInfo] withObject:completedChart];
-            dispatch_group_leave(group);
-            
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            failureHandler(error);
-            NSLog(@"Error with getting worker / cached chart: %@", error.localizedDescription);
+        [dict setObject:[chart.chart_id stringValue] forKey:@"chart_id"];
+
+        NSBlockOperation* operation = [NSBlockOperation blockOperationWithBlock:^{
+            [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];
+                [chart mergeValuesForKeysFromModel:places];
+                
+                //Send index along to replace in our original array
+                NSDictionary *completeChart = @{@"index" : @([charts indexOfObject:chart]), @"chart" : chart};
+                completionHandler(completeChart);
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                failureHandler(error);
+                NSLog(@"Error with getting worker / cached chart: %@", error.localizedDescription);
+            }];
         }];
+        
+        [blockOperations addObject:operation];
     }
     
-    //Try to do this one by one
-    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            //Need to make sure in same order
-        completionHandler(charts);
-        NSLog(@"Finished entire retrieval");
-    });
+    for (int i = 0; i < blockOperations.count; ++i) {
+        if (i == 0) continue;
+    
+        NSOperation *curOperation = blockOperations[i];
+        NSOperation *prevOperation = blockOperations[i-1];
+        [curOperation addDependency:prevOperation];
+    }
+    
+    [queue addOperations:blockOperations waitUntilFinished:NO];
 }
 
-
+- (void)getMoreRestaurantsForChart:(Chart *)chart
+                      atCoordinate:(CLLocationCoordinate2D)coordinate
+                 completionHandler:(void (^)(id))completionHandler
+                    failureHandler:(void (^)(id))failureHandler{
+    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+    NSNumber *nextPg = chart.next_page;
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:lat forKey:@"lat"];
+    [dict setObject:lng forKey:@"lng"];
+    [dict setObject:[chart.chart_id stringValue] forKey:@"chart_id"];
+    [dict setObject:[nextPg stringValue] forKey:@"page"];
+    
+    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        completionHandler(responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"%@", error);
+        failureHandler(error);
+    }];
+}
 
 #pragma mark - Workers
 

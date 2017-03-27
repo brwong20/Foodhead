@@ -11,6 +11,7 @@
 #import "UIFont+Extension.h"
 #import "LayoutBounds.h"
 
+
 @interface PriceFilterView ()<UITextFieldDelegate, UIGestureRecognizerDelegate>
 
 //Prompt labels
@@ -245,10 +246,9 @@
 - (void)didUpdatePrice{
     //Animate here as well - check if there's a valid price - if there is animate onto top and call delegate method
     NSNumber *priceToSubmit = [NSNumber numberWithDouble:(self.priceField.text.doubleValue/100)];
-    if ([priceToSubmit doubleValue] > 0.0) {
-        if ([self.delegate respondsToSelector:@selector(priceWasUpdated:)]) {
-            [self.delegate priceWasUpdated:priceToSubmit];
-        }
+    if ([priceToSubmit isEqualToNumber:@(0)]) priceToSubmit = nil;
+    if ([self.delegate respondsToSelector:@selector(priceWasUpdated:)]) {
+        [self.delegate priceWasUpdated:priceToSubmit];
     }
 }
 

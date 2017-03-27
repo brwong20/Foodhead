@@ -45,7 +45,6 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     
     self.detailCompletion = completionHandler;
     [self.sessionManager GET:detailURL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@", responseObject);
         NSString *workerId = responseObject[@"worker_id"];
         if (workerId && workerId.length > 0) {
             [self runWorkerRecursively:workerId withParameters:params completionHandler:^(id workerResult) {
@@ -76,6 +75,22 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         failureHandler(error);
     }];
 }
+
+- (void)getMoreMediaForRestaurant:(NSString *)restaurantId
+                              page:(NSString *)pageNumber
+                 completionHandler:(void (^)(id))completionHandler
+                    failureHandler:(void (^)(id))failureHandler{
+    NSString *getURL = [NSString stringWithFormat:API_PLACE_MEDIA, restaurantId];
+    [self.sessionManager GET:getURL parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"%@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"No more media");
+    }];
+    
+}
+
+
+#pragma mark - Autocomplete
 
 - (void)searchRestaurantsWithQuery:(NSString *)queryStr
                         atLocation:(CLLocationCoordinate2D)coordinate
@@ -111,13 +126,18 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     [self.sessionManager.requestSerializer setValue:@"multipart/form-data" forHTTPHeaderField:@"Content-Type"];
     NSURLRequest *request = [self.sessionManager.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:postURL parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFormData:[restaurantId dataUsingEncoding:NSUTF8StringEncoding] name:@"place_id"];
-        [formData appendPartWithFormData:[rating dataUsingEncoding:NSUTF8StringEncoding] name:@"like"];
-        [formData appendPartWithFormData:[price dataUsingEncoding:NSUTF8StringEncoding] name:@"price"];
-        [formData appendPartWithFormData:[health dataUsingEncoding:NSUTF8StringEncoding] name:@"healthiness"];
-
+        if (rating) {
+            [formData appendPartWithFormData:[rating dataUsingEncoding:NSUTF8StringEncoding] name:@"like"];
+        }
+        if (price) {
+            [formData appendPartWithFormData:[price dataUsingEncoding:NSUTF8StringEncoding] name:@"price"];
+        }
+        if (health) {
+            [formData appendPartWithFormData:[health dataUsingEncoding:NSUTF8StringEncoding] name:@"healthiness"];
+        }
         NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss a"];
-        [formData appendPartWithFileData:photoData name:@"shot" fileName:[NSString stringWithFormat:@"img_%@", [dateFormatter stringFromDate:[NSDate date]]] mimeType:@"image/jpeg"];
+        [formData appendPartWithFileData:photoData name:@"shot" fileName:[NSString stringWithFormat:@"img_%@", [dateFormatter stringFromDate:[NSDate date]]] mimeType:@"image/png"];
     } error:nil];
 
     NSURLSessionDataTask *task = [self.sessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
@@ -126,8 +146,10 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
             NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
             NSLog(@"%@", err);
+            failureHandler(err);
         }
         NSLog(@"Review upload successful!");
+        completionHandler(response);
     }];
     [task resume];
 }

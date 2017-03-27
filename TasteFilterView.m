@@ -90,19 +90,48 @@
 }
 
 - (void)didSelectTasteRating:(UIButton *)ratingButton{
+    BOOL shouldEmpty = NO;
+    
     if ([ratingButton isEqual:self.taste1]) {
-        self.overallRating = @(1);
+        if ([self.overallRating isEqualToNumber:@(1)]) {
+            shouldEmpty = YES;
+        }else{
+            self.overallRating = @(1);
+        }
     }else if ([ratingButton isEqual:self.taste2]){
-        self.overallRating = @(2);
+        if ([self.overallRating isEqualToNumber:@(2)]) {
+            shouldEmpty = YES;
+        }else{
+            self.overallRating = @(2);
+        }
     }else if ([ratingButton isEqual:self.taste3]){
-        self.overallRating = @(3);
+        if ([self.overallRating isEqualToNumber:@(3)]) {
+            shouldEmpty = YES;
+        }else{
+            self.overallRating = @(3);
+        }
     }else if ([ratingButton isEqual:self.taste4]){
-        self.overallRating = @(4);
+        if ([self.overallRating isEqualToNumber:@(4)]) {
+            shouldEmpty = YES;
+        }else{
+            self.overallRating = @(4);
+        }
     }else{
-        self.overallRating = @(5);
+        if ([self.overallRating isEqualToNumber:@(5)]) {
+            shouldEmpty = YES;
+        }else{
+            self.overallRating = @(5);
+        }
     }
+    
+    if (shouldEmpty) {
+        [self removeAllRatings];
+        self.overallRating = nil;
+    }else{
+        [self highlightButtonsUpTo:self.overallRating.integerValue];
+    }
+    
     [self.delegate didRateOverall:self.overallRating];
-    [self highlightButtonsUpTo:self.overallRating.integerValue];
 }
 
 - (void)highlightButtonsUpTo:(NSUInteger)num{
@@ -115,7 +144,12 @@
     for (int i = 0; i < num; ++i) {
         UIButton *tasteButton = self.buttonArray[i];
         [tasteButton setImage:[UIImage imageNamed:@"overall_flow"] forState:UIControlStateNormal];
+    }
+}
 
+- (void)removeAllRatings{
+    for (UIButton *tasteButton in self.buttonArray) {
+        [tasteButton setImage:[UIImage imageNamed:@"overall_flow_empty"] forState:UIControlStateNormal];
     }
 }
 

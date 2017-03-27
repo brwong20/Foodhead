@@ -24,6 +24,14 @@
               completionHandler:(void (^)(id details))completionHandler
                  failureHandler:(void (^)(id error))failureHandler;
 
+
+- (void)getMoreMediaForRestaurant:(NSString *)restaurantId
+                              page:(NSString *)pageNumber
+                 completionHandler:(void (^)(id images))completionHandler
+                    failureHandler:(void (^)(id error))failureHandler;
+
+
+//Autocomplete
 - (void)searchRestaurantsWithQuery:(NSString *)queryStr
                         atLocation:(CLLocationCoordinate2D)coordinate
                  completionHandler:(void (^)(id suggestions))completionHandler

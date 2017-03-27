@@ -20,10 +20,16 @@
 #import "CameraViewController.h"
 #import "TPLRestaurantPageViewModel.h"
 #import "TPLDetailedRestaurant.h"
+#import "RestaurantDetailsTableViewCell.h"
+#import "MenuTableViewCell.h"
+#import "UIFont+Extension.h"
+#import "LocationManager.h"
+#import "MenuViewController.h"
+#import "LayoutBounds.h"
 
 #import <SDWebImage/UIImageView+WebCache.h>
 
-@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, RestaurantInfoCellDelegate>
 
 //UI
 @property (nonatomic, strong) UITableView *detailsTableView;
@@ -37,54 +43,56 @@
 
 //View Model
 @property (nonatomic, strong) TPLRestaurantPageViewModel *pageViewModel;
+@property (nonatomic, assign) BOOL detailsFetched;
 
 @end
 
 static NSString *cellId = @"detailCell";
 static NSString *photoCellId = @"photoCell";
 
+#define COLLECTION_PADDING 4.0
+
 @implementation TPLRestaurantPageViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
-    self.restaurantPhotos = [NSMutableArray array];
+    self.detailsFetched = NO;
     
+    [self setupNavBar];
+    [self setupUI];
+    
+    self.restaurantPhotos = [NSMutableArray array];
     self.pageViewModel = [[TPLRestaurantPageViewModel alloc]init];
     [self loadRestaurantDetails];
     [self loadRestaurantReviews];
-    [self setupNavBar];
-    [self setupUI];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    //[self setupCustomNavBar];
-    
-    //[self getFSQRestuarantInfo:self.selectedRestaurant.venue_id];
 }
-
-//- (BOOL)prefersStatusBarHidden{
-//    return YES;
-//}
 
 - (void)loadRestaurantDetails{
     NSString *restId = self.selectedRestaurant.foursqId;
     [self.pageViewModel retrieveRestaurantDetailsFor:restId  atLocation:self.currentLocation completionHandler:^(id data) {
         NSLog(@"%@", data);
+        
         NSDictionary *result = data[@"result"];
-        TPLDetailedRestaurant *detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:result error:nil];
-        [self.selectedRestaurant mergeValuesForKeysFromModel:detailedRestaurant];
-        NSArray *imgs = result[@"instagram_images"];
-        
-        if (imgs.count < 5) {
-            imgs = result[@"images"];
+
+        NSError *err;
+        TPLDetailedRestaurant *detailedRestaurant;
+        if (result) {
+            detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:result error:&err];
+        }else{
+            detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:data error:&err];//Cached data returned by itself w/o 'result' key
         }
-        
+        //NSLog(@"%@", err.description);
+        [self.selectedRestaurant mergeValuesForKeysFromModel:detailedRestaurant];
+        self.restaurantPhotos = [self.selectedRestaurant.images mutableCopy];
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.restaurantPhotos = [[self.restaurantPhotos arrayByAddingObjectsFromArray:imgs]mutableCopy];
+            self.detailsFetched = YES;
             [self.detailsTableView reloadData];
+            //[LayoutBounds drawBoundsForAllLayers:self.view];
         });
     } failureHandler:^(id error) {
         
@@ -100,34 +108,29 @@ static NSString *photoCellId = @"photoCell";
 }
 
 - (void)setupNavBar{
-    self.title = @"";
+    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     
-    UIImage *backBtn = [UIImage imageNamed:@"exit"];
-    backBtn = [backBtn imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    
+    UIImage *backBtn = [[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     self.navigationController.navigationBar.backIndicatorImage = backBtn;
     self.navigationController.navigationBar.backIndicatorTransitionMaskImage = backBtn;
-    
-    self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
-    //self.navigationController.navigationBar.translucent = NO;
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];//Hide pushed VC back button title
-    
-//    RestaurantPageNavBarView *navBar = [[RestaurantPageNavBarView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 32)];
-//    navBar.backgroundColor = [UIColor whiteColor];
-//    self.navigationItem.titleView = navBar;
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"call_btn"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callRestaurant)];
     
 }
     
 #pragma mark - Helper Methods
 
 - (void)setupUI{
-    CGSize frameSize = self.view.frame.size;
-    self.detailsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, frameSize.width, frameSize.height) style:UITableViewStylePlain];
+
+    self.detailsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStylePlain];
     self.detailsTableView.delegate = self;
     self.detailsTableView.dataSource = self;
     self.detailsTableView.backgroundColor = APPLICATION_BACKGROUND_COLOR;
     self.detailsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     [self.view addSubview:self.detailsTableView];
-    
+/*
     self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.82, self.view.frame.size.height * 0.8, self.view.frame.size.width * 0.13, self.view.frame.size.width * 0.13)];
     self.submitButton.backgroundColor = [UIColor purpleColor];
     self.submitButton.layer.cornerRadius = 15.0;
@@ -135,6 +138,7 @@ static NSString *photoCellId = @"photoCell";
     [self.submitButton.titleLabel setFont:[UIFont boldSystemFontOfSize:24.0]];
     [self.submitButton addTarget:self action:@selector(submitReview) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.submitButton];
+ */
 }
 
 #pragma mark - Helper Methods
@@ -146,26 +150,28 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)setupPhotoCollection{
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    flowLayout.minimumInteritemSpacing = 0.0;
-    flowLayout.minimumLineSpacing = 0.0;
+    flowLayout.minimumInteritemSpacing = 1.0;
+    flowLayout.minimumLineSpacing = 2.0;
+    flowLayout.itemSize = CGSizeMake(self.view.frame.size.width/3, self.view.frame.size.width/3);
     flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
-    self.photoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, RESTAURANT_PHOTO_COLLECTION_HEIGHT) collectionViewLayout:flowLayout];
+    self.photoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, ((self.view.frame.size.width/3) * 2) + COLLECTION_PADDING/2) collectionViewLayout:flowLayout];
+    self.photoCollection.backgroundColor = [UIColor whiteColor];
     self.photoCollection.delegate = self;
     self.photoCollection.dataSource= self;
-    self.photoCollection.scrollEnabled = YES;
+    self.photoCollection.scrollEnabled = NO;
     [self.photoCollection registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:photoCellId];
 }
 
 - (UIView *)createAllButton{
-    UIView *allButton = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width * 0.25, RESTAURANT_PHOTO_COLLECTION_HEIGHT/5)];
+    UIView *allButton = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width/3, 30.0)];
     allButton.backgroundColor = [UIColor blackColor];
     
     UILabel *allLabel = [[UILabel alloc]initWithFrame:CGRectMake(5.0, 0, allButton.frame.size.width * 0.4, allButton.frame.size.height)];
-    allLabel.text = @"All";
+    allLabel.text = @"See all";
     allLabel.textColor = [UIColor whiteColor];
     allLabel.backgroundColor = [UIColor clearColor];
-    allLabel.font = [UIFont systemFontOfSize:17.0];
+    allLabel.font = [UIFont nun_fontWithSize:17.0];
     [allButton addSubview:allLabel];
     
     return allButton;
@@ -176,51 +182,117 @@ static NSString *photoCellId = @"photoCell";
     [self.navigationController pushViewController:cameraVC animated:YES];
 }
 
+#pragma mark - Call Restaurant
+
+- (void)callRestaurant{
+    if (self.selectedRestaurant.phoneNumber) {
+        NSString *formattedNumber = [self.selectedRestaurant.phoneNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
+        NSString *phoneNumber = [@"telprompt://" stringByAppendingString:formattedNumber];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:phoneNumber] options:@{} completionHandler:nil];
+    }
+}
+
+#pragma mark - Map Restaurant
+
+- (void)presentNavigationAlert
+{
+    CLLocationCoordinate2D restaurantCoordinate = CLLocationCoordinate2DMake([self.selectedRestaurant.latitude floatValue], [self.selectedRestaurant.longitude floatValue]);
+    
+    UIAlertController *navAlert = [UIAlertController alertControllerWithTitle:@"Open with" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *appleMaps = [UIAlertAction actionWithTitle:@"Maps" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        MKPlacemark *placeMark = [[MKPlacemark alloc]initWithCoordinate:restaurantCoordinate addressDictionary:nil];
+        MKMapItem *mapItem = [[MKMapItem alloc]initWithPlacemark:placeMark];
+        NSDictionary *launchOptions = @{MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving};
+        mapItem.name = self.selectedRestaurant.name;
+        [mapItem openInMapsWithLaunchOptions:launchOptions];
+        
+    }];
+    
+    UIAlertAction *googleMaps = [UIAlertAction actionWithTitle:@"Google Maps" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [[UIApplication sharedApplication] canOpenURL:
+         [NSURL URLWithString:@"comgooglemaps://"]];
+        
+        NSString *destinationLat = [NSString stringWithFormat:@"%f", restaurantCoordinate.latitude];
+        NSString *destinationLng = [NSString stringWithFormat:@"%f", restaurantCoordinate.longitude];
+        
+        CLLocationCoordinate2D currentLocation = [LocationManager sharedLocationInstance].currentLocation;
+        NSString *currentLat = [NSString stringWithFormat:@"%f", currentLocation.latitude];
+        NSString *currentLng = [NSString stringWithFormat:@"%f", currentLocation.longitude];
+        
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"comgooglemaps://?saddr=%@,%@&daddr=%@,%@&directionsmode=driving&views=", currentLat, currentLng, destinationLat, destinationLng]]options:@{} completionHandler:nil];
+    }];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive handler:nil];
+    
+    [navAlert addAction:appleMaps];
+    [navAlert addAction:googleMaps];
+    [navAlert addAction:cancel];
+    
+    [self presentViewController:navAlert animated:YES completion:nil];
+}
+
+#pragma mark - RestaurantInfoCell Delegate
+
+- (void)didTapLocation{
+    [self presentNavigationAlert];
+}
+
+- (void)didTapShareButton{
+    
+}
+
 #pragma mark - UTableViewDataSource Methods
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = nil;
     switch (indexPath.row) {
         case 0:{
-            GeneralRestaurantInfoView *generalView = [[GeneralRestaurantInfoView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height * 0.25)];
-            generalView.restaurantName.text = self.selectedRestaurant.name;
-            generalView.distanceLabel.text = [self.selectedRestaurant.distance stringValue];
-            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            [cell.contentView addSubview:generalView];
+            RestaurantDetailsTableViewCell *detail = [[RestaurantDetailsTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            [detail setInfoForRestaurant:self.selectedRestaurant];
+            cell = detail;
             break;
         }
         case 1:{
             MetricsDisplayCell *metricsCell = [[MetricsDisplayCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            //metricsCell.numReviews = @(self.selectedRestaurant.foursq_rating);
             cell = metricsCell;
+            //cell.layoutMargins = UIEdgeInsetsZero;
             break;
         }
         case 2:{
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.backgroundColor = [UIColor grayColor];
-            
+            cell.backgroundColor = [UIColor clearColor];
             [self setupPhotoCollection];
             [cell.contentView addSubview:self.photoCollection];
             break;
         }
         case 3:{
-            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.backgroundColor = APPLICATION_BACKGROUND_COLOR;
-            //Custom disclosure cell.accessoryView =
-            cell.textLabel.text = @"Menu";
+            MenuTableViewCell *menuCell = [[MenuTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            if (self.selectedRestaurant.menu) {
+                menuCell.menuLabel.text = @"Menu";
+                [menuCell.arrowImg setHidden:NO];
+            }else{
+                if (self.detailsFetched) {
+                    menuCell.menuLabel.text = @"Menu unavailable";
+                    [menuCell.arrowImg setHidden:YES];
+                }else{
+                    menuCell.menuLabel.text = @"";
+                    [menuCell.arrowImg setHidden:YES];
+                }
+            }
+            cell = menuCell;
             break;
         }
         case 4:{
             RestaurantInfoTableViewCell *infoCell = [[RestaurantInfoTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            infoCell.restaurantName.text = self.selectedRestaurant.name;
-            infoCell.addressLabel.text = self.selectedRestaurant.address;
+            infoCell.delegate = self;
+            [infoCell populateInfo:self.selectedRestaurant];
             cell = infoCell;
             break;
         }
         case 5:{
             HoursTableViewCell *hoursCell = [[HoursTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            [hoursCell populateHours:self.selectedRestaurant];
             cell = hoursCell;
             break;
         }
@@ -243,25 +315,47 @@ static NSString *photoCellId = @"photoCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     CGFloat cellHeight = 0.0;
     switch (indexPath.row) {
-        case 0:
-            cellHeight = self.view.frame.size.height * 0.25;
+        case 0:{
+//            CGSize maxCellSize = CGSizeMake(APPLICATION_FRAME.size.width * 0.7, INT_MAX);//Setting the appropriate width is a MUST here!!
+//            CGRect nameSize = [self.selectedRestaurant.name boundingRectWithSize:maxCellSize
+//                                                                         options:NSStringDrawingUsesLineFragmentOrigin
+//                                                                      attributes:@{NSFontAttributeName:[UIFont nun_fontWithSize:22.0]} context:nil];
+//            
+//            //Account for other elements (hours, categories, etc)
+//            cellHeight = APPLICATION_FRAME.size.height * 0.1 + nameSize.size.height;
+//            
+//            //Only if the cellHeight is larger than our default do we expand the cell size
+//            if (cellHeight <= RESTAURANT_INFO_CELL_HEIGHT) {
+//                cellHeight = RESTAURANT_INFO_CELL_HEIGHT;
+//            }
+//            
+            cellHeight = RESTAURANT_INFO_CELL_HEIGHT;
             break;
+        }
         case 1:
             cellHeight = METRIC_CELL_HEIGHT;
             break;
         case 2:
-            cellHeight = RESTAURANT_PHOTO_COLLECTION_HEIGHT;
+            cellHeight = ((self.view.frame.size.width/3) * 2) + COLLECTION_PADDING;
             break;
         case 3:
             cellHeight = METRIC_CELL_HEIGHT;
             break;
         case 4:
-            cellHeight = RESTAURANT_INFO_CELL_HEIGHT;
+            cellHeight = RESTAURANT_LOCATION_CELL_HEIGHT;
             break;
-        case 5:
-            //Multiply by how many days there are
-            cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;
+        case 5:{
+            if (self.selectedRestaurant.hours) {
+                if ((self.selectedRestaurant.hours.count - 1) == 1 || self.selectedRestaurant.hours.count == 0) {
+                    cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;//Only one line needed, use default
+                }else{
+                    cellHeight = RESTAURANT_HOURS_CELL_HEIGHT * (self.selectedRestaurant.hours.count * HOUR_CELL_SPACING); //Dynamically size hours cell based on number of days
+                }
+            }else{
+                cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;//Before we load detail data or no hours
+            }
             break;
+        }
         default:
             break;
     }
@@ -274,6 +368,16 @@ static NSString *photoCellId = @"photoCell";
             break;
         case 1:
             break;
+        case 2:
+            break;
+        case 3:{
+            if (self.selectedRestaurant.menu) {
+                MenuViewController *menuVC = [[MenuViewController alloc]init];
+                menuVC.menuLink = self.selectedRestaurant.menu;
+                [self.navigationController pushViewController:menuVC animated:YES];
+            }
+            break;
+        }
         default:
             break;
     }
@@ -284,14 +388,10 @@ static NSString *photoCellId = @"photoCell";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     //Make sure to register the cell type you want to use in the TabledCollectionCell subclass!
     ImageCollectionCell *collectionCell = (ImageCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:photoCellId forIndexPath:indexPath];
-    collectionCell.coverImageView.image = [UIImage imageNamed:@"AppIcon"];
-    if(indexPath.row == 0){
-        collectionCell.backgroundColor = [UIColor greenColor];
-    }else if(indexPath.row == 4){
-        [collectionCell.contentView addSubview:[self createAllButton]];
-        collectionCell.backgroundColor = [UIColor grayColor];
-    }else{
-        collectionCell.backgroundColor = [UIColor redColor];
+    collectionCell.backgroundColor = [UIColor whiteColor];
+    
+    if (indexPath.row == 5) {
+        [collectionCell.contentView insertSubview:[self createAllButton] aboveSubview:collectionCell.coverImageView];
     }
     
     //Get section instead and check if a dict exists
@@ -309,36 +409,20 @@ static NSString *photoCellId = @"photoCell";
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 5;
+    if (self.restaurantPhotos.count >= 6) {
+        return 6;
+    }
+    return self.restaurantPhotos.count;
 }
 
 #pragma mark - UICollectionViewDelegate methods
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    //Pass data (whatevers in cell) along with this as well
-    if (indexPath.row == 4) {
+    if (indexPath.row == 5) {
         RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc]init];
+        albumVC.images = self.selectedRestaurant.images;
         [self.navigationController pushViewController:albumVC animated:YES];
     }
-}
-
-#pragma mark - CHTCollectionViewDelegateWaterfallLayout methods
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 0) {
-        return CGSizeMake(self.view.frame.size.width/2, RESTAURANT_PHOTO_COLLECTION_HEIGHT);
-    }
-    return CGSizeMake(self.view.frame.size.width * 0.25, RESTAURANT_PHOTO_COLLECTION_HEIGHT/2);
-}
-
-#pragma mark - View Model
-
-//RACObserve and retrieve data to update mantle object
-
-- (void)bindViewModel{
-    
-    
-    
 }
 
 @end
