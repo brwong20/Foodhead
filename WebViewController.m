@@ -1,59 +1,62 @@
 //
-//  MenuViewController.m
+//  WebViewController.m
 //  Foodhead
 //
 //  Created by Brian Wong on 3/16/17.
 //  Copyright © 2017 Brian Wong. All rights reserved.
 //
 
-#import "MenuViewController.h"
+#import "WebViewController.h"
+#import "FoodWiseDefines.h"
+
+#import <SVProgressHUD/SVProgressHUD.h>
 
 @import WebKit;
 
-@interface MenuViewController () <WKNavigationDelegate>
+@interface WebViewController () <WKNavigationDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) WKWebView *webView;
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 
 @end
 
-@implementation MenuViewController
+@implementation WebViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.navigationController.navigationBar.
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitWebView)];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
     
     self.webView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    self.webView.scrollView.contentInset = adjustForTabbarInsets;
+    self.webView.scrollView.scrollIndicatorInsets = adjustForTabbarInsets;
     self.webView.navigationDelegate = self;
     self.webView.allowsBackForwardNavigationGestures = YES;
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.menuLink]]];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.webLink]]];
     [self.view addSubview:self.webView];
     
-    self.activityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - 22.0, self.view.frame.size.height/2, 44.0, 44.0)];
-    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    self.activityIndicator.color = [UIColor grayColor];
-    [self.view addSubview:self.activityIndicator];
-    
+    [SVProgressHUD setContainerView:self.view];
+    [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
+    //[SVProgressHUD setMinimumSize:CGSizeMake(self.view.frame.size.width * 0.4, self.view.frame.size.width * 0.4)];
+    [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
 }
 
-- (void)exitMenu
+- (void)exitWebView
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 
-//Activity indic
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
-    [self.view addSubview:self.activityIndicator];
-    [self.activityIndicator startAnimating];
+    [SVProgressHUD show];
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-    [self.activityIndicator stopAnimating];
-    [self.activityIndicator removeFromSuperview];
+    [SVProgressHUD dismiss];
 }
 
 

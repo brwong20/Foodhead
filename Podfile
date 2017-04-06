@@ -12,5 +12,6 @@ pod ‘SAMKeychain’
 pod 'TTTAttributedLabel'
 pod 'SVProgressHUD'
 pod ‘IDMPhotoBrowser'
+pod 'Flurry-iOS-SDK/FlurrySDK' 
 
 end

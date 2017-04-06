@@ -11,6 +11,7 @@
 
 @import CoreLocation;
 
+//Convenience class to manage data in review flow
 @interface RestaurantReview : NSObject
 
 @property (nonatomic, strong) NSString *restaurant_id;

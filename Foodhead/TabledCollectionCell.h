@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface IndexedPhotoCollectionView : UICollectionView
 
-@property (nonatomic, strong) NSIndexPath* indexPath;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 
 @end
 
@@ -28,3 +29,6 @@ static NSString *AddPhotoCellIdentifier = @"addPhotoCell";
 - (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource,UICollectionViewDelegate>)dataSourceDelegate indexPath:(NSIndexPath *)indexPath withCustomCell:(nullable Class)class;
 
 @end
+
+NS_ASSUME_NONNULL_END
+

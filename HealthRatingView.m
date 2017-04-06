@@ -7,8 +7,7 @@
 //
 
 #import "HealthRatingView.h"
-
-#define NUM_HEALTH 4
+#import "LayoutBounds.h"
 
 @interface HealthRatingView ()
 
@@ -31,20 +30,32 @@
 }
 
 - (void)setupUI:(CGRect)frame{
-    self.health2 = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.225, frame.size.height/2 - frame.size.width * 0.11, frame.size.width * 0.22, frame.size.width * 0.22)];
+    self.health2 = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.21, frame.size.height/2 - frame.size.height * 0.375, frame.size.width * 0.2, frame.size.height * 0.75)];
+    self.health2.contentMode = UIViewContentModeScaleAspectFit;
     self.health2.backgroundColor = [UIColor clearColor];
+    self.health2.layer.rasterizationScale = [[UIScreen mainScreen]scale];
+    self.health2.layer.shouldRasterize = YES;
     [self addSubview:self.health2];
     
-    self.health3 = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 + frame.size.width * 0.005, frame.size.height/2 - frame.size.width * 0.11, frame.size.width * 0.22, frame.size.width * 0.22)];
+    self.health3 = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 + frame.size.width * 0.01, frame.size.height/2 - frame.size.height * 0.375, frame.size.width * 0.2, frame.size.height * 0.75)];
+    self.health3.contentMode = UIViewContentModeScaleAspectFit;
     self.health3.backgroundColor = [UIColor clearColor];
+    self.health3.layer.rasterizationScale = [[UIScreen mainScreen]scale];
+    self.health3.layer.shouldRasterize = YES;
     [self addSubview:self.health3];
     
-    self.health1 = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.health2.frame) - frame.size.width * 0.23, frame.size.height/2 - frame.size.width * 0.11, frame.size.width * 0.22, frame.size.width * 0.22)];
+    self.health1 = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.health2.frame) - frame.size.width * 0.22, frame.size.height/2 - frame.size.height * 0.375, frame.size.width * 0.2, frame.size.height * 0.75)];
+    self.health1.contentMode = UIViewContentModeScaleAspectFit;
     self.health1.backgroundColor = [UIColor clearColor];
+    self.health1.layer.rasterizationScale = [[UIScreen mainScreen]scale];
+    self.health1.layer.shouldRasterize = YES;
     [self addSubview:self.health1];
     
-    self.health4 = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.health3.frame) + frame.size.width * 0.01, frame.size.height/2 - frame.size.width * 0.11, frame.size.width * 0.22, frame.size.width * 0.22)];
+    self.health4 = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.health3.frame) + frame.size.width * 0.02, frame.size.height/2 - frame.size.height * 0.375, frame.size.width * 0.2, frame.size.height * 0.75)];
+    self.health4.contentMode = UIViewContentModeScaleAspectFit;
     self.health4.backgroundColor = [UIColor clearColor];
+    self.health4.layer.rasterizationScale = [[UIScreen mainScreen]scale];
+    self.health4.layer.shouldRasterize = YES;
     [self addSubview:self.health4];
     
     self.healthArr = [NSMutableArray array];
@@ -54,9 +65,20 @@
     [self.healthArr addObject:self.health4];
 }
 
-- (void)setHealth:(NSNumber *)healthiness{
+- (void)setHealth:(NSNumber *)healthiness inReviewFlow:(BOOL)reviewFlow{
+    if (!healthiness) {
+        for (UIImageView *healthImg in self.healthArr) {
+            [healthImg setImage:nil];
+        }
+        return;
+    }
+    
     for (UIImageView *healthImg in self.healthArr) {
-        [healthImg setImage:nil];
+        if (reviewFlow) {
+            [healthImg setImage:nil];
+        }else{
+            [healthImg setImage:[UIImage imageNamed:@"health_empty_page"]];
+        }
     }
     
     //Fill based on rating

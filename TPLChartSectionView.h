@@ -19,6 +19,11 @@
 @property (nonatomic, assign) NSUInteger section;
 
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UIButton *arrowButton;
+@property (nonatomic, strong) UIImageView *arrowImg;
+
 @property (nonatomic, weak) id<ChartSectionViewDelegate> delegate;
+
+- (void)showSeeAllButton;
 
 @end

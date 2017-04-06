@@ -26,6 +26,7 @@
 
 @property (nonatomic, weak) id<BRWSearchViewDelegate> delegate;
 
+- (void)showKeyboard;
 - (void)dismissKeyboard;
 
 @end

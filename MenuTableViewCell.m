@@ -24,25 +24,29 @@
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        self.menuImg = [[UIImageView alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width * 0.019, METRIC_CELL_HEIGHT/4, APPLICATION_FRAME.size.width * 0.04, APPLICATION_FRAME.size.width * 0.05)];
+        UIView *sepLine = [[UIView alloc]initWithFrame:SEP_LINE_RECT];
+        sepLine.center = CGPointMake(sepLine.center.x, METRIC_CELL_HEIGHT - 1.0);
+        sepLine.backgroundColor = UIColorFromRGB(0x47606A);
+        sepLine.alpha = 0.15;
+        [self.contentView addSubview:sepLine];
+        
+        self.menuImg = [[UIImageView alloc]initWithFrame:CGRectMake(REST_PAGE_ICON_PADDING, METRIC_CELL_HEIGHT/3.5, APPLICATION_FRAME.size.width * 0.05, APPLICATION_FRAME.size.width * 0.06)];
         self.menuImg.contentMode = UIViewContentModeScaleAspectFit;
         self.menuImg.backgroundColor = [UIColor clearColor];
         [self.menuImg setImage:[UIImage imageNamed:@"menu_icon"]];
         [self.contentView addSubview:self.menuImg];
         
-        self.menuLabel = [[UILabel alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width * 0.1, METRIC_CELL_HEIGHT/2 - METRIC_CELL_HEIGHT * 0.15, APPLICATION_FRAME.size.width * 0.6, METRIC_CELL_HEIGHT * 0.3)];
+        self.menuLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(sepLine.frame), METRIC_CELL_HEIGHT/1.9 - METRIC_CELL_HEIGHT * 0.15, APPLICATION_FRAME.size.width * 0.6, METRIC_CELL_HEIGHT * 0.3)];
         self.menuLabel.backgroundColor = [UIColor clearColor];
         self.menuLabel.textColor = [UIColor blackColor];
-        self.menuLabel.font = [UIFont nun_fontWithSize:16.0];
+        self.menuLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
         [self.contentView addSubview:self.menuLabel];
         
-        self.arrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width - 20.0, METRIC_CELL_HEIGHT/2 - 7.5, 5.0, 10.0)];
+        self.arrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMaxX(sepLine.frame) - 5.0, METRIC_CELL_HEIGHT/2 - 4.5, 5.0, 9)];
         self.arrowImg.backgroundColor = [UIColor clearColor];
         self.arrowImg.contentMode = UIViewContentModeScaleAspectFit;
         [self.arrowImg setImage:[UIImage imageNamed:@"arrow_right"]];
-        [self.contentView addSubview:self.arrowImg];
-        
-        [LayoutBounds drawBoundsForAllLayers:self];
+        [self.contentView addSubview:self.arrowImg];        
     }
     return self;
 }

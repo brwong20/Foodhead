@@ -11,6 +11,7 @@
 
 @interface HoursTableViewCell : UITableViewCell
 
+@property (nonatomic, assign) CGFloat dynamicHeight;
 - (void)populateHours:(TPLRestaurant *)restaurant;
 
 @end

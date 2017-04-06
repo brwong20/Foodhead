@@ -10,14 +10,12 @@
 #import "UserAuthManager.h"
 #import "LoginViewController.h"
 #import "ChartsViewController.h"
-#import "SlideOutViewController.h"
-#import "User.h"
-
-#import "ChartsViewController.h"
 #import "TabCameraViewController.h"
 #import "UserProfileViewController.h"
-#import "CameraViewController.h"
+#import "FoodWiseDefines.h"
+#import "FoodheadAnalytics.h"
 
+#import "Flurry.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 @interface AppDelegate ()
@@ -30,6 +28,8 @@
     BOOL fbLaunched = [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
 
+    [FoodheadAnalytics beginFlurrySession];
+    
     //Must create window here ourselves if not using storyboard
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     
@@ -61,15 +61,17 @@
     UIViewController *root = nil;
     if(type == RootViewTypeLogin){
         LoginViewController *loginVC = [[LoginViewController alloc]init];
+        loginVC.isOnboarding = YES;
         UINavigationController *loginNav = [[UINavigationController alloc]initWithRootViewController:loginVC];
         root = loginNav;
         
         [self.window setRootViewController:root];
         [self.window makeKeyAndVisible];
     }
-    else if (type == RootViewTypeCharts)
-    {
+    else if (type == RootViewTypeCharts){
         self.tabBarController = [[UITabBarController alloc]init];
+        [[UITabBar appearance]setBackgroundImage:[UIImage imageNamed:@"tab_bar_bg"]];
+        self.tabBarController.tabBar.translucent = NO;
     
         ChartsViewController *chartsVC = [[ChartsViewController alloc]init];
         UINavigationController *chartsNav = [[UINavigationController alloc]initWithRootViewController:chartsVC];
@@ -80,21 +82,31 @@
         UserProfileViewController *profileVC = [[UserProfileViewController alloc]init];
         UINavigationController *profileNav = [[UINavigationController alloc]initWithRootViewController:profileVC];
         
-        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, camNav, profileNav, nil];
+        UIViewController *firstBlank = [[UIViewController alloc]init];
+        UIViewController *secondBlank = [[UIViewController alloc]init];
+        
+        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, firstBlank, camNav, secondBlank ,profileNav, nil];
         self.tabBarController.viewControllers = controllers;
         
-        //Pre-load the camera view so it's always ready the second a user clicks on the camera tab.
-        NSArray *viewArr = self.tabBarController.viewControllers;
-        UINavigationController *cam = [viewArr objectAtIndex:1];
-        [[[cam viewControllers]firstObject]view];
-        
-        chartsVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"home_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        chartsVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"home"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        chartsVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
+        chartsVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"home_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         chartsVC.tabBarItem.tag = CHART_TAB_TAG;
         
+        //Hack to avoid creating custom tab bar and spacing tab bar items
+        firstBlank.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:nil selectedImage:nil];
+        firstBlank.tabBarItem.enabled = NO;
+        
         camVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"camera_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
         camVC.tabBarItem.tag = CAMERA_TAB_TAG;
         
-        profileVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"profile_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        secondBlank.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:nil selectedImage:nil];
+        secondBlank.tabBarItem.enabled = NO;
+        
+        profileVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"profile"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        profileVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
+        profileVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"profile_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         profileVC.tabBarItem.tag = PROFILE_TAB_TAG;
         
         self.window.backgroundColor = [UIColor whiteColor];
@@ -102,7 +114,7 @@
         [self.window makeKeyAndVisible];
         
         if(animation){
-            [UIView transitionWithView:self.window duration:0.3 options:UIViewAnimationOptionTransitionCurlDown animations:^{
+            [UIView transitionWithView:self.window duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 [self.window setRootViewController:root];
                 [self.window makeKeyAndVisible];
             } completion:nil];

@@ -8,10 +8,17 @@
 
 #import "TPLChartsViewModel.h"
 #import "Chart.h"
+#import "FoodWiseDefines.h"
+#import "Places.h"
+
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <AFNetworking/AFNetworking.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 
 @interface TPLChartsViewModel ()
 
 @property (nonatomic, strong) TPLChartsDataSource *restaurantDataSrc;
+//@property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 
 @end
 
@@ -21,60 +28,47 @@
     self = [super init];
     if(self){
         self.restaurantDataSrc = store;
+        //self.sessionManager = [[AFHTTPSessionManager alloc]init];
         self.restaurantData = [NSMutableArray array];
         self.completeChartData = [NSMutableArray array];
     }
     return self;
 }
 
-
-//TODO: MUST FIND WAY TO PRESERVE CHART ID AND ORDER_INDEX SO WE CAN RE-QUERY - Make a Chart model object!!!
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
+    NSMutableArray *arrCopy = [self mutableArrayValueForKey:@"completeChartData"];
     //RACObserve the chart info and populate section titles first to make UI seem faster.
-    [self.restaurantDataSrc retrieveCharts:^(id chartsInfo) {
-        NSArray *charts = chartsInfo[@"charts"];
-        NSMutableArray *arrCopy = [self mutableArrayValueForKey:@"completeChartData"];
+    [self.restaurantDataSrc retrieveChartsForLocation:coordinate completionHandler:^(id chartData){
+        [arrCopy removeAllObjects];
+        NSArray *charts = chartData[@"charts"];
         for (NSDictionary *chartDetails in charts) {
             Chart *incompleteChart = [MTLJSONAdapter modelOfClass:[Chart class] fromJSONDictionary:chartDetails error:nil];
             [arrCopy addObject:incompleteChart];
         }
-
+        
+        self.finishedLoading = NO;
+        self.chartsLoadFailed = NO;
+    
+        #warning Need a better way of using RAC here (updating the same object in this array with a dictionary...)
         [self.restaurantDataSrc getRestaurantsForCharts:arrCopy atCoordinate:coordinate completionHandler:^(id completeChart) {
             NSNumber *index = completeChart[@"index"];
             Chart *chart = completeChart[@"chart"];
-#warning Need a better way of using RAC here (updating the same object in this array with a dictionary...)
             [arrCopy replaceObjectAtIndex:[index integerValue] withObject:chart];
+            
+#warning This doesn't work if we don't load in serial order. Must find a better way to do this
+            if ([index integerValue] == arrCopy.count - 1) {
+                self.finishedLoading = YES;
+            }
         } failureHandler:^(id error) {
-            NSLog(@"Couldn't get restaurants for charts");
+            //NSLog(@"Failed to get restaurants for charts: %@", error);
+            self.chartsLoadFailed = YES;
+            self.finishedLoading = YES;
         }];
     } failureHandler:^(id error) {
-        NSLog(@"Couldn't get chart info");
+        //Throw bad service alert
+        self.chartsLoadFailed = YES;
+        self.finishedLoading = YES;
     }];
-}
-
-#pragma mark - Helper methods
-
-- (NSArray *)parseJSON:(NSDictionary*)venueDict{
-    NSMutableArray *restaurantArr = [NSMutableArray array];
-    NSDictionary *response = venueDict[@"response"];
-    NSArray *groups = response[@"groups"];
-    //Have to check for other groups here - what if it's not recommended?
-    NSDictionary *recommended = [groups firstObject];
-    NSArray *venueArray = recommended[@"items"];
-    
-    for (NSDictionary *venueDict in venueArray) {
-        NSError *error;
-        TPLRestaurant *restaurant = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:venueDict error:&error];
-        if (error) {
-            NSLog(@"Couldn't deserealize JSON: %@", error);
-            //return nil;
-        }
-        [restaurantArr addObject:restaurant];
-    }
-    
-    NSArray *rest = [NSArray arrayWithArray:restaurantArr];
-    
-    return rest;
 }
 
 @end

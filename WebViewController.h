@@ -1,5 +1,5 @@
 //
-//  MenuViewController.h
+//  WebViewController.h
 //  Foodhead
 //
 //  Created by Brian Wong on 3/16/17.
@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MenuViewController : UIViewController
+@interface WebViewController : UIViewController
 
-@property (nonatomic, strong) NSString *menuLink;
+@property (nonatomic, strong) NSString *webLink;
 
 @end

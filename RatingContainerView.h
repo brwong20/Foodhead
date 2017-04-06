@@ -14,4 +14,6 @@
 - (void)setPrice:(NSNumber *)price;
 - (void)setOverall:(NSNumber *)overall;
 
+- (void)showGradient:(BOOL)gradient;
+
 @end

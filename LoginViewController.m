@@ -20,9 +20,15 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 
+#import "UIFont+Extension.h"
+
 @interface LoginViewController () <UIWebViewDelegate>
 
 @property (nonatomic, strong) UILabel *loginTitle;
+@property (nonatomic, strong) UILabel *loginCaption;
+
+@property (nonatomic, strong) UIImageView *owlImage;
+@property (nonatomic, strong) UIImageView *splashImage;
 
 @property (nonatomic, strong) UserAuthManager *authManager;
 @property (nonatomic, strong) UIWebView *webView;
@@ -37,25 +43,66 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.authManager = [UserAuthManager sharedInstance];
-    
     [self setupUI];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]){
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
 }
 
 - (void)setupUI{
     [self.navigationController.navigationBar setHidden:YES];
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    self.fbLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.25, self.view.frame.size.height/2.5, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.2)];
-    [self.fbLoginButton setTitle:@"FB LOGIN" forState:UIControlStateNormal];
-    self.fbLoginButton.backgroundColor = [UIColor cyanColor];
-    [self.fbLoginButton addTarget:self action:@selector(loginButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.splashImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.splashImage.backgroundColor = [UIColor whiteColor];
+    self.splashImage.contentMode = UIViewContentModeScaleAspectFit;
+    [self.splashImage setImage:[UIImage imageNamed:@"login_background"]];
+    [self.view addSubview:self.splashImage];
+    
+    self.owlImage = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.224, self.view.frame.size.height * 0.157, self.view.frame.size.width * 0.448, self.view.frame.size.height * 0.27)];
+    self.owlImage.backgroundColor = [UIColor clearColor];
+    self.owlImage.contentMode = UIViewContentModeScaleAspectFit;
+    [self.view addSubview:self.owlImage];
+    
+    self.loginCaption = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.4, CGRectGetMaxY(self.owlImage.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.1)];
+    self.loginCaption.backgroundColor = [UIColor clearColor];
+    self.loginCaption.textAlignment = NSTextAlignmentCenter;
+    self.loginCaption.numberOfLines = 0;
+    self.loginCaption.font = [UIFont nun_boldFontWithSize:self.loginCaption.frame.size.height * 0.35];
+    self.loginCaption.textColor = [UIColor whiteColor];
+    [self.view addSubview:self.loginCaption];
+    
+    self.fbLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.75, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.08)];
+    self.fbLoginButton.layer.cornerRadius = self.fbLoginButton.frame.size.height/2;
+    self.fbLoginButton.backgroundColor = UIColorFromRGB(0x718BEC);
+    self.fbLoginButton.titleLabel.font = [UIFont nun_boldFontWithSize:self.fbLoginButton.frame.size.height * 0.35];
+    [self.fbLoginButton setTitle:@"Sign up with Facebook" forState:UIControlStateNormal];
+    [self.fbLoginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.fbLoginButton addTarget:self action:@selector(didPressLogin) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.fbLoginButton];
     
-    self.skipLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.25, self.view.frame.size.height * 0.8 - self.view.frame.size.height * 0.1, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.2)];
+    self.skipLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.2, CGRectGetMaxY(self.fbLoginButton.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.05)];
     self.skipLoginButton.backgroundColor = [UIColor clearColor];
-    [self.skipLoginButton setTitle:@"Skip" forState:UIControlStateNormal];
+    self.skipLoginButton.titleLabel.font  = [UIFont nun_boldFontWithSize:self.skipLoginButton.frame.size.height * 0.5];
+    [self.skipLoginButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.skipLoginButton addTarget:self action:@selector(didPressSkip) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.skipLoginButton];
+    
+    if (self.isOnboarding) {
+        self.loginCaption.text = @"Discover | Eat | Snap";
+        [self.owlImage setImage:[UIImage imageNamed:@"owl_full"]];
+        [self.skipLoginButton setTitle:@"Skip" forState:UIControlStateNormal];
+
+    }else{
+        self.loginCaption.font = [UIFont nun_boldFontWithSize:self.loginCaption.frame.size.height * 0.3];
+        self.loginCaption.text = @"Almost there! Sign up now\nto post your food memories!";
+        [self.owlImage setImage:[UIImage imageNamed:@"owl_openarms"]];
+        [self.skipLoginButton setTitle:@"Go back" forState:UIControlStateNormal];
+      }
     
 //    UIButton *instaButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 200.0, 50.0)];
 //    instaButton.backgroundColor = [UIColor purpleColor];
@@ -66,61 +113,75 @@
 }
 
 
+//- (void)loginWasSuccessful{
+//    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+//    [appDelegate changeRootViewControllerFor:RootViewTypeCharts withAnimation:YES];
+//}
+
+#pragma LoginViewDelegate methods
+
 //To be called from callback when we recieve auth token or user skips
-- (void)loginWasSuccessful{
-    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    [appDelegate changeRootViewControllerFor:RootViewTypeCharts withAnimation:YES];
-}
-
 - (void)didPressSkip{
-    [self.authManager loginAnonymously];
-    [self loginWasSuccessful];
+    if (self.isOnboarding) {
+        [self.authManager loginAnonymously];
+//        UsernamePromptViewController *namePromptVC = [[UsernamePromptViewController alloc]init];
+//        [self.navigationController pushViewController:namePromptVC animated:YES];
+        PermissionViewController *permissionVC = [[PermissionViewController alloc]init];
+        [self.navigationController pushViewController:permissionVC animated:YES];
+    }else{
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 
-- (void)loginButtonClicked{
+- (void)didPressLogin{
     FBSDKLoginManager *manager = [[FBSDKLoginManager alloc]init];
-    [manager logInWithReadPermissions:@[@"public_profile", @"email", @"user_friends"] fromViewController:self handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+    [manager logInWithReadPermissions:@[@"public_profile", @"email", @"user_friends", @"user_location"] fromViewController:self handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
-            NSLog(@"%@", error.description);
+            //NSLog(@"%@", error.description);
         }else if (result.isCancelled){
             //Cancelled
         }else{
             //Logged in
-            [SVProgressHUD show];
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
+            [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
+            [SVProgressHUD setBackgroundColor:[UIColor whiteColor]];
+            [SVProgressHUD setFont:[UIFont nun_fontWithSize:16.0]];
+            [SVProgressHUD showWithStatus:@"Logging in"];
             [self.authManager loginWithFb:[result token] completionHandler:^(User *userResponse) {
+                [SVProgressHUD dismiss];
                 if(userResponse){
-                    NSLog(@"LOGIN RESPONSE: %@", userResponse);
-                    
+                    [SVProgressHUD dismiss];
                     User *currentUser = userResponse;
-                    if (!currentUser.username) {//New user
+                    if ([currentUser.username isEqualToString:@""]) {
+                        //New user or anon rating flow
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [SVProgressHUD dismiss];
                             UsernamePromptViewController *userPrompt = [[UsernamePromptViewController alloc]init];
+                            userPrompt.isOnboarding = self.isOnboarding;
                             userPrompt.currentUser = currentUser;
                             [self.navigationController pushViewController:userPrompt animated:YES];
                         });
-                    }else{//User has already signed up before, but deleted app or signed on different phone so just ask them for permissions if the device isn't authorized
+                    }else{//User has signed up before and created account, but either deleted app or is using a new, unauthorized phone.
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [SVProgressHUD dismiss];
-                            //Not possible right now since no log out
-//                            if ([LocationManager sharedLocationInstance].authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
-//                                [self loginWasSuccessful];
-//                            }else{
+                            if (self.isOnboarding) {
                                 PermissionViewController *permissionView = [[PermissionViewController alloc]init];
                                 [self.navigationController pushViewController:permissionView animated:YES];
-//                            }
+                            }else{
+                                [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                                    [[NSNotificationCenter defaultCenter]postNotificationName:SIGNUP_NOTIFICATION object:nil];
+                                }];
+                            }
                         });
                     }
                 }
             } failureHandler:^(id error) {
-                NSLog(@"Failed FB LOGIN: %@", error);
+                [SVProgressHUD dismiss];
+                UIAlertController *usernameFail = [UIAlertController alertControllerWithTitle:@"Failed to sign up" message:@"Sorry, there was a problem when trying to sign you up. Please check your connection and try again!" preferredStyle:UIAlertControllerStyleAlert];
+                [usernameFail addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+                [self presentViewController:usernameFail animated:YES completion:nil];
             }];
         }
     }];
-    
-    
-    
 }
 
 #pragma mark - UIWebViewDelegate methods

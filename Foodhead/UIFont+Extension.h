@@ -10,13 +10,6 @@
 
 @interface UIFont (Extension)
 
-//Monsterrat
-+(UIFont*)lightFontWithSize:(CGFloat)fontSize;
-+(UIFont*)fontWithSize:(CGFloat)fontSize;
-+(UIFont*)mediumFontWithSize:(CGFloat)fontSize;
-+(UIFont*)semiboldFontWithSize:(CGFloat)fontSize;
-+(UIFont*)boldFontWithSize:(CGFloat)fontSize;
-
 //Nunito
 +(UIFont*)nun_lightFontWithSize:(CGFloat)fontSize;
 +(UIFont*)nun_fontWithSize:(CGFloat)fontSize;

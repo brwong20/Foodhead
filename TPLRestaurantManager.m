@@ -50,17 +50,19 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
             [self runWorkerRecursively:workerId withParameters:params completionHandler:^(id workerResult) {
                 self.detailCompletion(workerResult);
             } failureHandler:^(id error) {
-                self.detailCompletion(error);
+                failureHandler(error);
             }];
         }else{
             self.detailCompletion(responseObject);
         }
-        
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSDictionary *userInfo = [error userInfo];
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"%@", err);
+        if (errorData) {
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"%@", err);
+        }
+        failureHandler(error);
     }];
     
 }
@@ -72,23 +74,38 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     [self.sessionManager GET:getURL parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         completionHandler(responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSDictionary *userInfo = [error userInfo];
+        NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if (errorData) {
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"%@", err);
+        }
         failureHandler(error);
     }];
 }
 
-- (void)getMoreMediaForRestaurant:(NSString *)restaurantId
-                              page:(NSString *)pageNumber
-                 completionHandler:(void (^)(id))completionHandler
-                    failureHandler:(void (^)(id))failureHandler{
+- (void)getMediaForRestaurant:(NSString *)restaurantId
+                         page:(NSString *)pageNumber
+            completionHandler:(void (^)(id mediaData))completionHandler
+               failureHandler:(void (^)(id error))failureHandler{
     NSString *getURL = [NSString stringWithFormat:API_PLACE_MEDIA, restaurantId];
-    [self.sessionManager GET:getURL parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@", responseObject);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"No more media");
-    }];
+    NSDictionary *params = nil;
+    if (pageNumber) {
+        params = @{@"page" : pageNumber};
+    }
     
+    [self.sessionManager GET:getURL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        completionHandler(responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSDictionary *userInfo = [error userInfo];
+        NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if (errorData) {
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"Failed to retrieve restaurant media: %@", err);
+            failureHandler(error);
+        }
+    }];
 }
-
 
 #pragma mark - Autocomplete
 
@@ -105,8 +122,11 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSDictionary *userInfo = [error userInfo];
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"%@", err);
+        if (errorData) {
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"%@", err);
+        }
+        failureHandler(error);
     }];
 }
 
@@ -144,12 +164,15 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         if (error) {
             NSDictionary *userInfo = [error userInfo];
             NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err);
-            failureHandler(err);
+            if (errorData) {
+                NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+                NSLog(@"%@", err);
+            }
+            failureHandler(error);
+        }else{
+            completionHandler(response);
+
         }
-        NSLog(@"Review upload successful!");
-        completionHandler(response);
     }];
     [task resume];
 }

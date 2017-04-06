@@ -1,5 +1,5 @@
 //
-//  UserFeedbackView.h
+//  UserFeedbackViewController.h
 //  Foodhead
 //
 //  Created by Brian Wong on 3/23/17.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UserFeedbackView : UIViewController
+@interface UserFeedbackViewController : UIViewController
 
 @end

@@ -8,8 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ImageCollectionCellDelegate <NSObject>
+
+- (void)didTapSeeAllButton;
+
+@end
+
 @interface ImageCollectionCell : UICollectionViewCell
 
 @property (nonatomic, strong) UIImageView *coverImageView;
+@property (nonatomic, weak) id<ImageCollectionCellDelegate>delegate;
+
+//Used in the restaurant page mini album
+- (void)showSeeAllButton;
 
 @end

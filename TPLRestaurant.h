@@ -49,6 +49,7 @@
 @property (nonatomic, copy) NSString *website;
 
 @property (nonatomic, copy) NSNumber *distance;
+@property (nonatomic, copy) NSNumber *foursq_num_ratings;
 
 @property (nonatomic, copy) NSArray *hours;
 @property (nonatomic, copy) NSArray *categories;

@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TPLRestaurant.h"
 
 @interface RestaurantAlbumViewController : UIViewController
+
+@property (nonatomic, strong) TPLRestaurant *restaurant;
+@property (nonatomic, strong) NSString *nextPg;
+@property (nonatomic, strong) NSMutableArray *media;
 
 @end

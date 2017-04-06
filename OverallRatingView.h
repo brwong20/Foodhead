@@ -10,6 +10,6 @@
 
 @interface OverallRatingView : UIView
 
-- (void)setOverall:(NSNumber *)overall;
+- (void)setOverall:(NSNumber *)overall inReviewFlow:(BOOL)reviewFlow;
 
 @end

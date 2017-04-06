@@ -8,6 +8,11 @@
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 
+#import "UserReview.h"
+#import "RatingContainerView.h"
+
 @interface ReviewMetricView : IDMCaptionView
+
+- (void)loadReview:(UserReview *)review;
 
 @end

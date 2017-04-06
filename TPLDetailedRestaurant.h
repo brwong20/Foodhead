@@ -19,6 +19,7 @@
 @property (nonatomic, copy) NSString *menu;
 @property (nonatomic, copy) NSString *website;
 
+@property (nonatomic, copy) NSNumber *foursq_num_ratings;
 @property (nonatomic, copy) NSNumber *distance;
 
 @property (nonatomic, copy) NSArray *hours;
@@ -27,5 +28,9 @@
 
 @property (nonatomic, assign)BOOL openNow;
 
+//User metrics
+@property (nonatomic, copy) NSNumber *userOverall;
+@property (nonatomic, copy) NSNumber *userAvgPrice;
+@property (nonatomic, copy) NSNumber *userHealth;
 
 @end

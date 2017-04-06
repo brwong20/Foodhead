@@ -14,14 +14,17 @@
 
 @import CoreLocation;
 
+typedef void (^ChartOperationCompletionBlock)(Chart *chart, NSError *error);
+
 //To be used with ViewModel and populate charts
 @interface TPLChartsDataSource : NSObject
 
 @property (nonatomic, strong) NSMutableArray *categories;
 
 //Places API
-- (void)retrieveCharts:(void (^)(id chartsInfo))completionHandler
-            failureHandler:(void (^)(id error))failureHandler;
+- (void)retrieveChartsForLocation:(CLLocationCoordinate2D)coordinate
+                completionHandler:(void (^)(id chartData))completionHandler
+                   failureHandler:(void (^)(id error))failureHandler;
 
 //To get all restaurants for multiple charts
 - (void)getRestaurantsForCharts:(NSMutableArray *)charts

@@ -10,6 +10,9 @@
 #import "FoodWiseDefines.h"
 #import "LayoutBounds.h"
 #import "UIFont+Extension.h"
+#import "OverallRatingView.h"
+#import "HealthRatingView.h"
+#import "UserReview.h"
 
 @interface MetricsDisplayCell()
 
@@ -19,7 +22,7 @@
 @property (nonatomic, strong) UIView *sep3;
 
 //Reviews
-@property (nonatomic, strong) UILabel *overallTitle;
+@property (nonatomic, strong) OverallRatingView *overallTitle;
 @property (nonatomic, strong) UILabel *overallLabel;
 
 //Price
@@ -27,12 +30,8 @@
 @property (nonatomic, strong) UILabel *avgPriceLabel;
 
 //Health
-@property (nonatomic, strong) UILabel *healthTitle;
+@property (nonatomic, strong) HealthRatingView *healthTitle;
 @property (nonatomic, strong) UILabel *healthLabel;
-
-//Portion
-//@property (nonatomic, strong) UILabel *portionTitle;
-//@property (nonatomic, strong) UILabel *portionLabel;
 
 @end
 
@@ -54,84 +53,142 @@
     
     CGRect screen = [[UIScreen mainScreen]bounds];
     
-    self.sep1 = [[UIView alloc]initWithFrame:CGRectMake(screen.size.width * 0.35, 0, 1.0, METRIC_CELL_HEIGHT)];
-    self.sep1.backgroundColor = [UIColor lightGrayColor];
+    UIView *topSep = [[UIView alloc]initWithFrame:CGRectMake(0, 0, APPLICATION_FRAME.size.width, 1.0)];
+    topSep.backgroundColor = UIColorFromRGB(0x47606A);
+    topSep.alpha = 0.15;
+    [self.contentView addSubview:topSep];
+    
+    self.sep1 = [[UIView alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width/3 - 1.0, 0, 1.0, METRIC_CELL_HEIGHT)];
+    self.sep1.backgroundColor = UIColorFromRGB(0x47606A);
+    self.sep1.alpha = 0.15;
     [self.contentView addSubview:self.sep1];
     
-    self.sep2 = [[UIView alloc]initWithFrame:CGRectMake(screen.size.width * 0.65, 0, 1.0, METRIC_CELL_HEIGHT)];
-    self.sep2.backgroundColor = [UIColor lightGrayColor];
+    self.sep2 = [[UIView alloc]initWithFrame:CGRectMake(((APPLICATION_FRAME.size.width/3) * 2) - 1.0, 0, 1.0, METRIC_CELL_HEIGHT)];
+    self.sep2.backgroundColor = UIColorFromRGB(0x47606A);
+    self.sep2.alpha = 0.15;
     [self.contentView addSubview:self.sep2];
     
-    self.overallTitle = [[UILabel alloc]initWithFrame:CGRectMake((screen.size.width - CGRectGetMaxX(self.sep2.frame))/2.2 - screen.size.width * 0.075, METRIC_CELL_HEIGHT * 0.7 - METRIC_CELL_HEIGHT * 0.1, screen.size.width * 0.15, METRIC_CELL_HEIGHT * 0.3)];
-    self.overallTitle.text = @"Reviews";
+    self.overallTitle = [[OverallRatingView alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.sep1.frame)/2 - CGRectGetMaxX(self.sep1.frame) * 0.44, METRIC_CELL_HEIGHT * 0.5, CGRectGetMaxX(self.sep1.frame) * 0.88, METRIC_CELL_HEIGHT * 0.45)];
     self.overallTitle.backgroundColor = [UIColor clearColor];
-    [self.overallTitle setFont:[UIFont systemFontOfSize:14.0]];
-    [self.overallTitle setTextColor:[UIColor blackColor]];
-    [self.overallTitle setTextAlignment:NSTextAlignmentCenter];
+    [self.overallTitle setOverall:@(0) inReviewFlow:NO];
     [self.contentView addSubview:self.overallTitle];
     
-    self.overallLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
-    self.overallLabel.center = CGPointMake(CGRectGetMidX(self.overallTitle.frame), CGRectGetMinY(self.overallTitle.frame) - 15.0);
-    //self.overallLabel.text = [self.numReviews stringValue];
+    self.overallLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, screen.size.width * 0.24, METRIC_CELL_HEIGHT * 0.3)];
+    self.overallLabel.center = CGPointMake(CGRectGetMidX(self.overallTitle.frame), CGRectGetMinY(self.overallTitle.frame) - METRIC_CELL_HEIGHT * 0.18);
+    self.overallLabel.alpha = 0.0;
     self.overallLabel.backgroundColor = [UIColor clearColor];
-    self.overallLabel.text = @"22";
-    [self.overallLabel setFont:[UIFont nun_semiboldFontWithSize:18.0]];
+    [self.overallLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.overallLabel setTextColor:[UIColor blackColor]];
     [self.overallLabel setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.overallLabel];
     
-    self.avgPriceTitle = [[UILabel alloc]initWithFrame:CGRectMake((CGRectGetMaxX(self.sep1.frame) + CGRectGetMinX(self.sep2.frame))/2 - screen.size.width * 0.12, CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.24, METRIC_CELL_HEIGHT * 0.3)];
-    self.avgPriceTitle.text = @"average price";
+    self.avgPriceTitle = [[UILabel alloc]initWithFrame:CGRectMake((CGRectGetMaxX(self.sep1.frame) + CGRectGetMinX(self.sep2.frame))/2 - screen.size.width * 0.14, CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.28, METRIC_CELL_HEIGHT * 0.34)];
     self.avgPriceTitle.backgroundColor = [UIColor clearColor];
-    [self.avgPriceTitle setFont:[UIFont nun_semiboldFontWithSize:METRIC_CELL_HEIGHT * 0.28]];
+    self.avgPriceTitle.alpha = 0.0;
+    [self.avgPriceTitle setFont:[UIFont nun_lightFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.avgPriceTitle setTextColor:[UIColor lightGrayColor]];
     [self.avgPriceTitle setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.avgPriceTitle];
     
-    self.avgPriceLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
-    self.avgPriceLabel.center = CGPointMake(CGRectGetMidX(self.avgPriceTitle.frame), CGRectGetMinY(self.avgPriceTitle.frame) - 15.0);
+    self.avgPriceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.avgPriceTitle.frame) - screen.size.width * 0.13, CGRectGetMidY(self.overallLabel.frame) - METRIC_CELL_HEIGHT * 0.15, screen.size.width * 0.26, METRIC_CELL_HEIGHT * 0.3)];
     self.avgPriceLabel.backgroundColor = [UIColor clearColor];
-    self.avgPriceLabel.text = @"$9";
-    [self.avgPriceLabel setFont:[UIFont nun_semiboldFontWithSize:18.0]];
+    self.avgPriceTitle.alpha = 0.0;
+    [self.avgPriceLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.044]];
     [self.avgPriceLabel setTextColor:[UIColor blackColor]];
     [self.avgPriceLabel setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.avgPriceLabel];
 
-    self.healthTitle = [[UILabel alloc]initWithFrame:CGRectMake(screen.size.width - CGRectGetMaxX(self.sep1.frame)/2.2 - screen.size.width * 0.075, CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.15, METRIC_CELL_HEIGHT * 0.3)];
-    self.healthTitle.text = @"Health";
+    self.healthTitle = [[HealthRatingView alloc]initWithFrame:CGRectMake(screen.size.width - CGRectGetMinX(self.sep1.frame)/2 - screen.size.width * 0.14 , CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.28, self.overallTitle.frame.size.height * 0.97)];
     self.healthTitle.backgroundColor = [UIColor clearColor];
-    [self.healthTitle setFont:[UIFont nun_lightFontWithSize:18.0]];
-    [self.healthTitle setTextColor:[UIColor blackColor]];
-    [self.healthTitle setTextAlignment:NSTextAlignmentCenter];
+    [self.healthTitle setHealth:@(0) inReviewFlow:NO];
     [self.contentView addSubview:self.healthTitle];
     
-    self.healthLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
-    self.healthLabel.center = CGPointMake(CGRectGetMidX(self.healthTitle.frame), CGRectGetMinY(self.healthTitle.frame) - 15.0);
+    self.healthLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.healthTitle.frame) - screen.size.width * 0.1, CGRectGetMinY(self.overallLabel.frame), screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
+    self.healthLabel.alpha = 0.0;
     self.healthLabel.backgroundColor = [UIColor clearColor];
-    self.healthLabel.text = @"Healthy";
-    [self.healthLabel setFont:[UIFont systemFontOfSize:16.0]];
+    [self.healthLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.healthLabel setTextColor:[UIColor blackColor]];
     [self.healthLabel setTextAlignment:NSTextAlignmentCenter];
-    [self.contentView addSubview:self.healthLabel];
-    
-//    self.portionTitle = [[UILabel alloc]initWithFrame:CGRectMake(screen.size.width - CGRectGetMaxX(self.sep1.frame)/2 - screen.size.width * 0.075, CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.15, METRIC_CELL_HEIGHT * 0.2)];
-//    self.portionTitle.text = @"Portion";
-//    self.portionTitle.backgroundColor = [UIColor clearColor];
-//    [self.portionTitle setFont:[UIFont systemFontOfSize:14.0]];
-//    [self.portionTitle setTextColor:[UIColor whiteColor]];
-//    [self.portionTitle setTextAlignment:NSTextAlignmentCenter];
-//    [self addSubview:self.portionTitle];
-//    
-//    self.portionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
-//    self.portionLabel.center = CGPointMake(CGRectGetMidX(self.portionTitle.frame), CGRectGetMinY(self.portionTitle.frame) - 15.0);
-//    self.portionLabel.backgroundColor = [UIColor clearColor];
-//    self.portionLabel.text = @"Stuffed";
-//    [self.portionLabel setFont:[UIFont systemFontOfSize:16.0]];
-//    [self.portionLabel setTextColor:[UIColor whiteColor]];
-//    [self.portionLabel setTextAlignment:NSTextAlignmentCenter];
-//    [self addSubview:self.portionLabel];
-    
-    //[LayoutBounds drawBoundsForAllLayers:self];
+    [self.contentView addSubview:self.healthLabel];    
 }
+
+- (void)populateMetrics:(TPLRestaurant *)restaurant withUserReviews:(NSMutableArray *)reviews{
+    //Holds averages of all reviews
+    double userPrice = 0.0;
+    double userOverall = 0.0;
+    double userHealth = 0.0;
+    
+    //Counts to determine if we convert or not
+    int overallCount = 0;
+    int healthCount = 0;
+    int priceCount = 0;
+    
+    for (UserReview *review in reviews) {
+        if (review.overall) {
+            ++overallCount;
+            userOverall += review.overall.doubleValue;
+        }
+        if (review.healthiness) {
+            ++healthCount;
+            userHealth += review.healthiness.doubleValue;
+            
+        }
+        if (review.price) {
+            ++priceCount;
+            userPrice += review.price.doubleValue;
+        }
+    }
+
+    userOverall = (round((userOverall/overallCount) * 2.0))/2.0;//Rounds to nearest 0.5
+    userHealth = round(userHealth/healthCount);
+    userPrice = userPrice/priceCount;
+    
+    //If not enough user reviews, use Foursquare's
+    NSNumber *avgRating;
+    if (overallCount >= OVERALL_CONVERSION_COUNT) {
+        avgRating = @(userOverall);
+        [self.overallTitle setOverall:avgRating inReviewFlow:NO];
+    }else{
+        avgRating = @(restaurant.foursq_rating.doubleValue/2.0);//Halve all ratings
+        avgRating = @(round(avgRating.doubleValue * 2.0)/2.0);//Round to nearest multiple of 0.5
+        [self.overallTitle setOverall:avgRating inReviewFlow:NO];
+    }
+    
+    NSNumber *totalRatings = @(restaurant.foursq_num_ratings.integerValue + overallCount);
+    self.overallLabel.text = [totalRatings stringValue];
+
+    if (priceCount >= PRICE_CONVERSION_COUNT) {
+        self.avgPriceTitle.text = @"per person";
+        NSNumber *avgPrice = @(userPrice);
+        self.avgPriceLabel.text = [NSString stringWithFormat:@"$%.2f", avgPrice.doubleValue];
+    }else{
+        self.avgPriceTitle.text = @"per person";
+        if ([restaurant.foursq_price_tier isEqual: @(1)]) {
+            self.avgPriceLabel.text = @"<$12";
+        }else if ([restaurant.foursq_price_tier isEqual: @(2)]){
+            self.avgPriceLabel.text = @"$15-25";
+        }else if ([restaurant.foursq_price_tier isEqual: @(3)]){
+            self.avgPriceLabel.text = @"$30-60";
+        }else if ([restaurant.foursq_price_tier isEqual: @(4)]){
+            self.avgPriceLabel.text = @"$60+";
+        }else{
+            self.avgPriceTitle.text = @"no price yet";
+        }
+    }
+    
+    if (healthCount > HEALTH_CONVERSION_COUNT) {
+        NSNumber *avgHealth = @(userHealth);
+        [self.healthTitle setHealth:avgHealth inReviewFlow:NO];
+        self.healthLabel.text = [NSString stringWithFormat:@"%d", healthCount];
+    }
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self.overallLabel.alpha = 1.0;
+        self.healthLabel.alpha = 1.0;
+        self.avgPriceTitle.alpha = 1.0;
+        self.avgPriceLabel.alpha = 1.0;
+    }];
+}
+
 
 @end

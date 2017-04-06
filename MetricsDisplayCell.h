@@ -8,11 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "TPLRestaurant.h"
+
 @interface MetricsDisplayCell : UITableViewCell
 
 @property (nonatomic, strong) NSNumber *numReviews;
 @property (nonatomic, strong) NSNumber *avgPrice;
 @property (nonatomic, strong) NSString *healthLevel;
 @property (nonatomic, strong) NSString *portionSize;
+
+- (void)populateMetrics:(TPLRestaurant *)restaurant withUserReviews:(NSMutableArray *)reviews;
 
 @end

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ImageRatingView.h"
+#import "TPLRestaurant.h"
 
 @interface TPLChartCollectionCell : UICollectionViewCell
 
@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *categoryLabel;
 @property (nonatomic, strong) UILabel *priceLabel;
-@property (nonatomic, strong) ImageRatingView *ratingView;
+
+- (void)populateRestauarantInfo:(TPLRestaurant *)restaurant;
 
 @end

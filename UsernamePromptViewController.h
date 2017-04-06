@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "User.h"
+
 @interface UsernamePromptViewController : UIViewController
 
-//Pass user auth info along - only show this if user isn't in our db (check after login)
+@property (nonatomic, strong) User *currentUser;
+@property (nonatomic, assign) BOOL isOnboarding;
 
 @end

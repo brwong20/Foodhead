@@ -13,8 +13,6 @@
 
 #import <ReactiveObjC/ReactiveObjC.h>
 
-typedef void(^WorkerCompletionBlock)(id chartsData);
-
 @interface TPLChartsDataSource ()
 
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
@@ -24,7 +22,6 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
 @property (nonatomic) void (^retrievedPlaces)(NSArray* placesData);//Created a block reference here bc this can either be called right away when response is returned or when a worker finishes (after some time interval)
 
 //@property (nonatomic) void (^retrievedCharts)(id chartsData);
-@property (nonatomic, copy) WorkerCompletionBlock chartsCompletion;
 
 
 @end
@@ -43,12 +40,23 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
 #pragma mark - Places
 
 //Get chart info to use with places API
-- (void)retrieveCharts:(void (^)(id chartData))completionHandler
-        failureHandler:(void (^)(id error))failureHandler{
-
-    [self.sessionManager GET:API_CHARTS parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+- (void)retrieveChartsForLocation:(CLLocationCoordinate2D)coordinate
+                completionHandler:(void (^)(id chartData))completionHandler
+                   failureHandler:(void (^)(id error))failureHandler{
+    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:lat forKey:@"lat"];
+    [dict setObject:lng forKey:@"lng"];
+    
+    [self.sessionManager GET:API_CHARTS parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         completionHandler(responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSDictionary *userInfo = [error userInfo];
+        NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if (errorData) {
+            //NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+        }
         failureHandler(error);
     }];
     
@@ -59,47 +67,47 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
              completionHandler:(void (^)(id completeChart))completionHandler
                 failureHandler:(void (^)(id error))failureHandler
 {
-    NSOperationQueue *queue = [[NSOperationQueue alloc]init];
-    queue.maxConcurrentOperationCount = 1;
-    queue.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+    //Run chart requests serially so they load in the order they're presented (makes loading look faster and more intutive) - TODO: Request and load in batches of 2/3.
+    dispatch_queue_t serialQ = dispatch_queue_create("com.Taplet.Foodhead.Charts", DISPATCH_QUEUE_SERIAL);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);//Important: Must default init with a counter of 1 to allow first request to process
     
-    NSMutableArray *blockOperations = [NSMutableArray array];
-    
-    for(Chart *chart in charts){
-        NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
-        NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
-        
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        [dict setObject:lat forKey:@"lat"];
-        [dict setObject:lng forKey:@"lng"];
-        [dict setObject:[chart.chart_id stringValue] forKey:@"chart_id"];
+    for (Chart *chart in charts) {
+        dispatch_async(serialQ, ^{
+            NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+            NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
 
-        NSBlockOperation* operation = [NSBlockOperation blockOperationWithBlock:^{
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            [dict setObject:lat forKey:@"lat"];
+            [dict setObject:lng forKey:@"lng"];
+            [dict setObject:[chart.chart_id stringValue] forKey:@"chart_id"];
+
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);//Waits for previous request to finish before starting a new one in queue (Block the thread and wait for queue to finish task)
             [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                NSHTTPURLResponse *response = (NSHTTPURLResponse *)[task response];
+                if(response){
+                    NSDictionary *httpHeaders = response.allHeaderFields;
+                    NSLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
+                }
                 Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];
                 [chart mergeValuesForKeysFromModel:places];
-                
                 //Send index along to replace in our original array
                 NSDictionary *completeChart = @{@"index" : @([charts indexOfObject:chart]), @"chart" : chart};
+                dispatch_semaphore_signal(semaphore);//Signal that task has finished and unblock the thread
                 completionHandler(completeChart);
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                NSDictionary *userInfo = [error userInfo];
+                NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                if (errorData) {
+                    NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+                    NSString *errorStr = err[@"error"];
+                    NSLog(@"%@", errorStr);
+                }
+                dispatch_semaphore_signal(semaphore);
                 failureHandler(error);
-                NSLog(@"Error with getting worker / cached chart: %@", error.localizedDescription);
             }];
-        }];
-        
-        [blockOperations addObject:operation];
+        });
+
     }
-    
-    for (int i = 0; i < blockOperations.count; ++i) {
-        if (i == 0) continue;
-    
-        NSOperation *curOperation = blockOperations[i];
-        NSOperation *prevOperation = blockOperations[i-1];
-        [curOperation addDependency:prevOperation];
-    }
-    
-    [queue addOperations:blockOperations waitUntilFinished:NO];
 }
 
 - (void)getMoreRestaurantsForChart:(Chart *)chart
@@ -119,32 +127,8 @@ typedef void(^WorkerCompletionBlock)(id chartsData);
     [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         completionHandler(responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@", error);
         failureHandler(error);
     }];
-}
-
-#pragma mark - Workers
-
-- (void)runWorkerRecursively:(NSString *)workerId withParams:(NSDictionary *)params
-           completionHandler:(void (^)(id chartData))completionHandler
-              failureHandler:(void (^)(id error))failureHandler
-{
-    NSString *workerURL = [NSString stringWithFormat:API_WORKER_PLACES, workerId];
-    //Timer will always call this async method which will return multiple times if worker is done
-    [self.sessionManager GET:workerURL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSString *workerStatus = responseObject[@"worker_status"];
-        if ([workerStatus isEqualToString:@"finished"]) {
-            NSMutableArray *chartsInfo = responseObject[@"result"];
-            completionHandler(chartsInfo);
-            return;
-        }else{
-            [self runWorkerRecursively:workerId withParams:params completionHandler:completionHandler failureHandler:failureHandler];
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error with worker recursion: %@", error.localizedDescription);
-    }];
-
 }
 
 @end

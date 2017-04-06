@@ -13,6 +13,7 @@
 
 - (void)didTapShareButton;
 - (void)didTapLocation;
+- (void)didTapRestaurantLink:(NSURL *)url;
 
 @end
 

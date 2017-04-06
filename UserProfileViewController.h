@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UserProfileViewController : UIViewController
+@interface UserProfileViewController : UIViewController <UITabBarControllerDelegate>
 
 @end
