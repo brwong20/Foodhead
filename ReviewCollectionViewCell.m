@@ -60,7 +60,7 @@
     //        self.nameLabel.alpha = 1.0;
     //    }];
 
-    [self.reviewImage sd_setImageWithURL:[NSURL URLWithString:review.thumbnailURL]placeholderImage:[UIImage new] options:SDWebImageRetryFailed|SDWebImageHighPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+    [self.reviewImage sd_setImageWithURL:[NSURL URLWithString:review.thumbnailURL]placeholderImage:[UIImage new] options:SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         self.reviewImage.alpha = 0;
         [UIView animateWithDuration:0.3 animations:^{
             self.reviewImage.alpha = 1;

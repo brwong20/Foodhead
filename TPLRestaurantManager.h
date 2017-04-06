@@ -10,6 +10,8 @@
 
 #import <AFNetworking/AFNetworking.h>
 
+#import "TPLRestaurant.h"
+
 @import CoreLocation;
 
 @interface TPLRestaurantManager : NSObject
@@ -25,7 +27,7 @@
                  failureHandler:(void (^)(id error))failureHandler;
 
 
-- (void)getMediaForRestaurant:(NSString *)restaurantId
+- (void)getMediaForRestaurant:(TPLRestaurant *)restaurant
                              page:(NSString *)pageNumber
                  completionHandler:(void (^)(id images))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;

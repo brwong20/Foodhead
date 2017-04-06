@@ -60,7 +60,7 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err);
+            NSLog(@"%@", err[@"error"]);
         }
         failureHandler(error);
     }];
@@ -84,14 +84,19 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
     }];
 }
 
-- (void)getMediaForRestaurant:(NSString *)restaurantId
+- (void)getMediaForRestaurant:(TPLRestaurant *)restaurant
                          page:(NSString *)pageNumber
             completionHandler:(void (^)(id mediaData))completionHandler
                failureHandler:(void (^)(id error))failureHandler{
-    NSString *getURL = [NSString stringWithFormat:API_PLACE_MEDIA, restaurantId];
-    NSDictionary *params = nil;
+    NSString *getURL = [NSString stringWithFormat:API_PLACE_MEDIA, restaurant.foursqId];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    
+    //All necessary to potentially find instagram images using FB API.
+    [params setObject:[restaurant.latitude stringValue] forKey:@"place_lat"];
+    [params setObject:[restaurant.longitude stringValue] forKey:@"place_lng"];
+    [params setObject:restaurant.name forKey:@"place_name"];
     if (pageNumber) {
-        params = @{@"page" : pageNumber};
+        [params setObject:pageNumber forKey:@"page"];
     }
     
     [self.sessionManager GET:getURL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -100,8 +105,8 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSDictionary *userInfo = [error userInfo];
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
-            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"Failed to retrieve restaurant media: %@", err);
+            //NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            //NSLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
             failureHandler(error);
         }
     }];

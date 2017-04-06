@@ -113,7 +113,7 @@ static NSString *loadingCellId = @"loadingCell";
             self.nextPg = completionHandler[@"next_page"];
             NSArray *images = completionHandler[@"images"];
             
-            if ([NSString isEmpty:self.nextPg]) return;
+            if ([NSString isEmpty:self.nextPg] || images.count == 0) return;
             
             for (NSDictionary *photoInfo in images) {
                 BOOL isVideo = photoInfo[@"isVideo"];
@@ -165,7 +165,7 @@ static NSString *loadingCellId = @"loadingCell";
         photoURL = [NSURL URLWithString:imgURL];
     }
     
-    [cell.coverImageView sd_setImageWithURL:photoURL placeholderImage:[UIImage new] options:SDWebImageHighPriority|SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+    [cell.coverImageView sd_setImageWithURL:photoURL placeholderImage:[UIImage new] options:SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         if (cacheType == SDImageCacheTypeNone) {
             cell.coverImageView.alpha = 0.0;
             [UIView animateWithDuration:0.25 animations:^{
