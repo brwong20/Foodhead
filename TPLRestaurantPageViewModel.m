@@ -59,7 +59,7 @@
                                page:(NSString *)pageNumber
                   completionHandler:(void (^)(id media))completionHandler
                      failureHandler:(void (^)(id error))failureHandler{
-    [self.restaurantManager getMediaForRestaurant:restaurant.foursqId page:pageNumber completionHandler:^(id mediaData) {
+    [self.restaurantManager getMediaForRestaurant:restaurant page:pageNumber completionHandler:^(id mediaData) {
         completionHandler(mediaData);
     } failureHandler:^(id error) {
         failureHandler(error);

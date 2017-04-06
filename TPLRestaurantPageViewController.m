@@ -91,7 +91,7 @@ static NSString *photoCellId = @"photoCell";
 - (void)loadRestaurantDetails{
     [self.pageViewModel retrieveRestaurantDetailsFor:self.selectedRestaurant atLocation:self.currentLocation completionHandler:^(TPLRestaurant* fullRestaurant) {
         if (fullRestaurant) {
-            self.selectedRestaurant = fullRestaurant;
+            self.selectedRestaurant = fullRestaurant;            
             self.dynamicHoursHeight = [self calculateDynamicHoursHeight];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0],
@@ -111,14 +111,13 @@ static NSString *photoCellId = @"photoCell";
             } failureHandler:^(id failureHandler) {
                 NSLog(@"Failed to get user reviews");
             }];
-            
-#warning Should work after fix tonight - Fix avatar img issue, clean up code, push out build
-            [self loadRestaurantImages];
         }
     } failureHandler:^(id error) {
-//TODO:: Handle this by changing rest page UI?
+        //TODO:: Handle this by changing rest page UI?
         NSLog(@"Couldn't get details");
     }];
+    
+    [self loadRestaurantImages];
 }
 
 - (void)refreshMetrics{
@@ -500,7 +499,7 @@ static NSString *photoCellId = @"photoCell";
             [collectionCell showSeeAllButton];
         }
         
-        [collectionCell.coverImageView sd_setImageWithURL:photoUrl placeholderImage:[UIImage imageNamed:@"image_unavailable"] options:SDWebImageHighPriority|SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        [collectionCell.coverImageView sd_setImageWithURL:photoUrl placeholderImage:[UIImage imageNamed:@"image_unavailable"] options:SDWebImageRetryFailed|SDWebImageHighPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
             if (cacheType == SDImageCacheTypeNone) {
                 collectionCell.coverImageView.alpha = 0.0;
                 [UIView animateWithDuration:0.25 animations:^{

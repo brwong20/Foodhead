@@ -137,7 +137,7 @@ caption = _caption;
         } else if (_photoURL) {
             // Load async from web (using SDWebImageManager)
             SDWebImageManager *manager = [SDWebImageManager sharedManager];
-            [manager downloadImageWithURL:_photoURL options:SDWebImageRetryFailed|SDWebImageHandleCookies progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+            [manager downloadImageWithURL:_photoURL options:SDWebImageRetryFailed|SDWebImageHandleCookies|SDWebImageHighPriority progress:^(NSInteger receivedSize, NSInteger expectedSize) {
                 if (self.progressUpdateBlock) {
                     self.progressUpdateBlock(receivedSize/expectedSize);
                 }

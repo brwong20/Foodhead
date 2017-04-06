@@ -165,7 +165,7 @@ static NSString *cellId = @"userPhoto";
         if (self.currentUser.avatarImg) {
             [self.profileImageView setImage:self.currentUser.avatarImg];
         }else{
-            [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.currentUser.avatarURL] placeholderImage:[UIImage new] options:SDWebImageHighPriority|SDWebImageRetryFailed];
+            [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.currentUser.avatarURL] placeholderImage:[UIImage new] options:SDWebImageRetryFailed];
         }
         self.usernameLabel.text = [NSString stringWithFormat:@"%@ %@", self.currentUser.firstName, self.currentUser.lastName];
         if (self.currentUser.location) {

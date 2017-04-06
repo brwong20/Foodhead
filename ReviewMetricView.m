@@ -70,7 +70,7 @@
     [self.ratingView setPrice:self.review.price];
     [self.ratingView setHealth:self.review.healthiness];
     [self.ratingView setOverall:self.review.overall];
-    [self.userAvatar sd_setImageWithURL:[NSURL URLWithString:self.review.avatarURL] placeholderImage:[UIImage new] options:SDWebImageHighPriority|SDWebImageRetryFailed];
+    [self.userAvatar sd_setImageWithURL:[NSURL URLWithString:self.review.avatarURL] placeholderImage:[UIImage new] options:SDWebImageRetryFailed];
     [self.username setText:self.review.username];
 }
 
