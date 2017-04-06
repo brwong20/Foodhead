@@ -24,7 +24,10 @@
         self.priceLabel.backgroundColor = [UIColor clearColor];
         self.priceLabel.textAlignment = NSTextAlignmentCenter;
         self.priceLabel.textColor = [UIColor whiteColor];
-        self.priceLabel.font = [UIFont nun_fontWithSize:frame.size.height * 0.43];
+        self.priceLabel.font = [UIFont nun_semiboldFontWithSize:frame.size.height * 0.45];
+        self.priceLabel.layer.shadowOffset = CGSizeMake(0, 0);
+        self.priceLabel.layer.shadowOpacity = 1.0;
+        self.priceLabel.layer.shadowRadius = 10.0f;
         [self addSubview:self.priceLabel];
     }
     return self;

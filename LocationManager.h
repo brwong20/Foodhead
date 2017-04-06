@@ -28,9 +28,8 @@
 
 + (LocationManager*) sharedLocationInstance;
 
-- (void)getCurrentLocation;
+- (void)retrieveCurrentLocation;
 
 - (void)checkLocationAuthorization;
-- (void)updateCurrentLocation;
 
 @end

@@ -1,15 +1,17 @@
 //
-//  ReviewTableViewCell.m
+//  ReviewCollectionViewCell.m
 //  Foodhead
 //
 //  Created by Brian Wong on 3/28/17.
 //  Copyright © 2017 Brian Wong. All rights reserved.
 //
 
-#import "ReviewTableViewCell.h"
+#import "ReviewCollectionViewCell.h"
 #import "UIFont+Extension.h"
 
-@interface ReviewTableViewCell()
+#import <SDWebImage/UIImageView+WebCache.h>
+
+@interface ReviewCollectionViewCell()
 
 @property (nonatomic, strong) UIImageView *reviewImage;
 @property (nonatomic, strong) UIView *captionView;
@@ -17,7 +19,7 @@
 
 @end
 
-@implementation ReviewTableViewCell
+@implementation ReviewCollectionViewCell
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -35,7 +37,7 @@
         self.captionView.backgroundColor = [[UIColor clearColor]colorWithAlphaComponent:0.5];
         [self.contentView addSubview:self.captionView];
         
-        self.captionLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.captionView.frame.size.width * 0.05, self.captionView.frame.size.height/2 - self.captionView.frame.size.height * 0.45, self.captionView.frame.size.width * 0.9, self.captionView.frame.size.height * 0.9)];
+        self.captionLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.captionView.frame.size.width * 0.02, self.captionView.frame.size.height/2 - self.captionView.frame.size.height * 0.45, self.captionView.frame.size.width * 0.93, self.captionView.frame.size.height * 0.9)];
         self.captionLabel.backgroundColor = [UIColor clearColor];
         self.captionLabel.numberOfLines = 1;
         self.captionLabel.textColor = [UIColor whiteColor];
@@ -52,7 +54,18 @@
 }
 
 - (void)populateUserReview:(UserReview *)review{
-    
+//    self.captionView.alpha = 0.0;
+    self.captionLabel.text = review.name;
+    //    [UIView animateWithDuration:0.2 animations:^{
+    //        self.nameLabel.alpha = 1.0;
+    //    }];
+
+    [self.reviewImage sd_setImageWithURL:[NSURL URLWithString:review.thumbnailURL]placeholderImage:[UIImage new] options:SDWebImageRetryFailed|SDWebImageHighPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        self.reviewImage.alpha = 0;
+        [UIView animateWithDuration:0.3 animations:^{
+            self.reviewImage.alpha = 1;
+        }];
+    }];
     
 }
 

@@ -1,5 +1,5 @@
 //
-//  AttributionCollectionViewCell.h
+//  AttributionTableViewCell.h
 //  Foodhead
 //
 //  Created by Brian Wong on 4/4/17.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AttributionCollectionViewCell : UICollectionViewCell
+@interface AttributionTableViewCell : UITableViewCell
 
 @end

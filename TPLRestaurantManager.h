@@ -25,11 +25,10 @@
                  failureHandler:(void (^)(id error))failureHandler;
 
 
-- (void)getMoreMediaForRestaurant:(NSString *)restaurantId
-                              page:(NSString *)pageNumber
+- (void)getMediaForRestaurant:(NSString *)restaurantId
+                             page:(NSString *)pageNumber
                  completionHandler:(void (^)(id images))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;
-
 
 //Autocomplete
 - (void)searchRestaurantsWithQuery:(NSString *)queryStr

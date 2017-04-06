@@ -17,6 +17,8 @@
 #import "UserProfileViewController.h"
 #import "ChartsViewController.h"
 #import "AlbumViewController.h"
+#import "FoodheadAnalytics.h"
+#import "LayoutBounds.h"
 
 @import AVFoundation;
 @import Photos;
@@ -112,6 +114,9 @@ typedef NS_ENUM( NSInteger, AVCamLivePhotoMode ) {
 @property (nonatomic, strong) UIImage *selectedPhoto;
 @property (nonatomic, strong) TPLAssetPreviewController *assetPreviewController;
 
+//Tooltip
+@property (nonatomic, strong) UIImageView *camTooltip;
+
 @end
 
 @implementation TabCameraViewController
@@ -128,7 +133,7 @@ static CGFloat previousZoom;
     [super viewDidLoad];
     
     [self setupCameraControls];
-    
+
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     //Only enable UI when session is running
@@ -147,10 +152,9 @@ static CGFloat previousZoom;
     self.sessionQueue = dispatch_queue_create("session queue", DISPATCH_QUEUE_SERIAL);
     self.setupResult = AVCamSetupResultSuccess;
     
-    //Check camera authorization
     switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
         case AVAuthorizationStatusAuthorized:
-            //Authorized
+            //Authorized, continue with sessionQueue
             break;
         case AVAuthorizationStatusNotDetermined:
         {
@@ -170,6 +174,8 @@ static CGFloat previousZoom;
             break;
     }
     
+    //[self checkAlbumAuth];
+    
     dispatch_async(self.sessionQueue, ^{
         [self configureSession];
     });
@@ -180,16 +186,19 @@ static CGFloat previousZoom;
                 [self addObservers];
                 [self.captureSession startRunning];
                 self.sessionRunning = self.captureSession.running;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showCameraTooltip];
+                });
                 break;
             }
             case AVCamSetupResultCameraNotAuthorized:{
                 dispatch_async( dispatch_get_main_queue(), ^{
-                    NSString *message = NSLocalizedString( @"AVCam doesn't have permission to use the camera, please change privacy settings", @"Alert message when the user has denied access to the camera" );
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"AVCam" message:message preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString( @"OK", @"Alert OK button" ) style:UIAlertActionStyleCancel handler:nil];
+                    NSString *message = @"Foodhead doesn't have permission to use the camera, please change your privacy settings!";
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Camera Permission" message:message preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
                     [alertController addAction:cancelAction];
                     // Provide quick access to Settings.
-                    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:NSLocalizedString( @"Settings", @"Alert button to open Settings" ) style:UIAlertActionStyleDefault handler:^( UIAlertAction *action ) {
+                    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Settings" style:UIAlertActionStyleDefault handler:^( UIAlertAction *action ) {
                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
                     }];
                     [alertController addAction:settingsAction];
@@ -200,13 +209,7 @@ static CGFloat previousZoom;
             }
             case AVCamSetupResultSessionConfigurationFailed:
             {
-                dispatch_async( dispatch_get_main_queue(), ^{
-                    NSString *message = NSLocalizedString( @"Unable to capture media", @"Alert message when something goes wrong during capture session configuration" );
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"AVCam" message:message preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString( @"OK", @"Alert OK button" ) style:UIAlertActionStyleCancel handler:nil];
-                    [alertController addAction:cancelAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
-                } );
+                NSLog(@"Camera configuration failed");
                 break;
             }
             default:
@@ -220,16 +223,11 @@ static CGFloat previousZoom;
     [super viewWillAppear:animated];
     
     [self.tabBarController.tabBar setHidden:YES];
-    [self checkAlbumAuth];
+    //[self loadLastPhoto];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-}
 
-//Also when user backgrounds app
+//Only stop the camera from running when the user quits the app
 - (void)dealloc{
     dispatch_async( self.sessionQueue, ^{
         if ( self.setupResult == AVCamSetupResultSuccess ) {
@@ -341,12 +339,12 @@ static CGFloat previousZoom;
     //self.backgroundRecordingID = UIBackgroundTaskInvalid;
     
     [self.captureSession commitConfiguration];
-    
 }
 
 - (void)setupCameraControls
 {
     CGRect bounds = self.view.bounds;
+    self.view.backgroundColor = [UIColor blackColor];
     
     self.previewView = [[TPLCameraPreviewView alloc]init];
     self.previewView.bounds = bounds;
@@ -354,55 +352,75 @@ static CGFloat previousZoom;
     self.previewView.videoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
     [self.view addSubview:self.previewView];
     
-    self.captureButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.height * 0.07, self.view.frame.size.height * 0.86, self.view.frame.size.height * 0.13, self.view.frame.size.height * 0.13)];
+    self.captureButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.86, self.view.frame.size.height * 0.14, self.view.frame.size.height * 0.14)];
     self.captureButton.backgroundColor = [UIColor clearColor];
-    self.captureButton.contentMode = UIViewContentModeScaleAspectFit;
+    self.captureButton.contentMode = UIViewContentModeCenter;
     [self.captureButton setImage:[UIImage imageNamed:@"camera_take_btn"] forState:UIControlStateNormal];
     [self.captureButton addTarget:self action:@selector(capturePhoto:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.captureButton];
     
-    self.flashButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.14, self.view.frame.size.height * 0.14)];
-    self.flashButton.center = CGPointMake(CGRectGetMinX(self.captureButton.frame) - self.view.frame.size.width * 0.1, CGRectGetMidY(self.captureButton.frame));
+    self.flashButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.1, self.view.frame.size.height * 0.1)];
+    self.flashButton.center = CGPointMake(self.view.frame.size.width - self.view.frame.size.height * 0.05, CGRectGetMidY(self.captureButton.frame));
     self.flashButton.backgroundColor = [UIColor clearColor];
     [self.flashButton setImage:[[UIImage imageNamed:@"camera_flash_off"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
     [self.flashButton addTarget:self action:@selector(toggleFlashMode) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.flashButton];
     
-    self.orientationButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.14, self.view.frame.size.height * 0.14)];
-    self.orientationButton.center = CGPointMake(CGRectGetMaxX(self.captureButton.frame) + self.view.frame.size.width * 0.1, CGRectGetMidY(self.captureButton.frame));
-    self.orientationButton.backgroundColor = [UIColor clearColor];
-    [self.orientationButton setImage:[UIImage imageNamed:@"camera_switch"] forState:UIControlStateNormal];
-    [self.orientationButton addTarget:self action:@selector(changeOrientation:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.orientationButton];
-    
-    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.14, self.view.frame.size.height * 0.14)];
-    self.cancelButton.center = CGPointMake(CGRectGetMinX(self.flashButton.frame) - self.view.frame.size.width * 0.07, CGRectGetMidY(self.captureButton.frame));
+    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.1, self.view.frame.size.height * 0.1)];
+    self.cancelButton.center = CGPointMake(self.view.frame.size.height * 0.05, CGRectGetMidY(self.captureButton.frame));
     self.cancelButton.backgroundColor = [UIColor clearColor];
     [self.cancelButton setImage:[UIImage imageNamed:@"camera_exit_btn"] forState:UIControlStateNormal];
     [self.cancelButton addTarget:self action:@selector(exitCamera) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.cancelButton];
     
-    self.albumButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.06)];
-    self.albumButton.center = CGPointMake(CGRectGetMaxX(self.orientationButton.frame) + self.view.frame.size.width * 0.07, CGRectGetMidY(self.captureButton.frame));
-    self.albumButton.backgroundColor = [UIColor whiteColor];
-    self.albumButton.layer.cornerRadius = self.albumButton.frame.size.height/2;
-    self.albumButton.clipsToBounds = YES;
-    [self.albumButton addTarget:self action:@selector(openAlbum) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.albumButton];
+    self.orientationButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.08, self.view.frame.size.height * 0.08)];
+    self.orientationButton.center = CGPointMake(CGRectGetMidX(self.cancelButton.frame) - self.view.frame.size.height * 0.01, self.view.frame.size.height * 0.07);
+    self.orientationButton.backgroundColor = [UIColor clearColor];
+    [self.orientationButton setImage:[UIImage imageNamed:@"camera_switch"] forState:UIControlStateNormal];
+    [self.orientationButton addTarget:self action:@selector(changeOrientation:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.orientationButton];
+    
+//    self.albumButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.06, self.view.frame.size.height * 0.06)];
+//    self.albumButton.center = CGPointMake(CGRectGetMaxX(self.orientationButton.frame) + self.view.frame.size.width * 0.07, CGRectGetMidY(self.captureButton.frame));
+//    self.albumButton.backgroundColor = [UIColor whiteColor];
+//    self.albumButton.layer.cornerRadius = self.albumButton.frame.size.height/2;
+//    self.albumButton.clipsToBounds = YES;
+//    [self.albumButton addTarget:self action:@selector(openAlbum) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:self.albumButton];
     
     self.pinchToZoom = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(handlePinchToZoomRecognizer:)];
     [self.view addGestureRecognizer:self.pinchToZoom];
     
-    self.focusView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.1, self.view.frame.size.height * 0.1)];
-    self.focusView.backgroundColor = [UIColor clearColor];
-    self.focusView.contentMode = UIViewContentModeScaleAspectFit;
-    self.focusView.alpha = 0.0;
-    [self.focusView setImage:[UIImage imageNamed:@"auto_focus"]];
-    [self.view addSubview:self.focusView];
+//    self.focusView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height * 0.1, self.view.frame.size.height * 0.1)];
+//    self.focusView.backgroundColor = [UIColor clearColor];
+//    self.focusView.contentMode = UIViewContentModeScaleAspectFit;
+//    self.focusView.alpha = 0.0;
+//    [self.focusView setImage:[UIImage imageNamed:@"auto_focus"]];
+//    [self.view addSubview:self.focusView];
     
     self.tapToFocus = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(focusAndExposeTap:)];
-    [self.view addGestureRecognizer:self.tapToFocus];
-    
+    [self.view addGestureRecognizer:self.tapToFocus];    
+}
+
+- (void)showCameraTooltip{
+    if ([[NSUserDefaults standardUserDefaults]boolForKey:CAMERA_CAPTURE_TOOLTIP]) {
+        self.camTooltip = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.captureButton.frame) - self.view.frame.size.width * 0.4, CGRectGetMinY(self.captureButton.frame) - self.view.frame.size.height * 0.45, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.5)];
+        self.camTooltip.backgroundColor = [UIColor clearColor];
+        self.camTooltip.contentMode = UIViewContentModeScaleAspectFit;
+        [self.camTooltip setImage:[UIImage imageNamed:@"tooltip_camera"]];
+        [self.view addSubview:self.camTooltip];
+        
+        UITapGestureRecognizer *dismissTooltip = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissCameraTip)];
+        dismissTooltip.numberOfTapsRequired = 1;
+        [self.view addGestureRecognizer:dismissTooltip];
+    }
+}
+
+- (void)dismissCameraTip{
+    if ([self.camTooltip superview]) {
+        [self.camTooltip removeFromSuperview];
+        [[NSUserDefaults standardUserDefaults]setBool:NO forKey:CAMERA_CAPTURE_TOOLTIP];
+    }
 }
 
 #pragma mark - Camera orientation
@@ -462,6 +480,7 @@ static CGFloat previousZoom;
             // Remove the existing device input first, since using the front and back camera simultaneously is not supported.
             [self.captureSession removeInput:self.videoDeviceInput];
             
+            
             if ( [self.captureSession canAddInput:videoDeviceInput] ) {
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:AVCaptureDeviceSubjectAreaDidChangeNotification object:currentVideoDevice];
                 
@@ -487,6 +506,21 @@ static CGFloat previousZoom;
              */
             self.photoOutput.livePhotoCaptureEnabled = self.photoOutput.livePhotoCaptureSupported;
             
+            //All devices under 6s don't have front flash so just hide for now and disable flash
+            if(!newVideoDevice.flashAvailable){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.flashButton setEnabled:NO];
+                    [self.flashButton setHidden:YES];
+                    self.flashMode = AVCaptureFlashModeOff;
+                });
+            }else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.flashButton setEnabled:YES];
+                    [self.flashButton setHidden:NO];
+                    [self setupFlashButtonForMode:self.flashMode];
+                });
+            }
+            
             [self.captureSession commitConfiguration];
         }
         
@@ -503,7 +537,17 @@ static CGFloat previousZoom;
 
 - (void)focusAndExposeTap:(UIGestureRecognizer *)gestureRecognizer
 {
-    CGPoint devicePoint = [self.previewView.videoPreviewLayer captureDevicePointOfInterestForPoint:[gestureRecognizer locationInView:gestureRecognizer.view]];
+    CGPoint gesturePt = [gestureRecognizer locationInView:gestureRecognizer.view];
+    CGPoint devicePoint = [self.previewView.videoPreviewLayer captureDevicePointOfInterestForPoint:gesturePt];
+//    [UIView animateWithDuration:0.3 animations:^{
+//        CGRect focusFrame = self.focusView.frame;
+//        focusFrame.origin.x = gesturePt.x;
+//        focusFrame.origin.y = gesturePt.y;
+//        self.focusView.frame = focusFrame;
+//        self.focusView.alpha = 1.0;
+//    }completion:^(BOOL finished) {
+//        self.focusView.alpha = 0.0;
+//    }];
     [self focusWithMode:AVCaptureFocusModeAutoFocus exposeWithMode:AVCaptureExposureModeAutoExpose atDevicePoint:devicePoint monitorSubjectAreaChange:YES];
 }
 
@@ -586,6 +630,7 @@ static CGFloat previousZoom;
         if ([device lockForConfiguration:&error]) {
             switch (self.flashMode) {
                 case AVCaptureFlashModeOff: {
+                    [FoodheadAnalytics logEvent:CAMERA_FLASH_ENABLED];
                     self.flashMode = AVCaptureFlashModeOn;
                     [self setupFlashButtonForMode:AVCaptureFlashModeOn];
                     break;
@@ -617,10 +662,6 @@ static CGFloat previousZoom;
         case AVCaptureFlashModeOff:
             [self.flashButton setImage:[UIImage imageNamed:@"camera_flash_off"] forState:UIControlStateNormal];
             break;
-            //        case AVCaptureFlashModeAuto:
-            //            [self.flashButton setImage:[UIImage imageNamed:@"flash_auto"] forState:UIControlStateNormal];
-            //            [self.flashButton setTag:AVCaptureTorchModeAuto];
-            //            break;
         default:
             break;
     }
@@ -637,8 +678,10 @@ static CGFloat previousZoom;
      the main thread and session configuration is done on the session queue.
      */
     AVCaptureVideoOrientation videoPreviewLayerVideoOrientation = self.previewView.videoPreviewLayer.connection.videoOrientation;
-    
+    [FoodheadAnalytics logEvent:CAMERA_CAPTURE];
     dispatch_async(self.sessionQueue, ^{
+        
+        [self dismissCameraTip];
         
         // Update the photo output's connection to match the video orientation of the video preview layer.
         AVCaptureConnection *photoOutputConnection = [self.photoOutput connectionWithMediaType:AVMediaTypeVideo];
@@ -651,48 +694,11 @@ static CGFloat previousZoom;
         if ( photoSettings.availablePreviewPhotoPixelFormatTypes.count > 0 ) {
             photoSettings.previewPhotoFormat = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : photoSettings.availablePreviewPhotoPixelFormatTypes.firstObject };
         }
-        //        if ( self.livePhotoMode == AVCamLivePhotoModeOn && self.photoOutput.livePhotoCaptureSupported ) { // Live Photo capture is not supported in movie mode.
-        //            NSString *livePhotoMovieFileName = [NSUUID UUID].UUIDString;
-        //            NSString *livePhotoMovieFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[livePhotoMovieFileName stringByAppendingPathExtension:@"mov"]];
-        //            photoSettings.livePhotoMovieFileURL = [NSURL fileURLWithPath:livePhotoMovieFilePath];
-        //        }
         
         // Use a separate object for the photo capture delegate to isolate each capture life cycle.
-        TPLCamPhotoCaptureDelegate *photoCaptureDelegate = [[TPLCamPhotoCaptureDelegate alloc] initWithRequestedPhotoSettings:photoSettings willCapturePhotoAnimation:^{
-            //            dispatch_async( dispatch_get_main_queue(), ^{
-            //                self.previewView.videoPreviewLayer.opacity = 0.0;
-            //                [UIView animateWithDuration:0.25 animations:^{
-            //                    self.previewView.videoPreviewLayer.opacity = 1.0;
-            //                }];
-            //            } );
-        } capturingLivePhoto:^( BOOL capturing ) {
-            /*
-             Because Live Photo captures can overlap, we need to keep track of the
-             number of in progress Live Photo captures to ensure that the
-             Live Photo label stays visible during these captures.
-             */
-//            dispatch_async( self.sessionQueue, ^{
-//                if ( capturing ) {
-//                    self.inProgressLivePhotoCapturesCount++;
-//                }
-//                else {
-//                    self.inProgressLivePhotoCapturesCount--;
-//                }
-//                
-//                NSInteger inProgressLivePhotoCapturesCount = self.inProgressLivePhotoCapturesCount;
-//                dispatch_async( dispatch_get_main_queue(), ^{
-//                    if ( inProgressLivePhotoCapturesCount > 0 ) {
-//                        self.capturingLivePhotoLabel.hidden = NO;
-//                    }
-//                    else if ( inProgressLivePhotoCapturesCount == 0 ) {
-//                        self.capturingLivePhotoLabel.hidden = YES;
-//                    }
-//                    else {
-//                        NSLog( @"Error: In progress live photo capture count is less than 0" );
-//                    }
-//                } );
-//            } );
-        } completed:^(TPLCamPhotoCaptureDelegate *photoCaptureDelegate ) {
+        TPLCamPhotoCaptureDelegate *photoCaptureDelegate = [[TPLCamPhotoCaptureDelegate alloc] initWithRequestedPhotoSettings:photoSettings willCapturePhotoAnimation:^{//Photo capture animation
+        } capturingLivePhoto:nil
+        completed:^(TPLCamPhotoCaptureDelegate *photoCaptureDelegate ) {
             // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
             dispatch_async( self.sessionQueue, ^{
                 self.inProgressPhotoCaptureDelegates[@(photoCaptureDelegate.requestedPhotoSettings.uniqueID)] = nil;
@@ -700,15 +706,49 @@ static CGFloat previousZoom;
         } withPhotoData:^(NSData *photoData) {
             //Once photo data is passed back, present preview screen
             if (photoData) {
+                if (self.videoDeviceInput.device.position == AVCaptureDevicePositionFront) {
+                    UIImage *source = [UIImage imageWithData:photoData];
+                    
+                    //There is something seriouslly wrong with the way thay these images are processed
+                    //Sometime one method works other time other methods work.
+                    //Seem to have narrowed it down to these
+                    switch (source.imageOrientation) {
+                        case UIImageOrientationDown:
+                            photoData = UIImageJPEGRepresentation([UIImage imageWithCGImage:source.CGImage
+                                                                                      scale:source.scale
+                                                                                orientation:UIImageOrientationDownMirrored], 1);
+                            break;
+                        case UIImageOrientationUp:
+                            photoData = UIImageJPEGRepresentation([UIImage imageWithCGImage:source.CGImage
+                                                                                      scale:source.scale
+                                                                                orientation:UIImageOrientationUpMirrored], 1);
+                            break;
+                        case UIImageOrientationLeft:
+                        case UIImageOrientationRight:
+                        default:
+                        {
+                            CGSize imageSize = source.size;
+                            CGFloat imageWidth = imageSize.width;
+                            CGFloat imageHeight = imageSize.height;
+                            UIGraphicsBeginImageContextWithOptions(imageSize, YES, 1.0);
+                            CGContextRef ctx = UIGraphicsGetCurrentContext();
+                            CGContextRotateCTM(ctx, M_PI/2);
+                            CGContextTranslateCTM(ctx, 0, -imageWidth);
+                            CGContextScaleCTM(ctx, imageHeight/imageWidth, imageWidth/imageHeight);
+                            CGContextDrawImage(ctx, CGRectMake(0.0, 0.0, imageWidth, imageHeight), source.CGImage);
+                            UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+                            UIGraphicsEndImageContext();
+                            photoData = UIImageJPEGRepresentation(newImage, 1);
+                        }
+                            break;
+                    }
+                }
                 UIImage *capturedImg = [UIImage imageWithData:photoData];
-//                if (self.videoDeviceInput.device.position == AVCaptureDevicePositionFront) {
-//                    capturedImg = [UIImage imageWithCGImage:capturedImg.CGImage scale:capturedImg.scale orientation:UIImageOrientationLeftMirrored];
-//                }
                 self.selectedPhoto = capturedImg;
                 TPLAssetPreviewController *assetVC = [[TPLAssetPreviewController alloc]init];
                 RestaurantReview *newReview = [[RestaurantReview alloc]init];
                 newReview.image = self.selectedPhoto;
-                newReview.reviewLocation = [[LocationManager sharedLocationInstance]getCurrentLocation];
+                newReview.reviewLocation = [LocationManager sharedLocationInstance].currentLocation;
                 assetVC.currentReview = newReview;
             
                 [self.tabBarController.tabBar setHidden:YES];
@@ -751,17 +791,8 @@ static CGFloat previousZoom;
 - (void)addObservers
 {
     [self.captureSession addObserver:self forKeyPath:@"running" options:NSKeyValueObservingOptionNew context:SessionRunningContext];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subjectAreaDidChange:) name:AVCaptureDeviceSubjectAreaDidChangeNotification object:self.videoDeviceInput.device];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionRuntimeError:) name:AVCaptureSessionRuntimeErrorNotification object:self.captureSession];
-    
-    /*
-     A session can only run when the app is full screen. It will be interrupted
-     in a multi-app layout, introduced in iOS 9, see also the documentation of
-     AVCaptureSessionInterruptionReason. Add observers to handle these session
-     interruptions and show a preview is paused message. See the documentation
-     of AVCaptureSessionWasInterruptedNotification for other interruption reasons.
-     */
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification object:self.captureSession];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionInterruptionEnded:) name:AVCaptureSessionInterruptionEndedNotification object:self.captureSession];
 }
@@ -777,8 +808,6 @@ static CGFloat previousZoom;
 {
     if ( context == SessionRunningContext ) {
         BOOL isSessionRunning = [change[NSKeyValueChangeNewKey] boolValue];
-//        BOOL livePhotoCaptureSupported = self.photoOutput.livePhotoCaptureSupported;
-//        BOOL livePhotoCaptureEnabled = self.photoOutput.livePhotoCaptureEnabled;
         
         dispatch_async( dispatch_get_main_queue(), ^{
             // Only enable the ability to change camera if the device has more than one camera.
@@ -800,8 +829,8 @@ static CGFloat previousZoom;
 //Auto-focus
 - (void)subjectAreaDidChange:(NSNotification *)notification
 {
-    CGPoint devicePoint = CGPointMake(0.5, 0.5);
-    [self focusWithMode:AVCaptureFocusModeContinuousAutoFocus exposeWithMode:AVCaptureExposureModeContinuousAutoExposure atDevicePoint:devicePoint monitorSubjectAreaChange:NO];
+    //CGPoint devicePoint = CGPointMake(0.5, 0.5);
+    //[self focusWithMode:AVCaptureFocusModeContinuousAutoFocus exposeWithMode:AVCaptureExposureModeContinuousAutoExposure atDevicePoint:devicePoint monitorSubjectAreaChange:NO];
 }
 
 - (void)sessionRuntimeError:(NSNotification *)notification
@@ -893,21 +922,21 @@ static CGFloat previousZoom;
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
     //Have to make sure user comes in first then set or just not let them take photo, but animate tab bar item instead
-    UINavigationController *nav = (UINavigationController *)viewController;
-    UIViewController *root = [[nav viewControllers]firstObject];
-    
+//    UINavigationController *nav = (UINavigationController *)viewController;
+//    UIViewController *root = [[nav viewControllers]firstObject];
+//    
     //If we're currently in the camera, take a photo using the tab bar item, otherwise assign the tabcontroller's delegate to the new controller presented.
-    if ([root isKindOfClass:[TabCameraViewController class]]) {
-        if (self.setupResult == AVCamSetupResultSuccess) {
-            [self capturePhoto:nil];
-        }
-    }else if([root isKindOfClass:[UserProfileViewController class]]){
-        UserProfileViewController *profileVC = (UserProfileViewController *)root;
-        profileVC.tabBarController.delegate = profileVC;
-    }else if ([root isKindOfClass:[ChartsViewController class]]){
-        ChartsViewController *chartsVC = (ChartsViewController *)root;
-        chartsVC.tabBarController.delegate = chartsVC;
-    }
+//    if ([root isKindOfClass:[TabCameraViewController class]]) {
+//        if (self.setupResult == AVCamSetupResultSuccess) {
+//            [self capturePhoto:nil];
+//        }
+//    if([root isKindOfClass:[UserProfileViewController class]]){
+//        UserProfileViewController *profileVC = (UserProfileViewController *)root;
+//        profileVC.tabBarController.delegate = profileVC;
+//    }else if ([root isKindOfClass:[ChartsViewController class]]){
+//        ChartsViewController *chartsVC = (ChartsViewController *)root;
+//        chartsVC.tabBarController.delegate = chartsVC;
+//    }
 }
 
 #pragma mark - Helper Methods
@@ -962,13 +991,12 @@ static CGFloat previousZoom;
 
 #pragma mark UI Convenience methods
 
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden{
     return YES;
 }
 
-#pragma mark - Filters
-
-
+- (BOOL)hidesBottomBarWhenPushed{
+    return YES;
+}
 
 @end

@@ -15,7 +15,7 @@
 #import "UIFont+Extension.h"
 
 
-@interface SettingsViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface SettingsViewController ()<UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
 
@@ -42,12 +42,14 @@ static NSString *cellId = @"settingCell";
 }
 
 - (void)setupNavBar{
-//    [self.navigationItem setTitle:@"Settings"];
-//    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_boldFontWithSize:20.0]};
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    UIImage *backBtn = [[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    self.navigationController.navigationBar.backIndicatorImage = backBtn;
-    self.navigationController.navigationBar.backIndicatorTransitionMaskImage = backBtn;
+    [self.navigationItem setTitle:@"Settings"];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_boldFontWithSize:20.0]};
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitSettings)];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
+}
+
+- (void)exitSettings{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITableViewDataSource
@@ -86,7 +88,7 @@ static NSString *cellId = @"settingCell";
         [self.navigationController pushViewController:webVC animated:YES];
     }else if (indexPath.row == 2){
         WebViewController *webVC = [[WebViewController alloc]init];
-        webVC.webLink = FOODHEAD_PRIVACY_URL;
+        webVC.webLink = FOODHEAD_TERMS_URL;
         [self.navigationController pushViewController:webVC animated:YES];
     }
 }

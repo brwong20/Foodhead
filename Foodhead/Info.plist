@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.gotaplet.Foodhead</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -26,7 +26,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.0.3</string>
 	<key>FacebookAppID</key>
 	<string>367027373675354</string>
 	<key>FacebookDisplayName</key>
@@ -43,15 +43,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Take photos.</string>
+	<string>Take pictures of your food.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We use your location to find the best spots near you.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We use your location to find the best spots near you!</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Record video.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Edit and upload photos</string>
+	<string>Save pictures to your camera roll</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Nunito-SemiBold.ttf</string>
@@ -73,6 +71,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarHidden</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -10,7 +10,7 @@
 #import "ImageCollectionCell.h"
 #import "TPLChartCollectionCell.h"
 #import "FoodWiseDefines.h"
-
+#import "LayoutBounds.h"
 
 @implementation IndexedPhotoCollectionView
 
@@ -23,14 +23,12 @@
     if (!(self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) return nil;
 
     self.flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    self.flowLayout.minimumInteritemSpacing = self.contentView.bounds.size.width * CHART_PADDING_PERCENTAGE;
-    self.flowLayout.itemSize = CGSizeMake(CHART_ITEM_SIZE * 0.9, CHART_ITEM_SIZE);
-    
-#warning Figure out why this doesn't align with section padding
-    self.flowLayout.sectionInset = UIEdgeInsetsMake(0.0, self.contentView.bounds.size.width * 0.055, 0.0, 1.5);
+    self.flowLayout.minimumLineSpacing = self.contentView.bounds.size.width * CHART_SPACING;
+    self.flowLayout.itemSize = CGSizeMake(CHART_ITEM_SIZE * 0.85, CHART_ITEM_SIZE * 1.1);
+    self.flowLayout.sectionInset = UIEdgeInsetsMake(0.0, (APPLICATION_FRAME.size.width * CHART_PADDING_PERCENTAGE) + 3.0, 0.0, 3.0);
     self.flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
-    self.collectionView = [[IndexedPhotoCollectionView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, CHART_ITEM_SIZE) collectionViewLayout:self.flowLayout];
+    self.collectionView = [[IndexedPhotoCollectionView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, self.contentView.frame.size.height) collectionViewLayout:self.flowLayout];
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.bounces = NO;

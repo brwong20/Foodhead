@@ -35,7 +35,7 @@
     if (self) {
         self.locationManager = [[CLLocationManager alloc]init];
         //self.locationManager.distanceFilter = 1000.0;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
         self.authorizedStatus = [CLLocationManager authorizationStatus];
         self.locationManager.delegate = self;
     }
@@ -45,6 +45,7 @@
 //Only request when app is in use for now since we only need the current location when opening the map. This also saves battery life!
 - (void)checkLocationAuthorization
 {
+    self.authorizedStatus = [CLLocationManager authorizationStatus];
     switch (self.authorizedStatus) {
         case kCLAuthorizationStatusNotDetermined: {
             if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
@@ -84,13 +85,8 @@
     self.locationManager.delegate = nil;
 }
 
-- (void)updateCurrentLocation{
+- (void)retrieveCurrentLocation{
     self.locationManager.delegate = self;
-    [self startUpdatingLocation];
-}
-
-#warning Needs to update and get CURRENT location in case user backgrounds app and changes location
-- (void)getCurrentLocation{
     [self startUpdatingLocation];
 }
 

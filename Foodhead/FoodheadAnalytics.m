@@ -10,4 +10,34 @@
 
 @implementation FoodheadAnalytics
 
+#pragma mark - Analytics Lifecycle
+
++ (void)beginFlurrySession{
+    FlurrySessionBuilder* builder = [[[[[FlurrySessionBuilder new]
+                                        withLogLevel:FlurryLogLevelCriticalOnly]
+                                       withCrashReporting:YES]
+                                      withSessionContinueSeconds:10]
+                                     withAppVersion:@"1.0"];
+    
+    [Flurry startSession:FLURRY_API_KEY withSessionBuilder:builder];
+}
+
+#pragma mark - Specific Event Logging
+
++ (void)logEvent:(NSString *)string{
+    [Flurry logEvent:string];
+}
+
++ (void)logEvent:(NSString *)string withParameters:(NSDictionary *)params{
+    [Flurry logEvent:string withParameters:params];
+}
+
++ (void)beginTimedEvent:(NSString *)string{
+    [Flurry logEvent:string timed:YES];
+}
+
++ (void)endTimedEvent:(NSString *)string withParameters:(NSDictionary *)params{
+    [Flurry endTimedEvent:string withParameters:params];
+}
+
 @end

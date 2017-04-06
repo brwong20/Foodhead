@@ -27,7 +27,7 @@
 - (BOOL)isUserLoggedIn;
 
 - (void)loginWithFb:(FBSDKAccessToken *)token
-  completionHandler:(void (^)(id))loginSuccess
+  completionHandler:(void (^)(User* currentUser))loginSuccess
      failureHandler:(void (^)(id))loginFailure;
 
 - (void)loginAnonymously;
@@ -36,9 +36,17 @@
 - (void)checkUserSessionActive:(void (^)(id sessionInfo))sessionHandler
                 failureHandler:(void (^)(id error))sessionFailure;
 
-//Get most updated user info. Also used to verify that this was the last user logged in.
+//GET:Get most updated user info. Also used to verify that this was the last user logged in.
 - (void)retrieveCurrentUser:(void (^)(id user))completionHandler
              failureHandler:(void (^)(id error))failureHandler;
+
+- (void)updateCurrentUserWithParams:(NSDictionary *)params
+                  completionHandler:(void (^)(id user))completionHandler
+                     failureHandler:(void (^)(id error))failureHandler;
+
+- (void)retrieveUserReviews:(void (^)(id reviews))completionHandler
+             failureHandler:(void (^)(id error))failureHandler;
+
 
 - (void)logoutUser:(void (^)(id completed))completionHandler
     failureHandler:(void (^)(id error))failureHandler;

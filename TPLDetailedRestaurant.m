@@ -25,7 +25,8 @@
              @"zipCode" : @"location_postal_code",
              @"city" : @"city",
              @"state" : @"location_state",
-             @"openNow" : @"is_open_now"
+             @"openNow" : @"is_open_now",
+             @"foursq_num_ratings" : @"rating_signals"
              };
 }
 

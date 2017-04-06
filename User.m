@@ -17,7 +17,17 @@
              @"lastName" : @"user.last_name",
              @"username" : @"user.username",
              @"email" : @"user.email",
-             @"avatarURL": @"user.avatar_url"};
+             @"avatarURL": @"user.avatar_url",
+             @"location" : @"user.location"};
 }
+
+//MTLValueTransformer for NSString -> UIImage
+//+ (NSValueTransformer *)avatarImgJSONTransformer{
+//    return [MTLValueTransformer transformerUsingForwardBlock:^id(NSString *avatarURL, BOOL *success, NSError *__autoreleasing *error) {
+//        return nil;
+//    } reverseBlock:^id(UIImage *avatarImg, BOOL *success, NSError *__autoreleasing *error) {
+//        return UIImagePNGRepresentation(avatarImg);
+//    }];
+//}
 
 @end

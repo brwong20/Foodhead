@@ -15,12 +15,16 @@
 #import "FoodWiseDefines.h"
 #import "LocationManager.h"
 #import "LayoutBounds.h"
+#import "FoodheadAnalytics.h"
+#import "ServiceErrorView.h"
+#import "UIFont+Extension.h"
 
 #import "UIImageView+AFNetworking.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SDWebImage/UIImageView+WebCache.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
-@interface TabledCollectionManager () <ChartSectionViewDelegate>
+@interface TabledCollectionManager () <ChartSectionViewDelegate, ServiceErrorViewDelegate>
 
 //Reference to parent table view that uses this delegate/datasource
 @property (nonatomic, strong) UITableView *tableView;
@@ -34,8 +38,10 @@
 
 //View Model
 @property (nonatomic, strong) TPLChartsViewModel *viewModel;
-
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+
+//Error View
+@property (nonatomic, strong) ServiceErrorView *errorView;
 
 @end
 
@@ -48,40 +54,32 @@
         self.cellIdentifier = cellId;
         self.tableView = tableview;
         [tableview registerClass:[TabledCollectionCell class] forCellReuseIdentifier:cellId];
-        //[self setupRefreshControl];
+        [self setupRefreshControl];
         self.contentOffsetDictionary = [NSMutableDictionary dictionary];
         self.viewModel = [[TPLChartsViewModel alloc]initWithStore:[[TPLChartsDataSource alloc]init]];
         [self bindViewModel];
-        
-        //[LayoutBounds drawBoundsForAllLayers:self.tableView];
     }
     return self;
 }
 
-//- (void)setupRefreshControl{
-//    self.refreshControl = [[UIRefreshControl alloc]init];
-//    self.refreshControl.backgroundColor = [UIColor lightGrayColor];
-//    self.refreshControl.tintColor = [UIColor redColor];
-//    [self.refreshControl addTarget:self action:@selector(refreshCharts:) forControlEvents:UIControlEventValueChanged];
-//    self.tableView.refreshControl = self.refreshControl;
-//}
+- (void)setupRefreshControl{
+    self.refreshControl = [[UIRefreshControl alloc]init];
+    self.refreshControl.backgroundColor = APPLICATION_BACKGROUND_COLOR;
+    self.refreshControl.tintColor = [UIColor lightGrayColor];
+    [self.refreshControl addTarget:self action:@selector(refreshCharts) forControlEvents:UIControlEventValueChanged];
+    self.tableView.refreshControl = self.refreshControl;
+}
 
 #pragma mark - Refresh
 
-//- (void)refreshCharts:(id)sender{
-//    [self.refreshControl beginRefreshing];
-//
-//    //Charts headers always the same right now. Only need to refresh restaurants!
-//    for (NSMutableDictionary *chartDict in self.collectionData) {
-//        //Replace all removed objects with index.
-//        NSString *chartKey = [[chartDict allKeys]firstObject];
-//        [chartDict removeObjectForKey:chartKey];
-//        [chartDict setObject:@([self.collectionData indexOfObject:chartDict]) forKey:chartKey];
-//
-//    }
-//
-//    [[LocationManager sharedLocationInstance]updateCurrentLocation];
-//}
+- (void)refreshCharts{
+    if (self.viewModel.finishedLoading) {
+        [self.refreshControl beginRefreshing];
+        [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
+    }else{
+        [self.refreshControl endRefreshing];
+    }
+}
 
 
 #pragma mark - UICollectionViewDataSource methods
@@ -89,33 +87,33 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     TPLChartCollectionCell *collectionCell = (TPLChartCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:CollectionCellIdentifier forIndexPath:indexPath];
-    //Get section instead and check if a dict exists
     TPLRestaurant *restaurant = [self getRestaurantAtIndexPath:indexPath inCollectionView:collectionView];
     [collectionCell populateRestauarantInfo:restaurant];
     return collectionCell;
 }
 
-//Keeps track of each offset for each distinct row of embedded collection views
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    TabledCollectionCell *photoCell = (TabledCollectionCell*)cell;
-    photoCell.collectionView.backgroundColor = [UIColor clearColor];
-    photoCell.collectionView.decelerationRate = UIScrollViewDecelerationRateFast;//Slows down the scroll speed
-    [photoCell setCollectionViewDataSourceDelegate:self indexPath:indexPath withCustomCell:[TPLChartCollectionCell class]];
-    
-    NSIndexPath *index = [self indexPathForCollectionView:photoCell.collectionView];
-    CGFloat horizontalOffset = [self.contentOffsetDictionary[[@(index.section) stringValue]]floatValue];
-    [photoCell.collectionView setContentOffset:CGPointMake(horizontalOffset, 0)];
-}
-
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     NSInteger itemCount = 0;
-    NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-    Chart *chart = self.collectionData[tableCellIndex.section];
-    if (chart.places) {
-        itemCount = chart.places.count;
+    if(self.collectionData.count > 0){
+        NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
+        Chart *chart = self.collectionData[tableCellIndex.section];
+        if (chart.places) {
+            //Only show 'all' button for section if we have a chart
+            //TPLChartSectionView *sectionView = [self.tableView viewWithTag:[chart.name hash]];
+            //[sectionView showSeeAllButton];
+            itemCount = chart.places.count;
+        }
     }
     return itemCount;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
+    NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
+    Chart *chart = self.collectionData[tableCellIndex.section];
+    if (indexPath.row == chart.places.count - 1) {
+        [FoodheadAnalytics logEvent:END_OF_CHART withParameters:@{@"chartName" : chart.name}];
+    }
 }
 
 
@@ -145,15 +143,33 @@
 #pragma mark - UITableViewDelegate methods
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    Chart *chart = [self.collectionData objectAtIndex:section];
-
-    TPLChartSectionView *sectionView = [[TPLChartSectionView alloc]initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, CHART_SECTION_HEIGHT)];
-    sectionView.delegate = self;
-    sectionView.section = section;
-    sectionView.titleLabel.text = chart.name;
-    
+    UIView *sectionView = nil;
+    if(self.collectionData.count > 0){
+        Chart *chart = [self.collectionData objectAtIndex:section];
+        
+        TPLChartSectionView *chartSection = [[TPLChartSectionView alloc]initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, CHART_SECTION_HEIGHT)];
+        //sectionView.tag = [chart.name hash];//Makes it easier to retrieve this view in other methods
+        chartSection.delegate = self;
+        chartSection.section = section;
+        chartSection.titleLabel.text = chart.name;
+        
+        sectionView = chartSection;
+    }
     return sectionView;
 }
+
+//Keeps track of each offset for each distinct row of embedded collection views
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    TabledCollectionCell *photoCell = (TabledCollectionCell*)cell;
+    photoCell.collectionView.backgroundColor = [UIColor clearColor];
+    photoCell.collectionView.decelerationRate = UIScrollViewDecelerationRateFast;//Slows down the scroll speed
+    [photoCell setCollectionViewDataSourceDelegate:self indexPath:indexPath withCustomCell:[TPLChartCollectionCell class]];
+    
+    NSIndexPath *index = [self indexPathForCollectionView:photoCell.collectionView];
+    CGFloat horizontalOffset = [self.contentOffsetDictionary[[@(index.section) stringValue]]floatValue];
+    [photoCell.collectionView setContentOffset:CGPointMake(horizontalOffset, 0)];
+}
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return CHART_ROW_HEIGHT;
@@ -182,12 +198,22 @@
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    if ([scrollView isKindOfClass:[UITableView class]]){
+        if(self.tableView.contentOffset.y >= (self.tableView.contentSize.height - self.tableView.frame.size.height)) {
+            [FoodheadAnalytics logEvent:END_OF_CHART_PAGE];
+        }
+    }
+}
+
 #pragma mark - ChartsSectionView delegate methods
 
 - (void)didSelectSection:(NSUInteger)section{
     Chart *chart = [self.collectionData objectAtIndex:section];
-    if ([self.delegate respondsToSelector:@selector(tableView:didSelectSectionWithChart:)]) {
-        [self.delegate tableView:self.tableView didSelectSectionWithChart:chart];
+    if (chart) {
+        if ([self.delegate respondsToSelector:@selector(tableView:didSelectSectionWithChart:)]) {
+            [self.delegate tableView:self.tableView didSelectSectionWithChart:chart];
+        }
     }
 }
 
@@ -212,6 +238,14 @@
 }
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
+    //Should show only during first chart load (when screen is blank)
+//    if(!self.refreshControl.isRefreshing){
+//        [SVProgressHUD setContainerView:self.tableView.superview];//Only show spinner in this view
+//        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
+//        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+//        [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
+//        [SVProgressHUD show];
+//    }
     [self.viewModel getChartsAtLocation:coordinate];
 }
 
@@ -221,19 +255,80 @@
 }
 
 - (void)bindViewModel{
+    [self bindChartData];
+    [self bindRefreshControl];
+    [self bindChartSpinner];
+}
+
+- (void)bindChartData{
     @weakify(self);
     [[RACObserve(self.viewModel, completeChartData) deliverOnMainThread]
      subscribeNext:^(id _) {
          @strongify(self){
              dispatch_async(dispatch_get_main_queue(), ^{
-                 if ([self.refreshControl isRefreshing]) {
-                     [self.refreshControl endRefreshing];
-                 }
                  self.collectionData = self.viewModel.completeChartData;
                  [self collectionViewReloadData];
              });
          }
      }];
+}
+
+- (void)bindRefreshControl{
+    @weakify(self);
+    [[RACObserve(self.viewModel, finishedLoading) deliverOnMainThread]
+     subscribeNext:^(id  _Nullable x) {
+         @strongify(self){
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 if (self.refreshControl.isRefreshing) {
+                     [self.refreshControl endRefreshing];
+                 }
+             });
+         }
+     }];
+}
+
+- (void)bindChartSpinner{
+    @weakify(self);
+    [[RACObserve(self.viewModel, chartsLoadFailed) deliverOnMainThread]
+     subscribeNext:^(id  _Nullable x) {
+         @strongify(self){
+             if(self.viewModel.chartsLoadFailed){
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     if (![self.errorView superview]) {
+                         self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width , self.tableView.frame.size.height) andErrorType:ServiceErrorTypeData];
+                         self.errorView.delegate = self;
+                         [self.tableView.superview addSubview:self.errorView];
+                     }else{
+                         //Chart refresh unsuccessful
+                         if ([SVProgressHUD isVisible]) {
+                             [SVProgressHUD dismiss];
+                         }
+                         [UIView animateWithDuration:0.3 animations:^{
+                             self.errorView.errorTitle.alpha = 1.0;
+                             self.errorView.errorTextView.alpha = 1.0;
+                         }];
+                     }
+                 });
+             }else{
+                 if ([SVProgressHUD isVisible]) {
+                     [SVProgressHUD dismiss];
+                 }
+                 
+                 if ([self.errorView superview]) {
+                     [self.errorView removeFromSuperview];
+                 }
+             }
+         }
+     }];
+}
+
+//Will call ChartsViewController's delegate method which then re-routes back here.
+- (void)serviceErrorViewToggledRefresh{
+    [UIView animateWithDuration:0.3 animations:^{
+        self.errorView.errorTitle.alpha = 0.0;
+        self.errorView.errorTextView.alpha = 0.0;
+    }];
+    [self getChartsAtLocation:[[LocationManager sharedLocationInstance]currentLocation]];
 }
 
 @end

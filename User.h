@@ -7,6 +7,7 @@
 //
 
 #import <Mantle/Mantle.h>
+#import <UIKit/UIKit.h>
 
 @interface User : MTLModel<MTLJSONSerializing>
 
@@ -18,6 +19,9 @@
 @property (nonatomic, copy) NSString *username;
 @property (nonatomic, copy) NSString *email;
 @property (nonatomic, copy) NSString *avatarURL;
+@property (nonatomic, copy) NSString *location;
+
+@property (nonatomic, copy) UIImage *avatarImg;
 
 @property (nonatomic, copy) NSArray *badges;
 

@@ -1,5 +1,5 @@
 //
-//  ReviewTableViewCell.h
+//  ReviewCollectionViewCell.h
 //  Foodhead
 //
 //  Created by Brian Wong on 3/28/17.
@@ -10,7 +10,7 @@
 
 #import "UserReview.h"
 
-@interface ReviewTableViewCell : UITableViewCell
+@interface ReviewCollectionViewCell : UICollectionViewCell
 
 - (void)populateUserReview:(UserReview *)review;
 

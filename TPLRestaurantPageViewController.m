@@ -9,37 +9,45 @@
 #import "TPLRestaurantPageViewController.h"
 #import "FoodWiseDefines.h"
 
-#import "RestaurantPageNavBarView.h"
 #import "ImageCollectionCell.h"
 #import "TabledCollectionCell.h"
 #import "MetricsDisplayCell.h"
 #import "RestaurantAlbumViewController.h"
 #import "RestaurantInfoTableViewCell.h"
-#import "GeneralRestaurantInfoView.h"
 #import "HoursTableViewCell.h"
-#import "CameraViewController.h"
 #import "TPLRestaurantPageViewModel.h"
 #import "TPLDetailedRestaurant.h"
 #import "RestaurantDetailsTableViewCell.h"
 #import "MenuTableViewCell.h"
 #import "UIFont+Extension.h"
 #import "LocationManager.h"
-#import "MenuViewController.h"
+#import "WebViewController.h"
 #import "LayoutBounds.h"
+#import "User.h"
+#import "UserReview.h"
+#import "ReviewMetricView.h"
+#import "AttributionTableViewCell.h"
+#import "FoodheadAnalytics.h"
 
+#import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 
-@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, RestaurantInfoCellDelegate>
+@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate>
 
 //UI
 @property (nonatomic, strong) UITableView *detailsTableView;
 @property (nonatomic, strong) UIButton *submitButton;
+@property (nonatomic, assign) CGFloat dynamicHoursHeight;//For dynamic resizing of hours cell height
 
 //Photos
 @property (nonatomic, strong) UICollectionView *photoCollection;
+@property (nonatomic, strong) NSString *nextPg;
 
 //Data source
 @property (nonatomic, strong) NSMutableArray *restaurantPhotos;
+@property (nonatomic, strong) NSMutableArray *idmPhotos;
+@property (nonatomic, strong) NSMutableArray *userReviews;
 
 //View Model
 @property (nonatomic, strong) TPLRestaurantPageViewModel *pageViewModel;
@@ -50,112 +58,186 @@
 static NSString *cellId = @"detailCell";
 static NSString *photoCellId = @"photoCell";
 
-#define COLLECTION_PADDING 4.0
+#define NUM_COLUMNS 3
+#define NUM_COLLECTION_CELLS 6
 
 @implementation TPLRestaurantPageViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
-    self.detailsFetched = NO;
     
-    [self setupNavBar];
     [self setupUI];
     
     self.restaurantPhotos = [NSMutableArray array];
+    self.idmPhotos = [NSMutableArray array];
+    self.userReviews = [NSMutableArray array];
     self.pageViewModel = [[TPLRestaurantPageViewModel alloc]init];
+    self.detailsFetched = NO;
+    
     [self loadRestaurantDetails];
-    [self loadRestaurantReviews];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    [self setupNavBar];
+    
+    //We should only load images/metrics once in viewDidLoad. If details have already been fetched, this means the user either reopened the app or submitted a review while on the restaurant page.
+    if (self.detailsFetched) {
+        [self refreshMetrics];
+        [self loadRestaurantImages];
+    }
 }
 
 - (void)loadRestaurantDetails{
-    NSString *restId = self.selectedRestaurant.foursqId;
-    [self.pageViewModel retrieveRestaurantDetailsFor:restId  atLocation:self.currentLocation completionHandler:^(id data) {
-        NSLog(@"%@", data);
-        
-        NSDictionary *result = data[@"result"];
+    [self.pageViewModel retrieveRestaurantDetailsFor:self.selectedRestaurant atLocation:self.currentLocation completionHandler:^(TPLRestaurant* fullRestaurant) {
+        if (fullRestaurant) {
+            self.selectedRestaurant = fullRestaurant;
+            self.dynamicHoursHeight = [self calculateDynamicHoursHeight];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0],
+                                                                [NSIndexPath indexPathForRow:3 inSection:0],
+                                                                [NSIndexPath indexPathForRow:4 inSection:0],
+                                                                [NSIndexPath indexPathForRow:5 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+            });
 
-        NSError *err;
-        TPLDetailedRestaurant *detailedRestaurant;
-        if (result) {
-            detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:result error:&err];
-        }else{
-            detailedRestaurant = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:data error:&err];//Cached data returned by itself w/o 'result' key
+            //Must load reviews after we retrieve details because restaurant might not be cached in our db
+            [self.pageViewModel retrieveReviewsForRestaurant:fullRestaurant completionHandler:^(id completionHandler) {
+                [self.userReviews addObjectsFromArray:completionHandler];
+                self.detailsFetched = YES;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                });
+                
+            } failureHandler:^(id failureHandler) {
+                NSLog(@"Failed to get user reviews");
+            }];
+            
+#warning Should work after fix tonight - Fix avatar img issue, clean up code, push out build
+            [self loadRestaurantImages];
         }
-        //NSLog(@"%@", err.description);
-        [self.selectedRestaurant mergeValuesForKeysFromModel:detailedRestaurant];
-        self.restaurantPhotos = [self.selectedRestaurant.images mutableCopy];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.detailsFetched = YES;
-            [self.detailsTableView reloadData];
-            //[LayoutBounds drawBoundsForAllLayers:self.view];
-        });
     } failureHandler:^(id error) {
-        
+//TODO:: Handle this by changing rest page UI?
+        NSLog(@"Couldn't get details");
     }];
 }
 
-- (void)loadRestaurantReviews{
-    [self.pageViewModel getReviewsForRestaurant:[self.selectedRestaurant.restaurantId stringValue] completionHandler:^(id completionHandler) {
-        
+- (void)refreshMetrics{
+    [self.pageViewModel retrieveReviewsForRestaurant:self.selectedRestaurant completionHandler:^(id completionHandler) {
+        NSArray *userReviews = completionHandler;
+
+#warning Is this the best way to handle photos and review refreshing? Need to revisit this logic later on
+        if (self.userReviews.count == userReviews.count) {
+            //No need to refresh in number of reviews didn't change
+            return;
+        }
+        [self.userReviews removeAllObjects];
+        [self.userReviews addObjectsFromArray:completionHandler];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+        });
+
     } failureHandler:^(id failureHandler) {
-        
+        NSLog(@"Failed to refresh metrics");
     }];
 }
+
+- (void)loadRestaurantImages{
+    [self.pageViewModel retrieveImagesForRestaurant:self.selectedRestaurant
+                                               page:nil
+                                  completionHandler:^(id media) {
+                                      self.nextPg = media[@"next_page"];
+                                      NSArray *images = media[@"images"];
+                                  
+                                      if (self.restaurantPhotos.count < images.count) {
+                                          [self.restaurantPhotos removeAllObjects];
+                                          [self.idmPhotos removeAllObjects];
+                                      }else{
+                                          //Nothing changed don't reload
+                                          return;
+                                      }
+                                      
+                                      if (images) {
+                                          for (NSDictionary *imgInfo in images) {
+                                              BOOL isVideo = imgInfo[@"isVideo"];
+                                              if (isVideo) {
+                                                  continue;
+                                              }
+                                              
+                                              if ([imgInfo[@"type"] isEqualToString:USER_REVIEW_PHOTO]) {
+                                                  UserReview *review = [MTLJSONAdapter modelOfClass:[UserReview class] fromJSONDictionary:imgInfo error:nil];
+                                                  User *user = [MTLJSONAdapter modelOfClass:[User class] fromJSONDictionary:imgInfo error:nil];
+                                                  [review mergeValuesForKeysFromModel:user];
+                                                  [self.restaurantPhotos addObject:review];
+                                              }else{
+                                                  [self.restaurantPhotos addObject:imgInfo];
+                                              }
+                                          }
+                                      }
+                                      
+                                      //For IDMPhotoBrowser
+                                      for (id photoInfo in self.restaurantPhotos){
+                                          IDMPhoto *photo;
+                                          //Check if UserReview or insta img
+                                          if ([photoInfo isKindOfClass:[UserReview class]]) {
+                                              UserReview *userReview = (UserReview *)photoInfo;
+                                              photo = [IDMPhoto photoWithURL:[NSURL URLWithString:userReview.imageURL]];
+                                          }else{
+                                              NSURL *photoURL = [[NSURL alloc]initWithString:photoInfo[@"url"]];
+                                              photo = [IDMPhoto photoWithURL:photoURL];
+                                          }
+                                          [self.idmPhotos addObject:photo];
+                                      }
+                                      
+                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                          [self.photoCollection reloadData];
+                                      });
+                                      
+      } failureHandler:^(id failureHandler) {
+          NSLog(@"%@", failureHandler);
+      }];
+}
+
 
 - (void)setupNavBar{
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    
-    UIImage *backBtn = [[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    self.navigationController.navigationBar.backIndicatorImage = backBtn;
-    self.navigationController.navigationBar.backIndicatorTransitionMaskImage = backBtn;
-
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"call_btn"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callRestaurant)];
-    
+    self.navigationItem.title = @"Foodhead";
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantPage)];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
-    
+
+- (void)exitRestaurantPage{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - Helper Methods
 
 - (void)setupUI{
-
+    self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
+    
     self.detailsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStylePlain];
     self.detailsTableView.delegate = self;
     self.detailsTableView.dataSource = self;
     self.detailsTableView.backgroundColor = APPLICATION_BACKGROUND_COLOR;
-    self.detailsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    self.detailsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    self.detailsTableView.contentInset = adjustForTabbarInsets;
+    self.detailsTableView.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.detailsTableView.rowHeight = UITableViewAutomaticDimension;
+    self.detailsTableView.estimatedRowHeight = RESTAURANT_HOURS_CELL_HEIGHT;
+    self.detailsTableView.showsVerticalScrollIndicator = NO;
+    
     [self.view addSubview:self.detailsTableView];
-/*
-    self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.82, self.view.frame.size.height * 0.8, self.view.frame.size.width * 0.13, self.view.frame.size.width * 0.13)];
-    self.submitButton.backgroundColor = [UIColor purpleColor];
-    self.submitButton.layer.cornerRadius = 15.0;
-    [self.submitButton setTitle:@"+" forState:UIControlStateNormal];
-    [self.submitButton.titleLabel setFont:[UIFont boldSystemFontOfSize:24.0]];
-    [self.submitButton addTarget:self action:@selector(submitReview) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.submitButton];
- */
-}
-
-#pragma mark - Helper Methods
-
-- (void)viewRestaurantPhotos{
-    RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc]init];
-    [self.navigationController pushViewController:albumVC animated:YES];
 }
 
 - (void)setupPhotoCollection{
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
     flowLayout.minimumInteritemSpacing = 1.0;
-    flowLayout.minimumLineSpacing = 2.0;
-    flowLayout.itemSize = CGSizeMake(self.view.frame.size.width/3, self.view.frame.size.width/3);
+    flowLayout.minimumLineSpacing = 1.0;
+    CGFloat itemWidth = (CGRectGetWidth(self.view.frame) - (NUM_COLUMNS - 1.0)) / NUM_COLUMNS;
+    flowLayout.itemSize = CGSizeMake(itemWidth - 0.5, itemWidth);
     flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
-    self.photoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, ((self.view.frame.size.width/3) * 2) + COLLECTION_PADDING/2) collectionViewLayout:flowLayout];
+    self.photoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, (self.view.frame.size.width/3) * 2) collectionViewLayout:flowLayout];
     self.photoCollection.backgroundColor = [UIColor whiteColor];
     self.photoCollection.delegate = self;
     self.photoCollection.dataSource= self;
@@ -163,33 +245,33 @@ static NSString *photoCellId = @"photoCell";
     [self.photoCollection registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:photoCellId];
 }
 
-- (UIView *)createAllButton{
-    UIView *allButton = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width/3, 30.0)];
-    allButton.backgroundColor = [UIColor blackColor];
-    
-    UILabel *allLabel = [[UILabel alloc]initWithFrame:CGRectMake(5.0, 0, allButton.frame.size.width * 0.4, allButton.frame.size.height)];
-    allLabel.text = @"See all";
-    allLabel.textColor = [UIColor whiteColor];
-    allLabel.backgroundColor = [UIColor clearColor];
-    allLabel.font = [UIFont nun_fontWithSize:17.0];
-    [allButton addSubview:allLabel];
-    
-    return allButton;
-}
-
-- (void)submitReview{
-    CameraViewController *cameraVC = [[CameraViewController alloc]init];
-    [self.navigationController pushViewController:cameraVC animated:YES];
-}
-
-#pragma mark - Call Restaurant
-
-- (void)callRestaurant{
-    if (self.selectedRestaurant.phoneNumber) {
-        NSString *formattedNumber = [self.selectedRestaurant.phoneNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
-        NSString *phoneNumber = [@"telprompt://" stringByAppendingString:formattedNumber];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:phoneNumber] options:@{} completionHandler:nil];
+//Calculates a dynamic height based on hours available then resizes the cell
+- (CGFloat)calculateDynamicHoursHeight{
+    CGFloat cellHeight = 0.0;
+    if (self.selectedRestaurant.hours) {
+        NSMutableArray *hoursOfWeek = [NSMutableArray array];
+        //Filter out today's hours from hours cell
+        for (NSDictionary *hrsForDay in self.selectedRestaurant.hours) {
+            if ([hrsForDay objectForKey:@"Today"]) {
+                continue;
+            }
+            [hoursOfWeek addObject:hrsForDay];
+        }
+        
+        for (NSDictionary *hrs in hoursOfWeek) {
+            NSArray *hoursAsStrs = [hrs allValues];
+            for (NSString *hrStr in hoursAsStrs) {
+                CGRect hrSize = [hrStr boundingRectWithSize:CGSizeMake(APPLICATION_FRAME.size.width * 0.4, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : [UIFont nun_fontWithSize:RESTAURANT_HOURS_CELL_HEIGHT * 0.2]} context:nil];
+                cellHeight += hrSize.size.height + RESTAURANT_HOURS_CELL_HEIGHT * 0.42;
+            }
+        }
     }
+
+    //Keep a constant height as a minimum or when there are no hours
+    if (cellHeight < RESTAURANT_HOURS_CELL_HEIGHT) {
+        cellHeight = RESTAURANT_HOURS_CELL_HEIGHT + APPLICATION_FRAME.size.height * 0.02;
+    }
+    return cellHeight;
 }
 
 #pragma mark - Map Restaurant
@@ -238,9 +320,15 @@ static NSString *photoCellId = @"photoCell";
     [self presentNavigationAlert];
 }
 
-- (void)didTapShareButton{
-    
+- (void)didTapRestaurantLink:(NSURL *)url{
+    WebViewController *webVC = [[WebViewController alloc]init];
+    webVC.webLink = url.absoluteString;
+    [self.navigationController pushViewController:webVC animated:YES];
 }
+
+//- (void)didTapShareButton{
+//    
+//}
 
 #pragma mark - UTableViewDataSource Methods
 
@@ -255,8 +343,10 @@ static NSString *photoCellId = @"photoCell";
         }
         case 1:{
             MetricsDisplayCell *metricsCell = [[MetricsDisplayCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            if (self.detailsFetched) {
+                [metricsCell populateMetrics:self.selectedRestaurant withUserReviews:self.userReviews];
+            }
             cell = metricsCell;
-            //cell.layoutMargins = UIEdgeInsetsZero;
             break;
         }
         case 2:{
@@ -292,8 +382,14 @@ static NSString *photoCellId = @"photoCell";
         }
         case 5:{
             HoursTableViewCell *hoursCell = [[HoursTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            hoursCell.dynamicHeight = self.dynamicHoursHeight;
             [hoursCell populateHours:self.selectedRestaurant];
             cell = hoursCell;
+            break;
+        }
+        case 6:{
+            AttributionTableViewCell *attributeCell = [[AttributionTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            cell = attributeCell;
             break;
         }
         default:
@@ -316,28 +412,17 @@ static NSString *photoCellId = @"photoCell";
     CGFloat cellHeight = 0.0;
     switch (indexPath.row) {
         case 0:{
-//            CGSize maxCellSize = CGSizeMake(APPLICATION_FRAME.size.width * 0.7, INT_MAX);//Setting the appropriate width is a MUST here!!
-//            CGRect nameSize = [self.selectedRestaurant.name boundingRectWithSize:maxCellSize
-//                                                                         options:NSStringDrawingUsesLineFragmentOrigin
-//                                                                      attributes:@{NSFontAttributeName:[UIFont nun_fontWithSize:22.0]} context:nil];
-//            
-//            //Account for other elements (hours, categories, etc)
-//            cellHeight = APPLICATION_FRAME.size.height * 0.1 + nameSize.size.height;
-//            
-//            //Only if the cellHeight is larger than our default do we expand the cell size
-//            if (cellHeight <= RESTAURANT_INFO_CELL_HEIGHT) {
-//                cellHeight = RESTAURANT_INFO_CELL_HEIGHT;
-//            }
-//            
             cellHeight = RESTAURANT_INFO_CELL_HEIGHT;
             break;
         }
         case 1:
             cellHeight = METRIC_CELL_HEIGHT;
             break;
-        case 2:
-            cellHeight = ((self.view.frame.size.width/3) * 2) + COLLECTION_PADDING;
+        case 2:{
+            CGFloat itemWidth = (CGRectGetWidth(self.view.frame) - (NUM_COLUMNS - 1.0)) / NUM_COLUMNS;
+            cellHeight = itemWidth * 2;
             break;
+        }
         case 3:
             cellHeight = METRIC_CELL_HEIGHT;
             break;
@@ -345,17 +430,16 @@ static NSString *photoCellId = @"photoCell";
             cellHeight = RESTAURANT_LOCATION_CELL_HEIGHT;
             break;
         case 5:{
-            if (self.selectedRestaurant.hours) {
-                if ((self.selectedRestaurant.hours.count - 1) == 1 || self.selectedRestaurant.hours.count == 0) {
-                    cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;//Only one line needed, use default
-                }else{
-                    cellHeight = RESTAURANT_HOURS_CELL_HEIGHT * (self.selectedRestaurant.hours.count * HOUR_CELL_SPACING); //Dynamically size hours cell based on number of days
-                }
+            if (self.dynamicHoursHeight > 0.0) {
+                cellHeight = self.dynamicHoursHeight;
             }else{
-                cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;//Before we load detail data or no hours
+                cellHeight = RESTAURANT_HOURS_CELL_HEIGHT;
             }
             break;
         }
+        case 6:
+            cellHeight = ATTRIBUTION_CELL_HEIGHT;
+            break;
         default:
             break;
     }
@@ -372,8 +456,9 @@ static NSString *photoCellId = @"photoCell";
             break;
         case 3:{
             if (self.selectedRestaurant.menu) {
-                MenuViewController *menuVC = [[MenuViewController alloc]init];
-                menuVC.menuLink = self.selectedRestaurant.menu;
+                [FoodheadAnalytics logEvent:OPEN_RESTAURANT_MENU];
+                WebViewController *menuVC = [[WebViewController alloc]init];
+                menuVC.webLink = self.selectedRestaurant.menu;
                 [self.navigationController pushViewController:menuVC animated:YES];
             }
             break;
@@ -389,16 +474,44 @@ static NSString *photoCellId = @"photoCell";
     //Make sure to register the cell type you want to use in the TabledCollectionCell subclass!
     ImageCollectionCell *collectionCell = (ImageCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:photoCellId forIndexPath:indexPath];
     collectionCell.backgroundColor = [UIColor whiteColor];
-    
-    if (indexPath.row == 5) {
-        [collectionCell.contentView insertSubview:[self createAllButton] aboveSubview:collectionCell.coverImageView];
+
+    //If there are no photos load a placeholder
+    BOOL photoExists = YES;
+    if (indexPath.row + 1 > self.restaurantPhotos.count) {
+        photoExists = NO;
     }
     
-    //Get section instead and check if a dict exists
-    if (self.restaurantPhotos.count > 0) {
-        NSDictionary *imgInfo = self.restaurantPhotos[indexPath.row];
-        NSString *imgURL = imgInfo[@"url"];
-        [collectionCell.coverImageView sd_setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:[UIImage new] options:SDWebImageHighPriority completed:nil];
+    if (self.restaurantPhotos.count > 0 && photoExists) {
+        
+        //Check if UserReview, insta img, foursquare, etc.
+        id photo = self.restaurantPhotos[indexPath.row];
+        NSURL *photoUrl;
+        if ([photo isKindOfClass:[UserReview class]]) {
+            UserReview *userReview = (UserReview *)photo;
+            photoUrl = [NSURL URLWithString:userReview.thumbnailURL];
+        }else{
+            NSDictionary *imgInfo = photo;
+            NSString *imgURL = imgInfo[@"url"];
+            photoUrl = [NSURL URLWithString:imgURL];
+        }
+        
+        if (indexPath.row == 5) {
+            collectionCell.delegate = self;
+            [collectionCell showSeeAllButton];
+        }
+        
+        [collectionCell.coverImageView sd_setImageWithURL:photoUrl placeholderImage:[UIImage imageNamed:@"image_unavailable"] options:SDWebImageHighPriority|SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            if (cacheType == SDImageCacheTypeNone) {
+                collectionCell.coverImageView.alpha = 0.0;
+                [UIView animateWithDuration:0.25 animations:^{
+                    collectionCell.coverImageView.alpha = 1.0;
+                }];
+            }else{
+                collectionCell.coverImageView.alpha = 1.0;
+            }
+        }];
+    }else{
+        [collectionCell.coverImageView setImage:[UIImage imageNamed:@"image_unavailable"]];
     }
     return collectionCell;
 }
@@ -407,22 +520,63 @@ static NSString *photoCellId = @"photoCell";
     return 1;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    if (self.restaurantPhotos.count >= 6) {
-        return 6;
-    }
-    return self.restaurantPhotos.count;
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return NUM_COLLECTION_CELLS;
 }
 
 #pragma mark - UICollectionViewDelegate methods
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 5) {
-        RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc]init];
-        albumVC.images = self.selectedRestaurant.images;
-        [self.navigationController pushViewController:albumVC animated:YES];
+    //Don't allow user to enter browser through a cell which has no photo
+    if (indexPath.row + 1 > self.idmPhotos.count) {
+        return;
     }
+
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc]initWithPhotos:self.idmPhotos];
+    browser.delegate = self;
+    browser.useWhiteBackgroundColor = YES;
+    browser.displayDoneButton = NO;
+    browser.dismissOnTouch = YES;
+    browser.displayToolbar = NO;
+    browser.autoHideInterface = NO;
+    browser.forceHideStatusBar = YES;
+    browser.usePopAnimation = YES;
+    browser.disableVerticalSwipe = YES;
+    browser.progressTintColor = APPLICATION_BLUE_COLOR;
+    [browser setInitialPageIndex:indexPath.row];
+    [browser trackPageCount];
+    
+    [self presentViewController:browser animated:YES completion:nil];
+}
+
+#pragma mark ImageCollectionCellDelegate methods
+
+- (void)didTapSeeAllButton{
+    [FoodheadAnalytics logEvent:OPEN_RESTAURANT_ALBUM];
+    RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc]init];
+    albumVC.media = self.restaurantPhotos;
+    albumVC.nextPg = self.nextPg;
+    albumVC.restaurant = self.selectedRestaurant;
+    [self.navigationController pushViewController:albumVC animated:YES];
+}
+
+#pragma mark IDMPhotoBrowserDelegate Methods
+
+//Display our custom metric view if it's a user photo
+- (IDMCaptionView *)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
+    id photoInfo = self.restaurantPhotos[index];
+    if ([photoInfo isKindOfClass:[UserReview class]]) {
+        UserReview *userReview = (UserReview *)photoInfo;
+        IDMPhoto *photo = [[IDMPhoto alloc]initWithURL:[NSURL URLWithString:userReview.imageURL]];
+        ReviewMetricView *ratingView = [[ReviewMetricView alloc]initWithPhoto:photo];
+        [ratingView loadReview:userReview];
+        return ratingView;
+    }
+    return nil;
+}
+
+- (void)willDisappearPhotoBrowser:(IDMPhotoBrowser *)photoBrowser{
+    [FoodheadAnalytics logEvent:ALBUM_SWIPE_COUNT withParameters:@{@"albumSwipeCount" : photoBrowser.pagingCount}];
 }
 
 @end

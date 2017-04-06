@@ -30,8 +30,7 @@
 - (instancetype)initWithTableView:(UITableView *)tableview
                 cellIdentifier:(NSString *)cellId;
 
-- (void)getRestaurantsAtLocation:(CLLocationCoordinate2D)coordinate;
-
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate;
+- (void)refreshCharts;
 
 @end

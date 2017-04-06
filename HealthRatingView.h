@@ -10,6 +10,6 @@
 
 @interface HealthRatingView : UIView
 
-- (void)setHealth:(NSNumber *)healthiness;
+- (void)setHealth:(NSNumber *)healthiness inReviewFlow:(BOOL)reviewFlow;
 
 @end

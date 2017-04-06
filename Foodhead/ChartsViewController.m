@@ -13,17 +13,23 @@
 #import "TPLRestaurant.h"
 #import "UserAuthManager.h"
 #import "TPLRestaurantPageViewController.h"
-#import "CameraViewController.h"
 #import "TPLChartsViewModel.h"
 #import "TPLExpandedChartController.h"
 #import "AppDelegate.h"
 #import "User.h"
 #import "UIFont+Extension.h"
-#import "RestaurantReview.h"
 #import "TabCameraViewController.h"
-#import "LocationPermissionView.h"
+#import "Chart.h"
+#import "UserFeedbackViewController.h"
+#import "ServiceErrorView.h"
+#import "FoodheadAnalytics.h"
+#import "UserProfileViewController.h"
+#import "LayoutBounds.h"
 
-@interface ChartsViewController () <LocationManagerDelegate, TabledCollectionDelegate, LocationPermissionViewDelegate>
+
+#import "NSString+IsEmpty.h"
+
+@interface ChartsViewController () <LocationManagerDelegate, TabledCollectionDelegate, ServiceErrorViewDelegate>
 
 //Authentication
 @property (nonatomic, strong) UserAuthManager *authManager;
@@ -33,11 +39,11 @@
 @property (nonatomic, strong) UIButton *searchButton;
 
 //Location
-@property (nonatomic, strong) LocationPermissionView *permissionView;
 @property (nonatomic, strong) LocationManager *locationManager;
 
 //Charts UI
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, assign) BOOL canScrollToTop;
 
 //Tabled Collection Manager - Manages all delegate/datasources for our custom charts controller as well as populating data with TPLChartsViewModel
 @property (nonatomic, strong) TabledCollectionManager *tableCollectionMngr;
@@ -45,42 +51,79 @@
 //Pull to refresh
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
+//Service Error
+@property (nonatomic, strong) ServiceErrorView *errorView;
+
 @end
 
 @implementation ChartsViewController
 
 static NSString *cellId = @"tabledCollectionCell";
 
-#pragma mark - View Lifecyclle
+#pragma mark - View Lifecycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     self.tabBarController.delegate = self;
-
+    
     [self setupNavBar];
     [self setupUI];
     [self verifyCurrentUser];
     
     self.locationManager = [LocationManager sharedLocationInstance];
-    
-    //User skipped to get in here so show permissions
-    if (self.locationManager.authorizedStatus == kCLAuthorizationStatusNotDetermined) {
-        self.permissionView = [[LocationPermissionView alloc]initWithFrame:self.view.frame];
-        self.permissionView.delegate = self;//This becomes a problem with singleton bc delegate is set in here - make sure to check this - reconsider singleton???
-        [self.view addSubview:self.permissionView];
-    }else if(self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse){
-        self.locationManager.locationDelegate = self;
-        [self.locationManager getCurrentLocation];//Callback gives us current coord
-    }else if (self.locationManager.authorizedStatus == kCLAuthorizationStatusDenied){
-        //Show error in charts background
+    self.locationManager.locationDelegate = self;
+    [self addObservers];
+
+    if (self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse || self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedAlways){
+        //Find a better way to only call this once
+        [self.locationManager retrieveCurrentLocation];
+    }else{
+        self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width , self.view.frame.size.height) andErrorType:ServiceErrorTypeLocation];
+        [self.view addSubview:self.errorView];
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    
+- (void)addObservers{
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(checkLocationPermissions) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)removeObservers{
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)checkLocationPermissions{
+    [self.locationManager checkLocationAuthorization];
+    if(self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse || self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedAlways)
+    {//If user denies location at first, but allows and comes back into app
+        if ([self.errorView superview] && self.errorView.errorType == ServiceErrorTypeLocation){
+            [self.errorView removeFromSuperview];
+            [self.locationManager retrieveCurrentLocation];
+        }
+    }
+    else
+    {//If user goes to settings and denies location access
+        if (![self.errorView superview]) {
+            self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width , self.view.frame.size.height) andErrorType:ServiceErrorTypeLocation];
+            [self.view addSubview:self.errorView];
+        }
+    }
+}
+
+- (void)dealloc{
+    [self removeObservers];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.canScrollToTop = YES;
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.canScrollToTop = NO;
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
 }
 
 #pragma mark - Status bar
@@ -97,18 +140,24 @@ static NSString *cellId = @"tabledCollectionCell";
 
 - (void)setupNavBar{
     //This back button must be configured in parent view controller so all pushed VCs reflec this change. The back image is set in its respective VC, but this is just to get rid of the "Back" button title.
+    self.navigationController.navigationBar.barTintColor = APPLICATION_BACKGROUND_COLOR;
+
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationController.navigationBar.topItem.title = @"foodhead";
     
-    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : [UIColor blackColor]};
-    //self.navigationController.hidesBarsOnSwipe = YES;
+    self.navigationController.navigationBar.topItem.title = @"Foodhead";
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];
 }
 
 - (void)setupUI{
     self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStyleGrouped];
-    //Change this init method
+    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    self.tableView.contentInset = adjustForTabbarInsets;
+    self.tableView.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.tableView.showsVerticalScrollIndicator = NO;
     self.tableCollectionMngr = [[TabledCollectionManager alloc] initWithTableView:self.tableView cellIdentifier:cellId];
     self.tableView.delegate = self.tableCollectionMngr;
     self.tableView.dataSource = self.tableCollectionMngr;
@@ -116,40 +165,34 @@ static NSString *cellId = @"tabledCollectionCell";
     self.tableView.backgroundColor = [UIColor whiteColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.tableView];
-    
 }
 
-//- (void)openCamera
-//{
-//    CameraViewController *camVC = [[CameraViewController alloc]init];
-//    RestaurantReview *newReview = [[RestaurantReview alloc]init];
-//    newReview.reviewLocation = [self.locationManager getCurrentLocation];
-//    camVC.currentReview = newReview;
-//    [self.navigationController pushViewController:camVC animated:NO ];
-//}
+- (void)submitFeedback{
+    UserFeedbackViewController *feedbackVC = [[UserFeedbackViewController alloc]init];
+    [self.navigationController pushViewController:feedbackVC animated:YES];
+}
 
 #pragma mark - User Session
 
 //Redirect and logout if credential aren't the same as last logged in user or expired auth
-
-- (void)verifyCurrentUser{
+- (void)verifyCurrentUser{    
     self.authManager = [UserAuthManager sharedInstance];
     [self.authManager retrieveCurrentUser:^(id user) {
-        NSString *lastUserId = [[NSUserDefaults standardUserDefaults]objectForKey:LAST_USER_DEFAULT];
-        User *currentUser = (User *)user;
         
-        //Extra check to see if this was the last logged in user 
-        if ([[currentUser.userId stringValue]isEqualToString:lastUserId] ) {
-            NSLog(@"SAME USER DO NOTHING!");
+        //TODO:: Refactor this check into AuthManager and just return an error if user ids dont match
+        NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:LAST_USER_DEFAULT];
+        User *lastUser;
+        if (data) {
+            lastUser = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        }
+        User *currentUser = (User *)user;
+        if ([currentUser.userId isEqual: lastUser.userId]) {
+            NSLog(@"Same user, do nothing.");
         }else{
-            UIAlertController *invalidUserAlert = [UIAlertController alertControllerWithTitle:@"Invalid Login" message:@"There was a problem verifying who you are. Please try logging in again!" preferredStyle:UIAlertControllerStyleAlert];
-            [self presentViewController:invalidUserAlert animated:YES completion:^{
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
-                [appDelegate changeRootViewControllerFor:RootViewTypeLogin withAnimation:NO];
-            }];
+            //Take them to login?
         }
     } failureHandler:^(id error) {
-        NSLog(@"Couldn't retrieve current user info. Should logout!");
+        //Anon login handle
     }];
 }
 
@@ -159,30 +202,29 @@ static NSString *cellId = @"tabledCollectionCell";
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = item;
     restPageVC.currentLocation = [LocationManager sharedLocationInstance].currentLocation;
+    [FoodheadAnalytics logEvent:OPEN_RESTAURANT_PAGE];
     [self.navigationController pushViewController:restPageVC animated:YES];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(NSDictionary *)chartInfo{
-    TPLExpandedChartController *chartVC = [[TPLExpandedChartController alloc]init];
-    chartVC.chartInfo = chartInfo;
-    [self.navigationController pushViewController:chartVC animated:YES];
-}
-
-#pragma mark - LocationPermissionViewDelegate methods
-
-- (void)didAuthorizeLocation:(CLAuthorizationStatus)status{
-    [self.permissionView removeFromSuperview];
-    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
-        self.locationManager.locationDelegate = self;
-        [self.locationManager getCurrentLocation];
-    }else{
-        //Show error in charts background
-    }
+- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(Chart *)chartInfo{
+//    TPLExpandedChartController *chartVC = [[TPLExpandedChartController alloc]init];
+//    chartVC.selectedChart = chartInfo;
+//    chartVC.currentLocation = [[LocationManager sharedLocationInstance]currentLocation];
+//    [FoodheadAnalytics logEvent:EXPANDED_CHART_PAGE withParameters:@{@"chartName" : chartInfo.name}];
+//    [self.navigationController pushViewController:chartVC animated:YES];
 }
 
 #pragma mark - LocationManager delegate methods
+
 - (void)didGetCurrentLocation:(CLLocationCoordinate2D)coordinate{
     [self.tableCollectionMngr getChartsAtLocation:coordinate];
+}
+
+#pragma mark - ServiceErrorViewDelegate methods
+
+- (void)serviceErrorViewToggledRefresh{
+    //Verify connection by verifying user - Could also just check for internet connection
+    [self verifyCurrentUser];
 }
 
 #pragma mark - UITabBarControllerDelegate methods
@@ -190,14 +232,21 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
 //    UINavigationController *nav = (UINavigationController *)viewController;
 //    UIViewController *root = [[nav viewControllers]firstObject];
-//    
 //    if ([root isKindOfClass:[TabCameraViewController class]]) {
 //        TabCameraViewController *camVC = (TabCameraViewController *) root;
 //        camVC.tabBarController.delegate = camVC;//Always keep delegate in appropriate VC.
 //    }
-//    else if ([root isKindOfClass:[ChartsViewController class]]){
-//        [self.tableView setContentOffset:CGPointMake(0, -self.tableView.contentInset.top) animated:YES];//Scroll to top only if tableview is visible
-//    }
+    
+    //Disable scroll to top if coming from a different page
+    if (self.canScrollToTop) {
+        [self.tableView setContentOffset:CGPointMake(0, -self.tableView.contentInset.top) animated:YES];//Scroll to top only if tableview is visible
+    }
+    
+    UINavigationController *nav = (UINavigationController *)viewController;
+    UIViewController *root = [[nav viewControllers]firstObject];
+    if ([root isKindOfClass:[UserProfileViewController class]]) {
+        [FoodheadAnalytics logEvent:PROFILE_TAB_CLICK];
+    }
 }
 
 @end
