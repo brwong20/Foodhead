@@ -91,7 +91,8 @@ static NSString *photoCellId = @"photoCell";
 - (void)loadRestaurantDetails{
     [self.pageViewModel retrieveRestaurantDetailsFor:self.selectedRestaurant atLocation:self.currentLocation completionHandler:^(TPLRestaurant* fullRestaurant) {
         if (fullRestaurant) {
-            self.selectedRestaurant = fullRestaurant;            
+            self.detailsFetched = YES;
+            self.selectedRestaurant = fullRestaurant;
             self.dynamicHoursHeight = [self calculateDynamicHoursHeight];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0],
@@ -103,7 +104,6 @@ static NSString *photoCellId = @"photoCell";
             //Must load reviews after we retrieve details because restaurant might not be cached in our db
             [self.pageViewModel retrieveReviewsForRestaurant:fullRestaurant completionHandler:^(id completionHandler) {
                 [self.userReviews addObjectsFromArray:completionHandler];
-                self.detailsFetched = YES;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                 });
