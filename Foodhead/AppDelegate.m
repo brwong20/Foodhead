@@ -28,7 +28,9 @@
     BOOL fbLaunched = [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
 
+#if PRODUCTION
     [FoodheadAnalytics beginFlurrySession];
+#endif
     
     //Must create window here ourselves if not using storyboard
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];

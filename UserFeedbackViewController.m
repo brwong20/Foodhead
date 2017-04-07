@@ -125,7 +125,7 @@
     [SVProgressHUD setMinimumSize:CGSizeMake(self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.2)];
     [SVProgressHUD showWithStatus:@"Submitting feedback"];
     [SVProgressHUD setMinimumDismissTimeInterval:2.0];
-    [sessionManager POST:USER_FEEDBACK_URL parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [sessionManager POST:API_FEEDBACK parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.submitButton.enabled = YES;
         [SVProgressHUD showSuccessWithStatus:@"Thanks for the feedback!"];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

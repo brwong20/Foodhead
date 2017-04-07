@@ -83,79 +83,51 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define STATUS_CODE_CONFLICT @"409"
 #define STATUS_NO_INTERNET @"The Internet connection appears to be offline."
 
-/*YumDrop API - Staging/Production Server
- ------------*/
-#define STAGING_BASE_URL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com"
+
+/* Foodhead API - API_BASE_URL defined in Prefix.pch file based on scheme */
+
+//Authentication Constants
+#define FB_PROVIDER_PATH @"facebook"
+#define AUTH_TOKEN_PARAM @"AUTHTOKEN"
 
 //Users
-#define API_USER @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/users"
+#define API_USER [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users"]
 #define ANON_USER @"anon"
 #define SIGNUP_NOTIFICATION @"signup"
 
 //Sessions
-#define API_SESSION_STATUS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/sessions"
-#define API_SERVER_STATUS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/sessions/health"
-#define API_SESSION_AUTHORIZE @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/auth/%@/callback"
+#define API_SESSION_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions"]
+#define API_SERVER_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions/health"]
+#define API_SESSION_AUTHORIZE [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/auth/%@/callback"]
 
 //Reviews
-#define API_REVIEW @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@/reviews"
-#define API_USER_REVIEWS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/users/reviews"
+#define API_REVIEW [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/reviews"]
+#define API_USER_REVIEWS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users/reviews"]
 
 //Places
-#define API_PLACES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places"
-#define API_PLACE_DETAIL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@"
-#define API_PLACE_SUGGESTIONS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/suggestions"
-#define API_PLACE_MEDIA @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@/images"
+#define API_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places"]
+#define API_PLACE_DETAIL [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@"]
+#define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
+#define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
 
 //Charts
-#define API_CHARTS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/charts"
+#define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/charts"]
 
 //Categories
-#define API_CATEGORIES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/categories"
+#define API_CATEGORIES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/categories"]
 
 
 //Workers
-#define API_WORKER_PLACES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/workers/%@/explorer"
-#define API_WORKER_DETAILS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/workers/%@/details"
+#define API_WORKER_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/explorer"]
+#define API_WORKER_DETAILS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/details"]
 
-//Images
+//User Feedback
+#define API_FEEDBACK [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/feedbacks"]
+
+//Images Types
 #define IMG_TYPE_FOURSQ @"foursquare_photo"
 #define IMG_TYPE_INSTA_MOBILE @"instagram_location"
 //#define IMG_TYPE_INSTA WEB
-
-/*YumDrop API - Development Server
-------------*/
-
-//Authentication & Sessions
-#define YUM_PROVIDER_AUTH @"http://yumdrop-dev.scrij.com/api/auth/%@/callback"
-#define YUM_CHECK_SESSION @"http://yumdrop-dev.scrij.com/api/sessions"
-#define FB_PROVIDER_PATH @"facebook"
-#define AUTH_TOKEN_PARAM @"AUTHTOKEN"
-
-
-#define BASE_URL @"http://yumdrop-dev.scrij.com/api/"
-
-//Users
-#define YUM_GET_USER_INFO @"http://yumdrop-dev.scrij.com/api/users"
-
-//Places
-#define YUM_PLACES_GENERAL @"http://yumdrop-dev.scrij.com/api/places"
-#define YUM_PLACES_DETAILS @"http://yumdrop-dev.scrij.com/api/places/%@"
-
-
-//Charts
-#define YUM_CHARTS @"http://yumdrop-dev.scrij.com/api/charts"
-
-//Reviews
-#define YUM_PLACES_REVIEWS @"http://yumdrop-dev.scrij.com/api/places/%@/reviews"
-
-//Feedback
-#define USER_FEEDBACK_URL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/feedbacks"
-
-//Workers
-#define YUM_WORKER_GENERAL @"http://yumdrop-dev.scrij.com/api/workers/%@/explorer"
-#define YUM_WORKER_DETAILS @"http://yumdrop-dev.scrij.com/api/workers/%@/details"
-
 
 /*UI Constants
 --------------*/
@@ -199,7 +171,6 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 /*Helper Macros
  -------------*/
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 #define CHART_TAB_TAG 1
 #define CAMERA_TAB_TAG 2

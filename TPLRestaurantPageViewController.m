@@ -357,6 +357,8 @@ static NSString *photoCellId = @"photoCell";
         }
         case 3:{
             MenuTableViewCell *menuCell = [[MenuTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            
+            //Only show menu text after we know for sure if there is a menu (after we get details)
             if (self.selectedRestaurant.menu) {
                 menuCell.menuLabel.text = @"Menu";
                 [menuCell.arrowImg setHidden:NO];

@@ -86,7 +86,8 @@
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)[task response];
                 if(response){
                     NSDictionary *httpHeaders = response.allHeaderFields;
-                    NSLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
+                    //NSLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
+                    DLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
                 }
                 Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];
                 [chart mergeValuesForKeysFromModel:places];
