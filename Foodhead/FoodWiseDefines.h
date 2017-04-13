@@ -109,6 +109,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define API_PLACE_DETAIL [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@"]
 #define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
 #define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
+#define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
 
 //Charts
 #define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/charts"]
@@ -159,8 +160,10 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define HEALTH_CONVERSION_COUNT 5
 
 //Search
+#define SEARCH_CONTROLLER_CELL_HEIGHT 55.0
 #define SEARCH_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define MAX_RESULT_COUNT 3
+#define RESULT_CELL_HEIGHT 175.0
 
 //Settings
 #define SETTINGS_CELL_HEIGHT 80.0
@@ -182,6 +185,14 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define APPLICATION_PURPLE_COLOR UIColorFromRGB(0xBA9AC1)
 
 #define APPLICATION_FRAME   [UIScreen mainScreen].bounds
+
+
+#define ASSET_PADDING           5
+#define ASSET_FRAME             CGRectMake(0, 0, CGRectGetWidth(APPLICATION_FRAME), CGRectGetHeight(APPLICATION_FRAME))
+#define ASSET_FRAME_LANDSCAPE   CGRectMake(0, 0, CGRectGetHeight(APPLICATION_FRAME), CGRectGetWidth(APPLICATION_FRAME))
+
+#define PREVIEW_FRAME  CGRectMake(0, APPLICATION_FRAME.size.height/2 - APPLICATION_FRAME.size.width/2, APPLICATION_FRAME.size.width, APPLICATION_FRAME.size.width)
+
 
 #define METERS_TO_MILES 0.000621371
 

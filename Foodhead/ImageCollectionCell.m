@@ -15,7 +15,6 @@
 @property (nonatomic, strong) UIView *allButton;
 @property (nonatomic, strong) UILabel *allLabel;
 @property (nonatomic, strong) UIImageView *arrowImg;
-@property (nonatomic, strong) UITapGestureRecognizer *seeAllGesture;
 
 @end
 
@@ -26,7 +25,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.coverImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-        self.coverImageView.backgroundColor = [UIColor clearColor];
+        self.coverImageView.backgroundColor = [UIColor whiteColor];
         self.coverImageView.contentMode = UIViewContentModeScaleAspectFill;
         self.clipsToBounds = YES;
         [self.contentView addSubview:self.coverImageView];
@@ -59,10 +58,6 @@
     self.arrowImg.contentMode = UIViewContentModeScaleAspectFit;
     [self.arrowImg setImage:[UIImage imageNamed:@"arrow_right_white"]];
     [self.allButton addSubview:self.arrowImg];
-    
-    self.seeAllGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tappedSeeAll)];
-    self.seeAllGesture.numberOfTapsRequired = 1;
-    [self.allButton addGestureRecognizer:self.seeAllGesture];
 }
 
 - (void)tappedSeeAll{
