@@ -22,12 +22,12 @@
 //        self.layer.borderWidth = 1.0;
 //        self.layer.borderColor = [UIColor grayColor].CGColor;
         
-        self.categoryImgView = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.2, frame.size.height/3 - frame.size.width * 0.2, frame.size.width * 0.4, frame.size.width * 0.4)];
+        self.categoryImgView = [[UIImageView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.2, frame.size.height/2.5 - frame.size.width * 0.2, frame.size.width * 0.4, frame.size.width * 0.4)];
         self.categoryImgView.contentMode = UIViewContentModeScaleAspectFit;
         self.categoryImgView.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:self.categoryImgView];
         
-        self.categoryName = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.categoryImgView.frame) - frame.size.width * 0.4, CGRectGetMaxY(self.categoryImgView.frame) + frame.size.height * 0.07, frame.size.width * 0.8, frame.size.height * 0.15)];
+        self.categoryName = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.categoryImgView.frame) - frame.size.width * 0.43, CGRectGetMaxY(self.categoryImgView.frame) + frame.size.height * 0.05, frame.size.width * 0.86, frame.size.height * 0.15)];
         self.categoryName.backgroundColor = [UIColor clearColor];
         self.categoryName.textAlignment = NSTextAlignmentCenter;
         self.categoryName.textColor = UIColorFromRGB(0x4D4E51);

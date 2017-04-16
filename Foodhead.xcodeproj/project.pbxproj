@@ -26,6 +26,14 @@
 		A02D2F291E5A497E003E65F3 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F281E5A497E003E65F3 /* UserProfileViewController.m */; };
 		A033E5A11E43E76300D4B9AC /* NSString+IsEmpty.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */; };
 		A033E5A41E43E7C600D4B9AC /* NSString+Trim.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E59D1E43E74900D4B9AC /* NSString+Trim.m */; };
+		A039F8811E99F5280093CE24 /* CategoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8801E99F5280093CE24 /* CategoryCollectionViewCell.m */; };
+		A039F8851E9A0D560093CE24 /* AnimationPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8841E9A0D560093CE24 /* AnimationPreviewViewController.m */; };
+		A039F8881E9A0DD90093CE24 /* AssetPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8871E9A0DD90093CE24 /* AssetPreviewViewController.m */; };
+		A039F88D1E9AB8D90093CE24 /* PreviewAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F88C1E9AB8D90093CE24 /* PreviewAnimation.m */; };
+		A039F8941E9AF45B0093CE24 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8931E9AF45B0093CE24 /* UIDeviceHardware.m */; };
+		A039F8A01E9C45D80093CE24 /* SearchFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F89F1E9C45D80093CE24 /* SearchFilterView.m */; };
+		A039F8A31E9D3D930093CE24 /* ResultTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */; };
+		A039F8A61E9D7B980093CE24 /* Category.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A51E9D7B980093CE24 /* Category.m */; };
 		A04B99621E70016E004AE07A /* PriceFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99611E70016E004AE07A /* PriceFilterView.m */; };
 		A04B996C1E7204AA004AE07A /* UIFont+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B996B1E7204AA004AE07A /* UIFont+Extension.m */; };
 		A04B99861E720A51004AE07A /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99801E72087A004AE07A /* Nunito-Regular.ttf */; };
@@ -87,6 +95,7 @@
 		A0E8442A1E283B0800BE98B1 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844291E283B0800BE98B1 /* FBSDKShareKit.framework */; };
 		A0ED828B1E427BCB0029D96E /* TPLRestaurantPageViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A0ED828A1E427BCB0029D96E /* TPLRestaurantPageViewModel.m */; };
 		A0EDD6B01E9762A3007A2445 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */; };
+		A0EDD6B41E980947007A2445 /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */; };
 		A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCC91E3811F0003D56A9 /* LocationManager.m */; };
 		A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */; };
 		A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */; };
@@ -134,6 +143,22 @@
 		A033E59D1E43E74900D4B9AC /* NSString+Trim.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Trim.m"; sourceTree = "<group>"; };
 		A033E59F1E43E76300D4B9AC /* NSString+IsEmpty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+IsEmpty.h"; path = "../../../Documents/Workspace/Joyspace App/Joyspace/Categories/NSString/NSString+IsEmpty.h"; sourceTree = "<group>"; };
 		A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+IsEmpty.m"; path = "../../../Documents/Workspace/Joyspace App/Joyspace/Categories/NSString/NSString+IsEmpty.m"; sourceTree = "<group>"; };
+		A039F87F1E99F5280093CE24 /* CategoryCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryCollectionViewCell.h; sourceTree = "<group>"; };
+		A039F8801E99F5280093CE24 /* CategoryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryCollectionViewCell.m; sourceTree = "<group>"; };
+		A039F8831E9A0D560093CE24 /* AnimationPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationPreviewViewController.h; sourceTree = "<group>"; };
+		A039F8841E9A0D560093CE24 /* AnimationPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimationPreviewViewController.m; sourceTree = "<group>"; };
+		A039F8861E9A0DD90093CE24 /* AssetPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetPreviewViewController.h; sourceTree = "<group>"; };
+		A039F8871E9A0DD90093CE24 /* AssetPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssetPreviewViewController.m; sourceTree = "<group>"; };
+		A039F88B1E9AB8D90093CE24 /* PreviewAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviewAnimation.h; sourceTree = "<group>"; };
+		A039F88C1E9AB8D90093CE24 /* PreviewAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviewAnimation.m; sourceTree = "<group>"; };
+		A039F8921E9AF45B0093CE24 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
+		A039F8931E9AF45B0093CE24 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
+		A039F89E1E9C45D80093CE24 /* SearchFilterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchFilterView.h; sourceTree = "<group>"; };
+		A039F89F1E9C45D80093CE24 /* SearchFilterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchFilterView.m; sourceTree = "<group>"; };
+		A039F8A11E9D3D930093CE24 /* ResultTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultTableViewCell.h; sourceTree = "<group>"; };
+		A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultTableViewCell.m; sourceTree = "<group>"; };
+		A039F8A41E9D7B980093CE24 /* Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Category.h; sourceTree = "<group>"; };
+		A039F8A51E9D7B980093CE24 /* Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Category.m; sourceTree = "<group>"; };
 		A04B995A1E6F94AC004AE07A /* FoodWiseDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FoodWiseDefines.h; sourceTree = "<group>"; };
 		A04B99601E70016E004AE07A /* PriceFilterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriceFilterView.h; sourceTree = "<group>"; };
 		A04B99611E70016E004AE07A /* PriceFilterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriceFilterView.m; sourceTree = "<group>"; };
@@ -244,6 +269,8 @@
 		A0EDD6AC1E973DF3007A2445 /* Foodhead_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Foodhead_Prefix.pch; sourceTree = "<group>"; };
 		A0EDD6AE1E9762A3007A2445 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
 		A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
+		A0EDD6B21E980947007A2445 /* SearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchTableViewCell.h; sourceTree = "<group>"; };
+		A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchTableViewCell.m; sourceTree = "<group>"; };
 		A0F4CCC81E3811F0003D56A9 /* LocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationManager.h; sourceTree = "<group>"; };
 		A0F4CCC91E3811F0003D56A9 /* LocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationManager.m; sourceTree = "<group>"; };
 		A0F4CCCB1E3836B7003D56A9 /* TPLRestaurant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLRestaurant.h; sourceTree = "<group>"; };
@@ -360,8 +387,6 @@
 			children = (
 				A0E8441D1E2806FE00BE98B1 /* TabledCollectionCell.h */,
 				A0E8441E1E2806FE00BE98B1 /* TabledCollectionCell.m */,
-				A0E844201E28071200BE98B1 /* ImageCollectionCell.h */,
-				A0E844211E28071200BE98B1 /* ImageCollectionCell.m */,
 			);
 			name = "Tabled Collection";
 			sourceTree = "<group>";
@@ -382,6 +407,8 @@
 		A02D2F151E58EEA9003E65F3 /* Restaurant Page */ = {
 			isa = PBXGroup;
 			children = (
+				A0E844201E28071200BE98B1 /* ImageCollectionCell.h */,
+				A0E844211E28071200BE98B1 /* ImageCollectionCell.m */,
 				A028D5411E7858B2001C7E89 /* RestaurantDetailsTableViewCell.h */,
 				A028D5421E7858B2001C7E89 /* RestaurantDetailsTableViewCell.m */,
 				A02D2F161E58EED1003E65F3 /* MetricsDisplayCell.h */,
@@ -416,6 +443,41 @@
 				A033E59D1E43E74900D4B9AC /* NSString+Trim.m */,
 			);
 			name = NSString;
+			sourceTree = "<group>";
+		};
+		A039F87B1E99B69D0093CE24 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				A04B99A11E74CE7E004AE07A /* SuggestionTableViewCell.h */,
+				A04B99A21E74CE7E004AE07A /* SuggestionTableViewCell.m */,
+				A0EDD6B21E980947007A2445 /* SearchTableViewCell.h */,
+				A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */,
+				A039F87F1E99F5280093CE24 /* CategoryCollectionViewCell.h */,
+				A039F8801E99F5280093CE24 /* CategoryCollectionViewCell.m */,
+				A039F8A11E9D3D930093CE24 /* ResultTableViewCell.h */,
+				A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */,
+			);
+			name = Search;
+			sourceTree = "<group>";
+		};
+		A039F8891E9A11820093CE24 /* Asset Preview */ = {
+			isa = PBXGroup;
+			children = (
+				A039F8861E9A0DD90093CE24 /* AssetPreviewViewController.h */,
+				A039F8871E9A0DD90093CE24 /* AssetPreviewViewController.m */,
+				A039F8831E9A0D560093CE24 /* AnimationPreviewViewController.h */,
+				A039F8841E9A0D560093CE24 /* AnimationPreviewViewController.m */,
+			);
+			name = "Asset Preview";
+			sourceTree = "<group>";
+		};
+		A039F88E1E9AB8E00093CE24 /* PreviewAnimation */ = {
+			isa = PBXGroup;
+			children = (
+				A039F88B1E9AB8D90093CE24 /* PreviewAnimation.h */,
+				A039F88C1E9AB8D90093CE24 /* PreviewAnimation.m */,
+			);
+			name = PreviewAnimation;
 			sourceTree = "<group>";
 		};
 		A04B996D1E7204B0004AE07A /* UIFont */ = {
@@ -558,6 +620,7 @@
 		A088C5AD1E80932300ACA764 /* Restaurant Media */ = {
 			isa = PBXGroup;
 			children = (
+				A039F8891E9A11820093CE24 /* Asset Preview */,
 				A088C5AE1E80937000ACA764 /* ReviewMetricView.h */,
 				A088C5AF1E80937000ACA764 /* ReviewMetricView.m */,
 				A02D2F0B1E580F41003E65F3 /* RestaurantAlbumViewController.h */,
@@ -623,6 +686,8 @@
 				A0C86DB41E6CFF9500FB3C0B /* TPLDetailedRestaurant.m */,
 				A04B99911E72676F004AE07A /* RestaurantReview.h */,
 				A04B99921E72676F004AE07A /* RestaurantReview.m */,
+				A039F8A41E9D7B980093CE24 /* Category.h */,
+				A039F8A51E9D7B980093CE24 /* Category.m */,
 			);
 			name = Restaurant;
 			sourceTree = "<group>";
@@ -639,13 +704,12 @@
 			isa = PBXGroup;
 			children = (
 				A02D2F0F1E581588003E65F3 /* Charts */,
+				A0EDD6B11E980927007A2445 /* Search */,
 				A02D2F0A1E580EBD003E65F3 /* Restaurant Page */,
 				A04B99A41E75E1EC004AE07A /* Review Flow */,
 				A02D2F031E57AFF5003E65F3 /* Profile */,
 				A0595ED51E457E1E001BB324 /* Login/Onboarding */,
 				A0D418DC1E3695FD004DDC6C /* Cells */,
-				A0EDD6AE1E9762A3007A2445 /* SearchViewController.h */,
-				A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */,
 				A088C5BD1E84B4C400ACA764 /* UserFeedbackViewController.h */,
 				A088C5BE1E84B4C400ACA764 /* UserFeedbackViewController.m */,
 			);
@@ -673,9 +737,8 @@
 				A023D7571E8AF36A00F23D85 /* Profile */,
 				A02D2F141E58EEA1003E65F3 /* Charts */,
 				A02D2F151E58EEA9003E65F3 /* Restaurant Page */,
+				A039F87B1E99B69D0093CE24 /* Search */,
 				A02D2F131E58EE81003E65F3 /* Tabled Collection */,
-				A04B99A11E74CE7E004AE07A /* SuggestionTableViewCell.h */,
-				A04B99A21E74CE7E004AE07A /* SuggestionTableViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -724,7 +787,10 @@
 		A0E844031E28034000BE98B1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A039F88E1E9AB8E00093CE24 /* PreviewAnimation */,
 				A08742D01E8DB7DD00C2AACC /* Analytics */,
+				A039F8921E9AF45B0093CE24 /* UIDeviceHardware.h */,
+				A039F8931E9AF45B0093CE24 /* UIDeviceHardware.m */,
 				A028D53B1E7795F1001C7E89 /* LayoutBounds.h */,
 				A028D53C1E7795F1001C7E89 /* LayoutBounds.m */,
 				A04B996F1E720816004AE07A /* Fonts */,
@@ -736,6 +802,17 @@
 				A0E844041E28034000BE98B1 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A0EDD6B11E980927007A2445 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				A0EDD6AE1E9762A3007A2445 /* SearchViewController.h */,
+				A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */,
+				A039F89E1E9C45D80093CE24 /* SearchFilterView.h */,
+				A039F89F1E9C45D80093CE24 /* SearchFilterView.m */,
+			);
+			name = Search;
 			sourceTree = "<group>";
 		};
 		A0F4CCCE1E38385C003D56A9 /* Networking */ = {
@@ -892,6 +969,7 @@
 				A088C59A1E7E2DF600ACA764 /* RatingContainerView.m in Sources */,
 				A0595ED91E45810E001BB324 /* TPLCameraPreviewView.m in Sources */,
 				A02D2EE91E53CAD2003E65F3 /* TPLExpandedChartController.m in Sources */,
+				A039F8A61E9D7B980093CE24 /* Category.m in Sources */,
 				A0595EDC1E458124001BB324 /* TPLCamPhotoCaptureDelegate.m in Sources */,
 				A088C5BF1E84B4C400ACA764 /* UserFeedbackViewController.m in Sources */,
 				A02D2F061E57B00E003E65F3 /* UserProfileView.m in Sources */,
@@ -901,6 +979,7 @@
 				A0C86DB51E6CFF9500FB3C0B /* TPLDetailedRestaurant.m in Sources */,
 				A08742D61E8DB7EE00C2AACC /* FoodheadAnalytics.m in Sources */,
 				A033E5A41E43E7C600D4B9AC /* NSString+Trim.m in Sources */,
+				A039F8811E99F5280093CE24 /* CategoryCollectionViewCell.m in Sources */,
 				A02D2EEC1E53D044003E65F3 /* ExpandedChartTableViewCell.m in Sources */,
 				A04B99A31E74CE7E004AE07A /* SuggestionTableViewCell.m in Sources */,
 				A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */,
@@ -910,6 +989,7 @@
 				A088C5BC1E8393FB00ACA764 /* SettingsTableViewCell.m in Sources */,
 				A028D54A1E789FC4001C7E89 /* MenuTableViewCell.m in Sources */,
 				A02D2EE61E53C501003E65F3 /* TPLChartSectionView.m in Sources */,
+				A039F8A01E9C45D80093CE24 /* SearchFilterView.m in Sources */,
 				A0F4CCD81E38408C003D56A9 /* TabledCollectionManager.m in Sources */,
 				A04B99931E72676F004AE07A /* RestaurantReview.m in Sources */,
 				A04B998F1E7265D0004AE07A /* RestaurantSearchViewController.m in Sources */,
@@ -925,6 +1005,7 @@
 				A088C5B91E83936B00ACA764 /* SettingsViewController.m in Sources */,
 				A02D2EEF1E5508B4003E65F3 /* UsernamePromptViewController.m in Sources */,
 				A0D418D81E3695C0004DDC6C /* LoginViewController.m in Sources */,
+				A039F8941E9AF45B0093CE24 /* UIDeviceHardware.m in Sources */,
 				A088C5911E7E2DD200ACA764 /* HealthRatingView.m in Sources */,
 				A088C5861E7CDB8B00ACA764 /* Places.m in Sources */,
 				A02D2F291E5A497E003E65F3 /* UserProfileViewController.m in Sources */,
@@ -937,6 +1018,8 @@
 				A0E844081E28034000BE98B1 /* AppDelegate.m in Sources */,
 				A028D5431E7858B2001C7E89 /* RestaurantDetailsTableViewCell.m in Sources */,
 				A02D2EFC1E566012003E65F3 /* User.m in Sources */,
+				A0EDD6B41E980947007A2445 /* SearchTableViewCell.m in Sources */,
+				A039F8851E9A0D560093CE24 /* AnimationPreviewViewController.m in Sources */,
 				A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */,
 				A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */,
 				A033E5A11E43E76300D4B9AC /* NSString+IsEmpty.m in Sources */,
@@ -945,11 +1028,14 @@
 				A02D2F181E58EED1003E65F3 /* MetricsDisplayCell.m in Sources */,
 				A088C5741E7B4C1900ACA764 /* PermissionViewController.m in Sources */,
 				A084A6671E3D3A3A008A3DCE /* TPLChartsViewModel.m in Sources */,
+				A039F88D1E9AB8D90093CE24 /* PreviewAnimation.m in Sources */,
 				A0282C131E5F5BB400CE089F /* HoursTableViewCell.m in Sources */,
 				A088C5B01E80937000ACA764 /* ReviewMetricView.m in Sources */,
 				A02D2EF21E5512FC003E65F3 /* BRWSearchView.m in Sources */,
+				A039F8881E9A0DD90093CE24 /* AssetPreviewViewController.m in Sources */,
 				A0529A851E4AA61500150557 /* FilterView.m in Sources */,
 				A0595F0D1E47C92B001BB324 /* TPLAssetPreviewController.m in Sources */,
+				A039F8A31E9D3D930093CE24 /* ResultTableViewCell.m in Sources */,
 				A0E8441F1E2806FE00BE98B1 /* TabledCollectionCell.m in Sources */,
 				A04B999A1E7480AE004AE07A /* TabCameraViewController.m in Sources */,
 				A0BED0D71E7A7ACE00D21298 /* WebViewController.m in Sources */,

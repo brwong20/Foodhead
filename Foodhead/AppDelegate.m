@@ -14,6 +14,7 @@
 #import "UserProfileViewController.h"
 #import "FoodWiseDefines.h"
 #import "FoodheadAnalytics.h"
+#import "SearchViewController.h"
 
 #import "Flurry.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -72,11 +73,14 @@
     }
     else if (type == RootViewTypeCharts){
         self.tabBarController = [[UITabBarController alloc]init];
-        [[UITabBar appearance]setBackgroundImage:[UIImage imageNamed:@"tab_bar_bg"]];
+        [[UITabBar appearance]setBackgroundColor:[UIColor whiteColor]];
         self.tabBarController.tabBar.translucent = NO;
     
         ChartsViewController *chartsVC = [[ChartsViewController alloc]init];
         UINavigationController *chartsNav = [[UINavigationController alloc]initWithRootViewController:chartsVC];
+        
+        SearchViewController *searchVC = [[SearchViewController alloc]init];
+        UINavigationController *searchNav = [[UINavigationController alloc]initWithRootViewController:searchVC];
         
         TabCameraViewController *camVC = [[TabCameraViewController alloc]init];
         UINavigationController *camNav = [[UINavigationController alloc]initWithRootViewController:camVC];
@@ -84,30 +88,25 @@
         UserProfileViewController *profileVC = [[UserProfileViewController alloc]init];
         UINavigationController *profileNav = [[UINavigationController alloc]initWithRootViewController:profileVC];
         
-        UIViewController *firstBlank = [[UIViewController alloc]init];
-        UIViewController *secondBlank = [[UIViewController alloc]init];
-        
-        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, firstBlank, camNav, secondBlank ,profileNav, nil];
+        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, searchNav, camNav ,profileNav, nil];
         self.tabBarController.viewControllers = controllers;
         
         chartsVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"home"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        chartsVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
+        chartsVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -15.0, -5.0, 15.0);
         chartsVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"home_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         chartsVC.tabBarItem.tag = CHART_TAB_TAG;
         
-        //Hack to avoid creating custom tab bar and spacing tab bar items
-        firstBlank.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:nil selectedImage:nil];
-        firstBlank.tabBarItem.enabled = NO;
+        searchVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"search"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        searchVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -10.0, -5.0, 10.0);
+        searchVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"search_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        searchVC.tabBarItem.tag = 10;
         
         camVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"camera_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
+        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 10.0, -5.0, -10.0);
         camVC.tabBarItem.tag = CAMERA_TAB_TAG;
-        
-        secondBlank.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:nil selectedImage:nil];
-        secondBlank.tabBarItem.enabled = NO;
-        
+
         profileVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"profile"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        profileVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0.0, -5.0, 0.0);
+        profileVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 15.0, -5.0, -15.0);
         profileVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"profile_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         profileVC.tabBarItem.tag = PROFILE_TAB_TAG;
         

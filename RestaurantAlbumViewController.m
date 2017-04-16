@@ -16,16 +16,26 @@
 #import "FoodWiseDefines.h"
 #import "NSString+IsEmpty.h"
 #import "FoodheadAnalytics.h"
+#import "AnimationPreviewViewController.h"
+#import "AssetPreviewViewController.h"
+#import "PreviewAnimation.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
+#import <SDWebImage/SDWebImagePrefetcher.h>
 
-@interface RestaurantAlbumViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, IDMPhotoBrowserDelegate>
+@interface RestaurantAlbumViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, IDMPhotoBrowserDelegate, UIViewControllerTransitioningDelegate>
 
 @property (nonatomic, strong) TPLRestaurantPageViewModel *viewModel;
 
 @property (nonatomic, strong) UICollectionView *photoCollectionView;
 @property (nonatomic, strong) NSMutableArray *idmPhotos;
+
+@property (nonatomic, strong) AnimationPreviewViewController *previewVC;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGest;
+@property (nonatomic, assign) BOOL gestureCancelled;
+
+@property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 
 @end
 
@@ -33,7 +43,6 @@ static NSString *cellId = @"albumCell";
 static NSString *loadingCellId = @"loadingCell";
 
 #define NUM_COLUMNS 3
-#define LOADING_CELL_TAG 1
 
 @implementation RestaurantAlbumViewController
 
@@ -43,6 +52,10 @@ static NSString *loadingCellId = @"loadingCell";
     self.viewModel = [[TPLRestaurantPageViewModel alloc]init];
     self.idmPhotos = [NSMutableArray array];
     
+    //Sometimes the long press gesture finishes too fast so we use this to track completion.
+    self.gestureCancelled = NO;
+    
+    NSMutableArray *photoURLs = [NSMutableArray array];
     for (id photoInfo in self.media) {
         IDMPhoto *photo;
         
@@ -52,11 +65,11 @@ static NSString *loadingCellId = @"loadingCell";
             photo = [IDMPhoto photoWithURL:[NSURL URLWithString:userReview.imageURL]];
         }else{
             NSURL *photoURL = [[NSURL alloc]initWithString:photoInfo[@"url"]];
+            [photoURLs addObject:photoURL];
             photo = [IDMPhoto photoWithURL:photoURL];
         }
         [self.idmPhotos addObject:photo];
     }
-
     [self setupAlbum];
 }
 
@@ -103,6 +116,10 @@ static NSString *loadingCellId = @"loadingCell";
     self.photoCollectionView.showsVerticalScrollIndicator = NO;
     [self.photoCollectionView registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:cellId];
     [self.view addSubview:self.photoCollectionView];
+    
+    self.longPressGest = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+    self.longPressGest.minimumPressDuration = 0.15;
+    [self.photoCollectionView addGestureRecognizer:self.longPressGest];
 }
 
 #pragma mark - Networking
@@ -178,21 +195,6 @@ static NSString *loadingCellId = @"loadingCell";
     return cell;
 }
 
-//- (UICollectionViewCell *)loadingCell:(NSIndexPath *)indexPath{
-//    UICollectionViewCell *cell = [self.photoCollectionView dequeueReusableCellWithReuseIdentifier:loadingCellId forIndexPath:indexPath];
-//    cell.backgroundColor = [UIColor whiteColor];
-//    
-//    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-//    indicator.center = cell.center;
-//    [cell addSubview:indicator];
-//    
-//    [indicator startAnimating];
-//    
-//    cell.tag = LOADING_CELL_TAG;
-//    
-//    return cell;
-//}
-
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
     return 1;
 }
@@ -223,8 +225,7 @@ static NSString *loadingCellId = @"loadingCell";
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
-    //When user hits second to last row, load more images
-    if (indexPath.row == self.media.count - 4) {
+    if (indexPath.row == self.media.count - 6) {
         [self loadMoreImages];
     }
 }
@@ -255,11 +256,73 @@ static NSString *loadingCellId = @"loadingCell";
     [FoodheadAnalytics logEvent:ALBUM_SWIPE_COUNT withParameters:@{@"albumSwipeCount" : photoBrowser.pagingCount}];
 }
 
-//- (void)didFinishPagingCount:(int)count{
-//    NSLog(@"%d", count);
-//}
+#pragma mark - UIGestureRecognizerDelegate methods
 
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer{
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.gestureCancelled = NO;
+        CGPoint p = [gestureRecognizer locationInView:self.photoCollectionView];
+        self.selectedIndexPath = [self.photoCollectionView indexPathForItemAtPoint:p];
+        
+        //Must check if thumbnail has loaded first b/c we need the smaller image to perform animation as
+        ImageCollectionCell *imgCell = (ImageCollectionCell *)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
+        if (!CGSizeEqualToSize(imgCell.coverImageView.image.size, CGSizeZero)) {
+            NSDictionary *imgInfo = self.media[self.selectedIndexPath.row];
+            NSURL *imgURL = [NSURL URLWithString:imgInfo[@"url"]];
+            
+            //Init the view controller for previewing
+            self.previewVC = [[AnimationPreviewViewController alloc] initWithIndex:0 andImageURL:imgURL withPlaceHolder:imgCell.coverImageView.image];
+            self.previewVC.modalPresentationCapturesStatusBarAppearance = YES;//Must use this in order to hide the status bar
+            self.previewVC.transitioningDelegate = self;
+            [self.previewVC setModalPresentationStyle:UIModalPresentationCustom];
+            [self presentViewController:self.previewVC animated:YES completion:^{
+                if (self.gestureCancelled) {
+                    //[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+                }
+            }];
+        }
+    } else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [self.previewVC dismissViewControllerAnimated:YES completion:nil];
+    } else if(gestureRecognizer.state == UIGestureRecognizerStateCancelled) {
+        self.gestureCancelled = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.previewVC dismissViewControllerAnimated:YES completion:nil];
+        });
+    }
+}
 
+#pragma mark - UIViewControllerTransitioningDelegate methods
 
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    UIImageView *smallImageView;
+    UIImageView *bigImageView;
+    
+    //First lets get the current cell
+    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
+    
+    //Now lets get the current image
+    smallImageView = cell.coverImageView;
+    
+    //Now lets get the Animation Imageview
+    bigImageView = [(AnimationPreviewViewController*)presented imageView];
+    
+    return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    UIImageView *smallImageView;
+    UIImageView *bigImageView;
+    
+    //First lets get the current cell
+    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
+    
+    //Now lets get the current image
+    smallImageView = cell.coverImageView;
+    
+    //Now lets get the Animation Imageview
+    bigImageView = [(AnimationPreviewViewController*)dismissed imageView];
+    
+    return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
+}
 
 @end

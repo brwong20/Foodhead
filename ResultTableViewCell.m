@@ -130,30 +130,43 @@
     self.distanceLabel.backgroundColor = [UIColor clearColor];
     self.distanceLabel.font = [UIFont nun_mediumFontWithSize:16.0];
     [self.infoContainer addSubview:self.distanceLabel];
-    
-    //[LayoutBounds drawBoundsForAllLayers:self];
 }
 
 - (void)prepareForReuse{
     [super prepareForReuse];
+    
     self.restaurantThumbnail.image = nil;
+    self.restaurantName.text = @"";
+    self.categoryLabel.text = @"";
+    self.openNowLabel.text = @"";
+    [self.overallRating setOverall:@(0) inReviewFlow:NO];
+    self.distanceLabel.text = @"";
+    self.priceLabel.text = @"";
 }
 
 - (void)populateRestaurant:(TPLRestaurant *)restaurant{
     self.restaurantName.text = restaurant.name;
     
-    if (restaurant.primaryCategory) {
-        self.categoryLabel.text = restaurant.primaryCategory;
+    //Explore results only return the primary category so just get the first element.
+    if (restaurant.categories) {
+        self.categoryLabel.text = [restaurant.categories firstObject];
     }
     
-    if (restaurant.openNowExplore) {
-        if ([restaurant.openNowExplore boolValue]) {
+    if (restaurant.openNowExplore != nil) {
+        //Based on popular hour check-ins from Foursquare
+        if ([restaurant.openNowStatus isEqualToString:@"Likely open"]) {//Use Foursquare status
+            self.openNowLabel.text = @"Likely Open";
+        }else if([restaurant.openNowExplore boolValue] && !restaurant.openNowStatus) {//Based on popular hours
+            self.openNowLabel.text = @"Likely Open";
+        }else if (![restaurant.openNowExplore boolValue] && !restaurant.openNowStatus){//Based on popular hours
+            self.openNowLabel.text = @"Likely Closed";
+        }else if ([restaurant.openNowExplore boolValue] && restaurant.openNowStatus){
             self.openNowLabel.text = @"Open";
         }else{
             self.openNowLabel.text = @"Closed";
         }
     }else{
-        self.openNowLabel.text = @"Likely Open";
+        self.openNowLabel.text = @"Hours unavailable";
     }
     
     NSNumber *avgRating;
@@ -170,7 +183,7 @@
     }else if ([restaurant.foursq_price_tier isEqual: @(4)]){
         self.priceLabel.text = @"60+";
     }else{
-        self.priceLabel.text = @"no price yet";
+        self.priceLabel.text = @"No price yet";
     }
     
     //Meters to miles

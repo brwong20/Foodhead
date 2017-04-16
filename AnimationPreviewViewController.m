@@ -7,6 +7,7 @@
 //
 
 #import "AnimationPreviewViewController.h"
+#import "FoodWiseDefines.h"
 
 @interface AnimationPreviewViewController ()
 
@@ -33,14 +34,12 @@
     self.extendedLayoutIncludesOpaqueBars = YES;
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    [self.view addSubview:self.blurEffectView];
+    //[self.view addSubview:self.blurEffectView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -48,11 +47,8 @@
     [super viewDidAppear:animated];
     
     self.isNavbarHidden = YES;
-    
-    //[UIView animateWithDuration:0.3 animations:^{
-    //   [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-    //}];
 }
+
 
 -(PHImageRequestOptions*)getOptionsForClass
 {

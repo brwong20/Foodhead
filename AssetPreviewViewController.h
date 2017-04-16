@@ -17,7 +17,9 @@
 
 @property (assign) NSInteger pageindex;
 @property (nonatomic, strong) PHAsset *currentAsset;
-
+@property (nonatomic, strong) UIImage *currentImg;
+@property (nonatomic, strong) UIImage *placeHolderImg;
+@property (nonatomic, strong) NSURL *currentImgURL;
 
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSURL *videoURL;
@@ -28,6 +30,7 @@
 //@property (nonatomic, strong) SDImageCache *imageCache;
 
 -(instancetype)initWithIndex:(NSUInteger)index andAsset:(PHAsset*)asset;
+-(instancetype)initWithIndex:(NSUInteger)index andImageURL:(NSURL *)imgURL withPlaceHolder:(UIImage *)placeholder;
 
 -(PHImageRequestOptions*)getOptionsForClass;
 

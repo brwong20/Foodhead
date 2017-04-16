@@ -8,6 +8,7 @@
 
 #import "PreviewAnimation.h"
 #import <AVFoundation/AVUtilities.h>
+#import "FoodWiseDefines.h"
 
 @interface PreviewAnimation()
 
@@ -41,7 +42,7 @@
 #pragma mark UIViewControllerAnimatedTransitioning methods
 -(NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext
 {
-    return 0.1;
+    return 0.2;
 }
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
@@ -75,14 +76,15 @@
     [transitionContext.containerView addSubview:toViewController.view];
     
     //Setup frame for Orientation and aspect ration
-    CGRect frame;
-    if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
-        frame = ASSET_FRAME_LANDSCAPE;
-    }
-    else
-    {
-        frame = ASSET_FRAME;
-    }
+    CGRect frame = PREVIEW_FRAME;
+//    if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
+//        frame = ASSET_FRAME_LANDSCAPE;
+//    }
+//    else
+//    {
+//        frame = ASSET_FRAME;
+//    }
+    
     CGRect transitionViewFinalFrame = AVMakeRectWithAspectRatioInsideRect(self.smallImageViewRef.image.size, frame);
     
     // Perform the transition using a spring motion effect
@@ -91,10 +93,10 @@
     [UIView animateWithDuration:duration
                      animations:^{
                          transitionView.frame = transitionViewFinalFrame;
-                         if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
-                             transitionView.transform = CGAffineTransformMakeRotation(M_PI_2);
-                             transitionView.center = self.blurEffectView.center;
-                         }
+//                         if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
+//                             transitionView.transform = CGAffineTransformMakeRotation(M_PI_2);
+//                             transitionView.center = self.blurEffectView.center;
+//                         }
                      }
                      completion:^(BOOL finished) {
                          toViewController.view.alpha = 1;
@@ -112,15 +114,16 @@
     // Compute the initial frame for the temporary view based on the image view
     //CGRect transitionViewInitialFrame = AVMakeRectWithAspectRatioInsideRect(self.bigImageViewRef.image.size, APPLICATION_FRAME);
     CGRect transitionViewInitialFrame = [transitionContext.containerView convertRect:self.bigImageViewRef.bounds
-                                                                     fromView:self.bigImageViewRef];
+                                                                            fromView:self.bigImageViewRef];
     
-    if (self.bigImageViewRef.image.size.width > self.bigImageViewRef.image.size.height) {
-        transitionViewInitialFrame = ASSET_FRAME_LANDSCAPE;
-    }
-    else
-    {
-        transitionViewInitialFrame = ASSET_FRAME;
-    }
+    transitionViewInitialFrame = PREVIEW_FRAME;
+//    if (self.bigImageViewRef.image.size.width > self.bigImageViewRef.image.size.height) {
+//        transitionViewInitialFrame = ASSET_FRAME_LANDSCAPE;
+//    }
+//    else
+//    {
+//        transitionViewInitialFrame = ASSET_FRAME;
+//    }
     
     // Compute the final frame for the temporary view based on the reference
     // image view
@@ -139,11 +142,11 @@
     transitionView.contentMode = UIViewContentModeScaleAspectFill;
     transitionView.clipsToBounds = YES;
     transitionView.frame = transitionViewInitialFrame;
-    if (self.bigImageViewRef.image.size.width > self.bigImageViewRef.image.size.height) {
-        transitionView.transform = CGAffineTransformMakeRotation(M_PI_2);
-        transitionView.center = self.blurEffectView.center;
-    }
-
+//    if (self.bigImageViewRef.image.size.width > self.bigImageViewRef.image.size.height) {
+//        transitionView.transform = CGAffineTransformMakeRotation(M_PI_2);
+//        transitionView.center = self.blurEffectView.center;
+//    }
+    
     
     [transitionContext.containerView addSubview:transitionView];
     //Revome the old view from the background
@@ -157,13 +160,12 @@
     [UIView animateWithDuration:duration
                      animations:^{
                          transitionView.frame = transitionViewFinalFrame;
-                         if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
-                             transitionView.transform = CGAffineTransformMakeRotation(0);
-                         }
+//                         if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
+//                             transitionView.transform = CGAffineTransformMakeRotation(0);
+//                         }
                      } completion:^(BOOL finished) {
                          [transitionView removeFromSuperview];
                          [transitionContext completeTransition:YES];
-                         
                      }];
 }
 
