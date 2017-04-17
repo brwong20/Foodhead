@@ -26,7 +26,9 @@
              @"city" : @"city",
              @"state" : @"location_state",
              @"openNow" : @"is_open_now",
-             @"foursq_num_ratings" : @"rating_signals"
+             @"foursq_num_ratings" : @"rating_signals",
+             @"foursq_price_tier" : @"price",
+             @"foursq_rating" : @"rating",
              };
 }
 

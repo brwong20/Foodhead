@@ -28,12 +28,15 @@
 #import "ReviewMetricView.h"
 #import "AttributionTableViewCell.h"
 #import "FoodheadAnalytics.h"
+#import "AnimationPreviewViewController.h"
+#import "PreviewAnimation.h"
+#import "NSString+IsEmpty.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate>
+@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, UIViewControllerTransitioningDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate>
 
 //UI
 @property (nonatomic, strong) UITableView *detailsTableView;
@@ -52,6 +55,12 @@
 //View Model
 @property (nonatomic, strong) TPLRestaurantPageViewModel *pageViewModel;
 @property (nonatomic, assign) BOOL detailsFetched;
+
+//Hold to preview
+@property (nonatomic, strong) AnimationPreviewViewController *previewVC;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGest;
+@property (nonatomic, strong) NSIndexPath *selectedIndexPath;
+@property (nonatomic, assign) BOOL gestureCancelled;
 
 @end
 
@@ -146,8 +155,8 @@ static NSString *photoCellId = @"photoCell";
                                   completionHandler:^(id media) {
                                       self.nextPg = media[@"next_page"];
                                       NSArray *images = media[@"images"];
-                                  
-                                      if (self.restaurantPhotos.count < images.count) {
+                                
+                                      if (self.restaurantPhotos.count != images.count) {
                                           [self.restaurantPhotos removeAllObjects];
                                           [self.idmPhotos removeAllObjects];
                                       }else{
@@ -242,6 +251,13 @@ static NSString *photoCellId = @"photoCell";
     self.photoCollection.dataSource= self;
     self.photoCollection.scrollEnabled = NO;
     [self.photoCollection registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:photoCellId];
+    
+    self.longPressGest = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+    self.longPressGest.minimumPressDuration = 0.15;
+    [self.photoCollection addGestureRecognizer:self.longPressGest];
+    
+    //Sometimes the guesture finishes too fast so we use this in order to find out
+    self.gestureCancelled = NO;
 }
 
 //Calculates a dynamic height based on hours available then resizes the cell
@@ -260,8 +276,8 @@ static NSString *photoCellId = @"photoCell";
         for (NSDictionary *hrs in hoursOfWeek) {
             NSArray *hoursAsStrs = [hrs allValues];
             for (NSString *hrStr in hoursAsStrs) {
-                CGRect hrSize = [hrStr boundingRectWithSize:CGSizeMake(APPLICATION_FRAME.size.width * 0.4, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : [UIFont nun_fontWithSize:RESTAURANT_HOURS_CELL_HEIGHT * 0.2]} context:nil];
-                cellHeight += hrSize.size.height + RESTAURANT_HOURS_CELL_HEIGHT * 0.42;
+                CGRect hrSize = [hrStr boundingRectWithSize:CGSizeMake(APPLICATION_FRAME.size.width * 0.4, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE]} context:nil];
+                cellHeight += hrSize.size.height + RESTAURANT_HOURS_CELL_HEIGHT * 0.4;//Need extra padding here for spacing
             }
         }
     }
@@ -336,7 +352,7 @@ static NSString *photoCellId = @"photoCell";
     switch (indexPath.row) {
         case 0:{
             RestaurantDetailsTableViewCell *detail = [[RestaurantDetailsTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-            [detail setInfoForRestaurant:self.selectedRestaurant];
+            [detail setInfoForRestaurant:self.selectedRestaurant detailsFetched:self.detailsFetched];
             cell = detail;
             break;
         }
@@ -492,8 +508,7 @@ static NSString *photoCellId = @"photoCell";
             photoUrl = [NSURL URLWithString:userReview.thumbnailURL];
         }else{
             NSDictionary *imgInfo = photo;
-            NSString *imgURL = imgInfo[@"url"];
-            photoUrl = [NSURL URLWithString:imgURL];
+            photoUrl = [NSURL URLWithString:imgInfo[@"thumbnail_url"]];
         }
         
         if (indexPath.row == 5) {
@@ -578,6 +593,80 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)willDisappearPhotoBrowser:(IDMPhotoBrowser *)photoBrowser{
     [FoodheadAnalytics logEvent:ALBUM_SWIPE_COUNT withParameters:@{@"albumSwipeCount" : photoBrowser.pagingCount}];
+}
+
+#pragma mark - UIGestureRecognizerDelegate methods
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer{
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.gestureCancelled = NO;
+        CGPoint p = [gestureRecognizer locationInView:self.photoCollection];
+        self.selectedIndexPath = [self.photoCollection indexPathForItemAtPoint:p];
+        
+        //Don't let user hold to preview an empty cell
+        if (self.selectedIndexPath.row + 1 > self.restaurantPhotos.count) {
+            return;
+        }
+        
+        if (self.selectedIndexPath) {
+            //Must check if thumbnail has loaded first b/c we need the smaller image to perform animation as
+            ImageCollectionCell *imgCell = (ImageCollectionCell *)[self.photoCollection cellForItemAtIndexPath:self.selectedIndexPath];
+            if (!CGSizeEqualToSize(imgCell.coverImageView.image.size, CGSizeZero)) {
+                NSDictionary *imgInfo = self.restaurantPhotos[self.selectedIndexPath.row];
+                NSURL *imgURL = [NSURL URLWithString:imgInfo[@"url"]];
+                
+                //Init the view controller for previewing
+                self.previewVC = [[AnimationPreviewViewController alloc] initWithIndex:0 andImageURL:imgURL withPlaceHolder:imgCell.coverImageView.image];
+                self.previewVC.modalPresentationCapturesStatusBarAppearance = YES;//Must use this in order to hide the status bar
+                self.previewVC.transitioningDelegate = self;
+                [self.previewVC setModalPresentationStyle:UIModalPresentationCustom];
+                [self presentViewController:self.previewVC animated:YES completion:^{
+                    if (self.gestureCancelled) {
+                        //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+                    }
+                }];
+            }
+        }
+    } else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [self.previewVC dismissViewControllerAnimated:YES completion:nil];
+    } else if(gestureRecognizer.state == UIGestureRecognizerStateCancelled) {
+        self.gestureCancelled = YES;
+        [self.previewVC dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate methods
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    UIImageView *smallImageView;
+    UIImageView *bigImageView;
+    
+    //First lets get the current cell
+    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollection cellForItemAtIndexPath:self.selectedIndexPath];
+    
+    //Now lets get the current image
+    smallImageView = cell.coverImageView;
+    
+    //Now lets get the Animation Imageview
+    bigImageView = [(AnimationPreviewViewController*)presented imageView];
+    
+    return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    UIImageView *smallImageView;
+    UIImageView *bigImageView;
+    
+    //First lets get the current cell
+    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollection cellForItemAtIndexPath:self.selectedIndexPath];
+    
+    //Now lets get the current image
+    smallImageView = cell.coverImageView;
+    
+    //Now lets get the Animation Imageview
+    bigImageView = [(AnimationPreviewViewController*)dismissed imageView];
+    
+    return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
 }
 
 @end

@@ -18,15 +18,15 @@
              @"restaurantId" : @"id",
              @"foursqId" : @"four_square_id",
              @"name" : @"name",
-             @"foursq_price_tier" : @"price",
              @"latitude" : @"lat",
              @"longitude" : @"lng",
-             @"foursq_rating" : @"rating",
              @"thumbnail" : @"avatar",
+             @"openNowStatus" : @"open_status",
+             @"openNowExplore" : @"open_now",
              @"suggestion_address" : @"location_address",
              @"suggestion_city" : @"location_city",
              @"suggestion_zip" : @"location_postal_code",
-             @"suggestion_state" : @"location_state"
+             @"suggestion_state" : @"location_state",
              };
     
 }

@@ -13,7 +13,13 @@
 
 @interface ServiceErrorView ()
 
+@property (nonatomic, strong) UILabel *errorTitle;
+@property (nonatomic, strong) UITextView *errorTextView;
+@property (nonatomic, strong) UIImageView *errorImgView;
+
+//Refresh for charts
 @property (nonatomic, strong) UITapGestureRecognizer *refreshGesture;
+@property (nonatomic, strong) UIActivityIndicatorView *refreshIndicator;
 
 @end
 
@@ -48,8 +54,16 @@
         [self.errorImgView setImage:[UIImage imageNamed:@"owl_dead"]];
         [self addSubview:self.errorImgView];
         
-        //[LayoutBounds drawBoundsForAllLayers:self];
+        self.refreshGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(didTapRefresh)];
+        self.refreshGesture.numberOfTapsRequired = 1;
+        [self addGestureRecognizer:self.refreshGesture];
         
+        self.refreshIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        self.refreshIndicator.center = CGPointMake(self.center.x, self.center.y - self.bounds.size.height * 0.12);
+        CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.4, 1.4);
+        self.refreshIndicator.transform = scaleUp;
+        self.refreshIndicator.hidesWhenStopped = YES;
+        [self addSubview:self.refreshIndicator];        
     }
     return self;
 }
@@ -59,7 +73,7 @@
     if (_errorType == ServiceErrorTypeLocation) {
         self.errorTextView.text = @"We need location access to\nsuggest you restuaurants.\n\nGo to Settings > Privacy >\nLocation Services > turn on Foodhead";
     }else if (_errorType == ServiceErrorTypeData){
-        self.errorTextView.text = @"Please check your connection then tap to retry!";
+        self.errorTextView.text = @"Please check your connection then tap to reload restaurants near you!";
         self.refreshGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(didTapRefresh)];
         self.refreshGesture.numberOfTapsRequired = 1;
         [self addGestureRecognizer:self.refreshGesture];
@@ -70,17 +84,25 @@
     if ([self.delegate respondsToSelector:@selector(serviceErrorViewToggledRefresh)]) {
         [self.delegate serviceErrorViewToggledRefresh];
     }
-}
-
-- (void)startRefreshing{
-    [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
-    [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
+    
+    if (_errorType == ServiceErrorTypeData) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.errorTitle.alpha = 0.0;
+            self.errorTextView.alpha = 0.0;
+            [self.refreshIndicator startAnimating];
+        }];
+    }
 }
 
 - (void)stopRefreshing{
-    [SVProgressHUD dismiss];
+    if (_errorType == ServiceErrorTypeData) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.errorTitle.alpha = 1.0;
+            self.errorTextView.alpha = 1.0;
+            [self.refreshIndicator stopAnimating];
+        }];
+    }
 }
+
 
 @end
