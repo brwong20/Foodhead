@@ -76,7 +76,7 @@
             loginFailure(error);
         }];
     }else{
-        NSLog(@"FB_AUTH_FAILED");
+        DLog(@"FB_AUTH_FAILED");
     }
 }
 
@@ -161,9 +161,9 @@
         NSString* errorCode = userInfo[NSLocalizedDescriptionKey];
         if (![NSString isEmpty:errorCode]) {
             if ([errorCode containsString:STATUS_CODE_UNAUTHORIZED]) {
-                NSLog(@"Anonymous user has logged in.");
+                DLog(@"Anonymous user has logged in.");
             }else if ([errorCode containsString:STATUS_NO_INTERNET]){//No connection to retrieve current user so use cached user info if there is any
-                NSLog(@"No internet connection, couldn't retrieve logged in user.");
+                DLog(@"No internet connection, couldn't retrieve logged in user.");
             }
         }
         failureHandler(error);
@@ -187,7 +187,7 @@
         
         completionHandler(self.currentUser);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Failed to update user info: %@", error.description);
+        DLog(@"Failed to update user info: %@", error.description);
         failureHandler(error);
     }];
 }

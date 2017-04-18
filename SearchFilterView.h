@@ -18,4 +18,6 @@
 
 @property (nonatomic, weak) id<SearchFilterViewDelegate> delegate;
 
+- (void)clearAllFilters;
+
 @end

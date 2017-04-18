@@ -97,12 +97,12 @@
         chartsVC.tabBarItem.tag = CHART_TAB_TAG;
         
         searchVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"search"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        searchVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -10.0, -5.0, 10.0);
+        searchVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -8.0, -5.0, 8.0);
         searchVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"search_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         searchVC.tabBarItem.tag = 10;
         
         camVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"camera_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 10.0, -5.0, -10.0);
+        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 8.0, -5.0, -8.0);
         camVC.tabBarItem.tag = CAMERA_TAB_TAG;
 
         profileVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"profile"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];

@@ -118,12 +118,12 @@ static NSString *photoCellId = @"photoCell";
                 });
                 
             } failureHandler:^(id failureHandler) {
-                NSLog(@"Failed to get user reviews");
+                DLog(@"Failed to get user reviews");
             }];
         }
     } failureHandler:^(id error) {
         //TODO:: Handle this by changing rest page UI?
-        NSLog(@"Couldn't get details");
+        DLog(@"Couldn't get details");
     }];
     
     [self loadRestaurantImages];
@@ -145,7 +145,7 @@ static NSString *photoCellId = @"photoCell";
         });
 
     } failureHandler:^(id failureHandler) {
-        NSLog(@"Failed to refresh metrics");
+        DLog(@"Failed to refresh metrics");
     }];
 }
 
@@ -201,7 +201,7 @@ static NSString *photoCellId = @"photoCell";
                                       });
                                       
       } failureHandler:^(id failureHandler) {
-          NSLog(@"%@", failureHandler);
+          DLog(@"%@", failureHandler);
       }];
 }
 

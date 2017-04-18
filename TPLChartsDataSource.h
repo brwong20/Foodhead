@@ -38,4 +38,9 @@ typedef void (^ChartOperationCompletionBlock)(Chart *chart, NSError *error);
                  completionHandler:(void (^)(id chartData))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;
 
+- (void)getRestaurantsForChart:(Chart *)chart
+                  atCoordinate:(CLLocationCoordinate2D)coordinate
+             completionHandler:(void (^)(id))completionHandler
+                failureHandler:(void (^)(id))failureHandler;
+
 @end

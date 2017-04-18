@@ -24,6 +24,7 @@
 #import "ServiceErrorView.h"
 #import "FoodheadAnalytics.h"
 #import "UserProfileViewController.h"
+#import "SearchViewController.h"
 #import "LayoutBounds.h"
 
 
@@ -187,7 +188,7 @@ static NSString *cellId = @"tabledCollectionCell";
         }
         User *currentUser = (User *)user;
         if ([currentUser.userId isEqual: lastUser.userId]) {
-            NSLog(@"Same user, do nothing.");
+            DLog(@"Same user, do nothing.");
         }
     }failureHandler:^(id error) {
         //Anon login handle
@@ -244,6 +245,8 @@ static NSString *cellId = @"tabledCollectionCell";
     UIViewController *root = [[nav viewControllers]firstObject];
     if ([root isKindOfClass:[UserProfileViewController class]]) {
         [FoodheadAnalytics logEvent:PROFILE_TAB_CLICK];
+    }else if ([root isKindOfClass:[SearchViewController class]]){
+        [FoodheadAnalytics logEvent:SEARCH_TAB_CLICK];
     }
 }
 

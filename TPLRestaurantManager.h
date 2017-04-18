@@ -31,10 +31,12 @@
                  completionHandler:(void (^)(id images))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;
 
+//Returns a dictionary: "nextPg" : page for more results, "results" : current page of results
 - (void)getRestaurantsWithQuery:(NSString *)query
                      atLocation:(CLLocationCoordinate2D)coordinate
-                        filters:(NSDictionary *)filterParams
-              completionHandler:(void (^)(id restaurants))completionHandler
+                        filters:(NSMutableDictionary *)filterParams
+                           page:(NSString *)pageNum
+              completionHandler:(void (^)(NSDictionary *results))completionHandler
                  failureHandler:(void (^)(id error))failureHandler;
 
 //Autocomplete

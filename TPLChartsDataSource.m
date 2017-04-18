@@ -107,8 +107,34 @@
                 failureHandler(error);
             }];
         });
-
     }
+}
+
+
+- (void)getRestaurantsForChart:(Chart *)chart
+                  atCoordinate:(CLLocationCoordinate2D)coordinate
+             completionHandler:(void (^)(id))completionHandler
+                failureHandler:(void (^)(id))failureHandler{
+    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:lat forKey:@"lat"];
+    [dict setObject:lng forKey:@"lng"];
+    [dict setObject:[chart.chart_id stringValue] forKey:@"chart_id"];
+    
+    [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSHTTPURLResponse *response = (NSHTTPURLResponse *)[task response];
+        if(response){
+            NSDictionary *httpHeaders = response.allHeaderFields;
+            DLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
+        }
+        Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];
+        [chart mergeValuesForKeysFromModel:places];
+        completionHandler(chart);
+    }failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        failureHandler(error);
+    }];
 }
 
 - (void)getMoreRestaurantsForChart:(Chart *)chart

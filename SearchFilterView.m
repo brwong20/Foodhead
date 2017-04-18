@@ -10,6 +10,7 @@
 #import "FoodWiseDefines.h"
 #import "UIFont+Extension.h"
 #import "LayoutBounds.h"
+#import "FoodheadAnalytics.h"
 
 @interface SearchFilterView ()
 
@@ -101,7 +102,7 @@
         self.applyButton.layer.cornerRadius = self.applyButton.frame.size.height/2;
         self.applyButton.layer.borderColor = [UIColor blackColor].CGColor;
         self.applyButton.layer.borderWidth = 0.5;
-        self.applyButton.alpha = 0.0;
+        //self.applyButton.alpha = 0.0;
         [self.applyButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [self.applyButton.titleLabel setFont:[UIFont nun_boldFontWithSize:frame.size.height * 0.03]];
         [self.applyButton setTitle:@"APPLY" forState:UIControlStateNormal];
@@ -111,7 +112,6 @@
         [self setupPriceUI:frame];
         [self setupDistanceUI:frame];
         
-        //[LayoutBounds drawBoundsForAllLayers:self];
     }
     return self;
 }
@@ -252,13 +252,13 @@
 - (void)toggleApplyButton{
     if (self.openNowFilter || self.priceFilters.count > 0 || self.distanceFilter) {
         [UIView animateWithDuration:0.25 animations:^{
-            self.applyButton.alpha = 1.0;
+            //self.applyButton.alpha = 1.0;
             self.clearButton.alpha = 1.0;
 
         }];
     }else{
         [UIView animateWithDuration:0.25 animations:^{
-            self.applyButton.alpha = 0.0;
+            //self.applyButton.alpha = 0.0;
             self.clearButton.alpha = 0.0;
         }];
     }
@@ -286,7 +286,6 @@
 }
 
 - (void)exit{
-    [self clearAllFilters];
     if (self.superview) {
         [self removeFromSuperview];
     }
@@ -344,11 +343,11 @@
     }
     if (self.distanceFilter) [filters setObject:self.distances[[self.distanceFilter integerValue]] forKey:@"radius"];
     
-    [self clearAllFilters];
-    
     if ([self.delegate respondsToSelector:@selector(didSelectFilters:)]) {
         [self.delegate didSelectFilters:filters];
     }
+    
+    [FoodheadAnalytics logEvent:SEARCH_FILTER_APPLY withParameters:filters];
 }
 
 @end

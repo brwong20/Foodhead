@@ -22,7 +22,6 @@
 #import "UIImageView+AFNetworking.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <SVProgressHUD/SVProgressHUD.h>
 
 @interface TabledCollectionManager () <ChartSectionViewDelegate, ServiceErrorViewDelegate>
 
@@ -32,6 +31,7 @@
 //Datasource
 @property (nonatomic, strong) NSMutableArray *collectionData;
 @property (nonatomic, strong) NSString *cellIdentifier;
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 
 //Helper properties
 @property (nonatomic, strong) NSMutableDictionary *contentOffsetDictionary;
@@ -57,6 +57,7 @@
         [self setupRefreshControl];
         self.contentOffsetDictionary = [NSMutableDictionary dictionary];
         self.viewModel = [[TPLChartsViewModel alloc]initWithStore:[[TPLChartsDataSource alloc]init]];
+        [self showChartLoader];
         [self bindViewModel];
     }
     return self;
@@ -70,12 +71,29 @@
     self.tableView.refreshControl = self.refreshControl;
 }
 
+//Should only show on app launch (when screen is blank)
+- (void)showChartLoader{
+    self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.indicatorView.center = self.tableView.window.center;
+    CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.4, 1.4);
+    self.indicatorView.transform = scaleUp;
+    [self.tableView.window addSubview:self.indicatorView]; //Show above everything
+    [self.indicatorView startAnimating];
+}
+
+- (void)hideChartLoader{
+    if ([self.indicatorView isAnimating]) {
+        [self.indicatorView stopAnimating];
+        [self.indicatorView removeFromSuperview];
+    }
+}
+
 #pragma mark - Refresh
 
 - (void)refreshCharts{
     if (self.viewModel.finishedLoading) {
         [self.refreshControl beginRefreshing];
-        [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
+        [[LocationManager sharedLocationInstance] retrieveCurrentLocation];
     }else{
         [self.refreshControl endRefreshing];
     }
@@ -238,14 +256,10 @@
 }
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
-    //Should show only during first chart load (when screen is blank)
-//    if(!self.refreshControl.isRefreshing){
-//        [SVProgressHUD setContainerView:self.tableView.superview];//Only show spinner in this view
-//        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
-//        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-//        [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
-//        [SVProgressHUD show];
-//    }
+    //Should ONLY show the very first time user enters the app and there's a blank screen. The rest of the loading will be handled by pull to refresh for now.
+    if (!self.refreshControl.refreshing && ![self.errorView superview]) {
+        [self showChartLoader];
+    }
     [self.viewModel getChartsAtLocation:coordinate];
 }
 
@@ -266,6 +280,7 @@
      subscribeNext:^(id _) {
          @strongify(self){
              dispatch_async(dispatch_get_main_queue(), ^{
+                 [self hideChartLoader];
                  self.collectionData = self.viewModel.completeChartData;
                  [self collectionViewReloadData];
              });
@@ -295,25 +310,16 @@
              if(self.viewModel.chartsLoadFailed){
                  dispatch_async(dispatch_get_main_queue(), ^{
                      if (![self.errorView superview]) {
+                         [self hideChartLoader];//Should never show chart loader along with error view
                          self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width , self.tableView.frame.size.height) andErrorType:ServiceErrorTypeData];
                          self.errorView.delegate = self;
                          [self.tableView.superview addSubview:self.errorView];
                      }else{
-                         //Chart refresh unsuccessful
-                         if ([SVProgressHUD isVisible]) {
-                             [SVProgressHUD dismiss];
-                         }
-                         [UIView animateWithDuration:0.3 animations:^{
-                             self.errorView.errorTitle.alpha = 1.0;
-                             self.errorView.errorTextView.alpha = 1.0;
-                         }];
+                         //Couldn't refresh after retry
+                         [self.errorView stopRefreshing];
                      }
                  });
              }else{
-                 if ([SVProgressHUD isVisible]) {
-                     [SVProgressHUD dismiss];
-                 }
-                 
                  if ([self.errorView superview]) {
                      [self.errorView removeFromSuperview];
                  }
@@ -322,12 +328,10 @@
      }];
 }
 
+#pragma mark - ServiceErrorViewDelegate methods
+
 //Will call ChartsViewController's delegate method which then re-routes back here.
 - (void)serviceErrorViewToggledRefresh{
-    [UIView animateWithDuration:0.3 animations:^{
-        self.errorView.errorTitle.alpha = 0.0;
-        self.errorView.errorTextView.alpha = 0.0;
-    }];
     [self getChartsAtLocation:[[LocationManager sharedLocationInstance]currentLocation]];
 }
 

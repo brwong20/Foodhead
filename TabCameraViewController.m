@@ -209,7 +209,7 @@ static CGFloat previousZoom;
             }
             case AVCamSetupResultSessionConfigurationFailed:
             {
-                NSLog(@"Camera configuration failed");
+                DLog(@"Camera configuration failed");
                 break;
             }
             default:
@@ -267,7 +267,7 @@ static CGFloat previousZoom;
     
     AVCaptureDeviceInput *videoDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
     if ( ! videoDeviceInput ) {
-        NSLog( @"Could not create video device input: %@", error );
+        DLog( @"Could not create video device input: %@", error );
         self.setupResult = AVCamSetupResultSessionConfigurationFailed;
         [self.captureSession commitConfiguration];
         return;
@@ -297,7 +297,7 @@ static CGFloat previousZoom;
         } );
     }
     else {
-        NSLog( @"Could not add video device input to the session" );
+        DLog( @"Could not add video device input to the session" );
         self.setupResult = AVCamSetupResultSessionConfigurationFailed;
         [self.captureSession commitConfiguration];
         return;
@@ -307,13 +307,13 @@ static CGFloat previousZoom;
 //    AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
 //    AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
 //    if ( ! audioDeviceInput ) {
-//        NSLog( @"Could not create audio device input: %@", error );
+//        DLog( @"Could not create audio device input: %@", error );
 //    }
 //    if ( [self.captureSession canAddInput:audioDeviceInput] ) {
 //        [self.captureSession addInput:audioDeviceInput];
 //    }
 //    else {
-//        NSLog( @"Could not add audio device input to the session" );
+//        DLog( @"Could not add audio device input to the session" );
 //    }
     
     // Add photo output.
@@ -330,7 +330,7 @@ static CGFloat previousZoom;
         //self.inProgressLivePhotoCapturesCount = 0;
     }
     else {
-        NSLog( @"Could not add photo output to the session" );
+        DLog( @"Could not add photo output to the session" );
         self.setupResult = AVCamSetupResultSessionConfigurationFailed;
         [self.captureSession commitConfiguration];
         return;
@@ -575,7 +575,7 @@ static CGFloat previousZoom;
             [device unlockForConfiguration];
         }
         else {
-            NSLog( @"Could not lock device for configuration: %@", error );
+            DLog( @"Could not lock device for configuration: %@", error );
         }
     } );
 }
@@ -648,7 +648,7 @@ static CGFloat previousZoom;
             }
             [device unlockForConfiguration];
         } else {
-            NSLog(@"Error toggling flash : %@", error);
+            DLog(@"Error toggling flash : %@", error);
         }
     }
 }
@@ -836,7 +836,7 @@ static CGFloat previousZoom;
 - (void)sessionRuntimeError:(NSNotification *)notification
 {
     NSError *error = notification.userInfo[AVCaptureSessionErrorKey];
-    NSLog( @"Capture session runtime error: %@", error );
+    DLog( @"Capture session runtime error: %@", error );
     
     /*
      Automatically try to restart the session running if media services were
@@ -874,7 +874,7 @@ static CGFloat previousZoom;
     BOOL showResumeButton = NO;
     
     AVCaptureSessionInterruptionReason reason = [notification.userInfo[AVCaptureSessionInterruptionReasonKey] integerValue];
-    NSLog( @"Capture session was interrupted with reason %ld", (long)reason );
+    DLog( @"Capture session was interrupted with reason %ld", (long)reason );
     
     if ( reason == AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient ||
         reason == AVCaptureSessionInterruptionReasonVideoDeviceInUseByAnotherClient ) {
@@ -901,7 +901,7 @@ static CGFloat previousZoom;
 
 - (void)sessionInterruptionEnded:(NSNotification *)notification
 {
-    NSLog( @"Capture session interruption ended" );
+    DLog( @"Capture session interruption ended" );
     if ( ! self.resumeButton.hidden ) {
         [UIView animateWithDuration:0.25 animations:^{
             self.resumeButton.alpha = 0.0;

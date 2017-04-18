@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 //Flurry Analytics
 #define FLURRY_API_KEY @"TW3F2PWHGQYK585VK759"
 
-//Event Logs//
+//ANALYTICS - Event Logs//
 
 //Login/Singup
 #define USER_SKIP_LOGIN
@@ -74,6 +74,17 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define PRICE_SUBMIT @"didSubmitPrice"
 #define REVIEW_FLOW_NEXT @"reviewFlowNext"
 #define REVIEW_SUBMIT @"reviewSubmit"
+
+//Search
+#define SEARCH_TAB_CLICK @"searchTabClick"
+#define SEARCH_FOUND_CATEGORY @"searchFoundCategory"
+#define SEARCH_FOUND_RESTAURANT @"searchFoundRestaurant" //Measures 2 things: User found restaurant on search + they want to look at the restaurants page
+#define SEARCH_CUSTOM_CATEGORY @"didClickCustomCategory"
+#define SEARCH_BUTTON_CLICK @"didClickSearchButton"
+#define SEARCH_BAR_CLICK @"didClickSearchBar"
+
+//Search Filters
+#define SEARCH_FILTER_APPLY @"didApplySearchFilters"
 
 
 //STATUS CODES
@@ -163,7 +174,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define SEARCH_CONTROLLER_CELL_HEIGHT 55.0
 #define SEARCH_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define MAX_RESULT_COUNT 3
-#define RESULT_CELL_HEIGHT 175.0
+#define RESULT_CELL_HEIGHT 170.0
 
 //Settings
 #define SETTINGS_CELL_HEIGHT 80.0

@@ -21,6 +21,8 @@
 #import "ResultTableViewCell.h"
 #import "NSString+IsEmpty.h"
 #import "LocationManager.h"
+#import "NSString+IsEmpty.h"
+#import "FoodheadAnalytics.h"
 
 #import "SearchFilterView.h"
 
@@ -44,9 +46,10 @@
 @property (nonatomic, assign) BOOL showSuggestions;//Show restaurant & category suggestions based on query. If false, shows actual results
 @property (nonatomic, strong) UILabel *errorLabel;
 
-//Filter View
+//Filters
 @property (nonatomic, strong) UIButton *filterButton;
 @property (nonatomic, strong) SearchFilterView *filterView;
+@property (nonatomic, strong) NSMutableDictionary *filters;
 
 //Paging
 @property (nonatomic, strong) NSString *nextPage;
@@ -61,13 +64,13 @@ static NSString *exploreCellId = @"exploreCell";
 
 #define NUM_COLUMNS 3
 #define NUM_ROWS 5
+#define FANCY_INDEX 11
 
 @implementation SearchViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
-    self.currentLocation = [[LocationManager sharedLocationInstance]currentLocation];
     self.restManager = [[TPLRestaurantManager alloc]init];
     self.searchResults = [NSMutableArray array];
     self.nextPage = @"";
@@ -75,7 +78,8 @@ static NSString *exploreCellId = @"exploreCell";
     [self addObservers];
     
     self.categoryTitles = @[@"Coffee", @"Salad", @"Juice", @"Mexican", @"Breakfast", @"Sushi", @"Asian", @"Burgers", @"Noodle Soup", @"Drinks", @"Dessert", @"Fancy", @"Vegetarian" , @"Pizza", @"Steakhouse"];
-    self.categoryValues = @[ @"Coffee Shop", @"Salad", @"Juice Bar", @"Mexican", @"Breakfast", @"Sushi", @"Asian Restaurant", @"Burgers", @"Noodle soup", @"Nightlife Spot", @"Dessert Shop", @"Fancy", @"Vegetarian / Vegan Restaurant", @"Pizza Place", @"Steakhouse"];
+    
+    self.categoryValues = @[@"Coffee", @"Salad place", @"Juice, Smoothie", @"Mexican", @"Pancake, Breakfast", @"Sushi", @"Asian Restaurant", @"Burger", @"Ramen, Pho", @"Cocktail", @"Dessert, Ice+cream", @"Food", @"Vegetarian", @"Pizza", @"Steakhouse"];
     
     CGSize adjustedFrame = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height - (CGRectGetHeight(self.tabBarController.tabBar.frame) + (CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) + self.navigationController.navigationBar.frame.size.height)));
     
@@ -145,6 +149,9 @@ static NSString *exploreCellId = @"exploreCell";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self setupNavBar];
+
+#warning Once we have custom location setting, this will be changed
+    self.currentLocation = [[LocationManager sharedLocationInstance] currentLocation];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -211,12 +218,14 @@ static NSString *exploreCellId = @"exploreCell";
             TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
             restPageVC.currentLocation = self.currentLocation;
             restPageVC.selectedRestaurant = restaurant;
+            [FoodheadAnalytics logEvent:SEARCH_FOUND_RESTAURANT];
             [self.navigationController pushViewController:restPageVC animated:YES];
         }else if([suggestion isKindOfClass:[Category class]]){
             //Search based on category
             Category *category = suggestion;
             self.searchBar.text = category.categoryShortName;
             [self searchBarSearchButtonClicked:self.searchBar];
+            [FoodheadAnalytics logEvent:SEARCH_FOUND_CATEGORY withParameters:@{@"Category" : category.categoryFullName}];
         }
     }else{
         //Opening rest page from ResultTableViewCell
@@ -225,6 +234,7 @@ static NSString *exploreCellId = @"exploreCell";
         restPageVC.currentLocation = self.currentLocation;
         restPageVC.selectedRestaurant = restaurant;
         [self.navigationController pushViewController:restPageVC animated:YES];
+        [FoodheadAnalytics logEvent:SEARCH_FOUND_RESTAURANT];
     }
 }
 
@@ -320,21 +330,28 @@ static NSString *exploreCellId = @"exploreCell";
 }
 
 - (void)loadMoreResults{
+    NSString *queryStr;
+    if(self.filters){
+        queryStr = @"";
+    }else{
+        queryStr = self.searchBar.text;
+    }
+    
     if (!self.loadMoreIndicator.isAnimating) {//Make sure user doesn't run this request multiple times
         self.loadMoreLabel.alpha = 0.0;
         [self.loadMoreIndicator startAnimating];
         if ([self.errorLabel superview]) [self.errorLabel removeFromSuperview];
         if (![NSString isEmpty:self.searchBar.text] && ![NSString isEmpty:self.nextPage]) {
-            [self.restManager getRestaurantsWithQuery:self.searchBar.text atLocation:self.currentLocation filters:nil page:self.nextPage completionHandler:^(NSDictionary *restaurants) {
+            [self.restManager getRestaurantsWithQuery:queryStr atLocation:self.currentLocation filters:self.filters page:self.nextPage completionHandler:^(NSDictionary *restaurants) {
                 self.nextPage = restaurants[@"nextPage"];
                 [self.searchResults addObjectsFromArray:restaurants[@"results"]];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.showSuggestions = NO;
                     self.loadMoreLabel.alpha = 1.0;
                     [self.loadMoreIndicator stopAnimating];
-                    [self showFilterBarButton];
                     [self.indicatorView stopAnimating];
                     [self.resultsTableView reloadData];
+                    [self showFilterBarButton];
                 });
             } failureHandler:^(id error) {
                 [self clearResults];
@@ -352,10 +369,18 @@ static NSString *exploreCellId = @"exploreCell";
 
 #pragma mark - UICollectionViewDelegate Methods
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{    
     self.searchBar.text = self.categoryTitles[indexPath.row];
+    
+    self.filters = [NSMutableDictionary dictionary];
+    [self.filters setObject:self.categoryValues[indexPath.row] forKey:@"query"];
+    if (indexPath.row == FANCY_INDEX) {
+        [self.filters setObject:@"3,4" forKey:@"price"];
+    }
     self.showCategories = NO;
     [self toggleCategories];
+    
+    [FoodheadAnalytics logEvent:SEARCH_CUSTOM_CATEGORY withParameters:@{@"Category" : self.categoryTitles[indexPath.row]}];
     [self searchBarSearchButtonClicked:self.searchBar];
 }
 
@@ -381,6 +406,9 @@ static NSString *exploreCellId = @"exploreCell";
 #pragma mark - UISearchBarDelegate methods
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    //Should never pre-populate filters for user if they're typing themselves
+    if (self.filters) self.filters = nil;
+    
     if (![NSString isEmpty:searchText]) {
         self.showCategories = NO;
         self.showSuggestions = YES;
@@ -402,6 +430,7 @@ static NSString *exploreCellId = @"exploreCell";
         self.showCategories = YES;
         self.showSuggestions = YES;
         [self clearResults];
+        [self.filterView clearAllFilters];
         [self hideFilterButton];
         [self toggleCategories];
     }
@@ -414,6 +443,7 @@ static NSString *exploreCellId = @"exploreCell";
     if ([self.filterView superview]) {
         [self.filterView removeFromSuperview];
     }
+    [self.filterView clearAllFilters];
     self.showCategories = YES;
     self.showSuggestions = YES;
     [self dismissKeyboard];
@@ -421,12 +451,28 @@ static NSString *exploreCellId = @"exploreCell";
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    [self clearResults];
+    if (!self.filters) {
+        [FoodheadAnalytics logEvent:SEARCH_BUTTON_CLICK withParameters:@{@"Query" : self.searchBar.text}];//Should only track a literal search bar click
+    }
+    
+#warning TODO: Need a better way of handling custom categories we make for the user
+    //If user selects a custom pre-made category (collection view cell), ignore the search bar's text as a query but show it.
+    [self.filterView clearAllFilters];
+    [self.searchResults removeAllObjects];
+    [self.resultsTableView reloadData];
+    
+    NSString *queryStr;
+    if(self.filters){
+        queryStr = @"";
+    }else{
+        queryStr = self.searchBar.text;
+    }
+    
     [self dismissKeyboard];
     [self.indicatorView startAnimating];
     if ([self.errorLabel superview]) [self.errorLabel removeFromSuperview];
     if (![NSString isEmpty:searchBar.text]) {
-        [self.restManager getRestaurantsWithQuery:self.searchBar.text atLocation:self.currentLocation filters:nil page:nil completionHandler:^(NSDictionary *restaurants) {
+        [self.restManager getRestaurantsWithQuery:queryStr atLocation:self.currentLocation filters:self.filters page:nil completionHandler:^(NSDictionary *restaurants) {
             self.nextPage = restaurants[@"nextPage"];
             [self.searchResults removeAllObjects];
             [self.searchResults addObjectsFromArray:restaurants[@"results"]];
@@ -448,6 +494,10 @@ static NSString *exploreCellId = @"exploreCell";
 //Animate the cancel button like UISearchController does
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    [FoodheadAnalytics logEvent:SEARCH_BAR_CLICK];
+    if ([self.filterView superview]) {
+        [self.filterView removeFromSuperview];
+    }
     [searchBar setShowsCancelButton:YES animated:NO];
 }
 
@@ -459,18 +509,27 @@ static NSString *exploreCellId = @"exploreCell";
 
 #pragma mark - SearchFilterViewDelegate methods
 
-- (void)didSelectFilters:(NSDictionary *)filters{
-    NSLog(@"%@", filters);
+- (void)didSelectFilters:(NSMutableDictionary *)filters{
+    [self.searchResults removeAllObjects];
+    [self.resultsTableView reloadData];
+
+    //If a query already exists, add to filters to it.
+    NSString *queryStr = [self.filters objectForKey:@"query"];
+    if ([NSString isEmpty:queryStr]) {
+        queryStr = self.searchBar.text;
+        self.filters = filters;
+    }else{
+        [self.filters addEntriesFromDictionary:filters];
+    }
+    
     if ([self.filterView superview]) [self.filterView removeFromSuperview];
     if ([self.errorLabel superview]) [self.errorLabel removeFromSuperview];
     if (![NSString isEmpty:self.searchBar.text]) {
-        [self clearResults];
         [self dismissKeyboard];
         [self.indicatorView startAnimating];
         if (![NSString isEmpty:self.searchBar.text]) {
-            [self.restManager getRestaurantsWithQuery:self.searchBar.text atLocation:self.currentLocation filters:filters page:nil completionHandler:^(NSDictionary *restaurants) {
+            [self.restManager getRestaurantsWithQuery:queryStr atLocation:self.currentLocation filters:self.filters page:nil completionHandler:^(NSDictionary *restaurants) {
                 self.nextPage = restaurants[@"nextPage"];
-                [self.searchResults removeAllObjects];
                 [self.searchResults addObjectsFromArray:restaurants[@"results"]];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.showSuggestions = NO;
@@ -508,6 +567,8 @@ static NSString *exploreCellId = @"exploreCell";
 }
 
 - (void)clearResults{
+    self.filters = nil;
+    [self.filterView clearAllFilters];
     self.nextPage = @"";
     [self.searchResults removeAllObjects];
     [self.resultsTableView reloadData];

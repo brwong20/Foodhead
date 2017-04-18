@@ -15,7 +15,6 @@
 
 @interface TPLChartsViewModel : NSObject
 
-@property (nonatomic, strong) NSMutableArray *restaurantData;
 @property (nonatomic, strong) NSMutableArray *completeChartData;
 
 @property (nonatomic, assign) BOOL finishedLoading;//Tells our refresh control to stop refreshing
@@ -25,7 +24,5 @@
 - (instancetype)initWithStore:(TPLChartsDataSource *)store;
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate;
-
-- (void)refreshChartsAtLocation:(CLLocationCoordinate2D)coordinate;
 
 @end
