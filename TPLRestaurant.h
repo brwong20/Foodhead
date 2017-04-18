@@ -17,7 +17,6 @@
 @property (nonatomic, copy) NSNumber *restaurantId;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *address;
-@property (nonatomic, copy) NSString *category;
 
 @property (nonatomic, copy) NSString *fb_places_id;
 @property (nonatomic, copy) NSNumber *latitude;
@@ -26,9 +25,9 @@
 
 //Foursquare data
 @property (nonatomic, copy) NSString *foursqId;
-@property (nonatomic, copy) NSNumber *foursq_rating;
-@property (nonatomic, copy) NSNumber *foursq_price_tier;
 @property (nonatomic, copy) NSString *menuLink;
+@property (nonatomic, copy) NSNumber *openNowExplore; //From foursquare explore instead of our detailed openNow we calculate in case the restaurant is cached in db.
+@property (nonatomic, copy) NSString *openNowStatus;
 
 
 //Suggestion API properties
@@ -50,12 +49,14 @@
 
 @property (nonatomic, copy) NSNumber *distance;
 @property (nonatomic, copy) NSNumber *foursq_num_ratings;
+@property (nonatomic, copy) NSNumber *foursq_rating;
+@property (nonatomic, copy) NSNumber *foursq_price_tier;
 
 @property (nonatomic, copy) NSArray *hours;
 @property (nonatomic, copy) NSArray *categories;
 @property (nonatomic, copy) NSArray *images;
 @property (nonatomic, copy) NSArray *instagram_images;
 
-@property (nonatomic, assign)BOOL openNow;
+@property (nonatomic, copy) NSNumber *openNow;
 
 @end

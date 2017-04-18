@@ -8,6 +8,8 @@
 
 #import "TPLRestaurantManager.h"
 #import "FoodWiseDefines.h"
+#import "Category.h"
+#import "TPLDetailedRestaurant.h"
 
 #import <SAMKeychain/SAMKeychain.h>
 
@@ -60,7 +62,7 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err[@"error"]);
+            DLog(@"%@", err[@"error"]);
         }
         failureHandler(error);
     }];
@@ -78,7 +80,7 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err);
+            DLog(@"%@", err);
         }
         failureHandler(error);
     }];
@@ -106,9 +108,51 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             //NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            //NSLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
+            //DLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
             failureHandler(error);
         }
+    }];
+}
+
+- (void)getRestaurantsWithQuery:(NSString *)query
+                     atLocation:(CLLocationCoordinate2D)coordinate
+                        filters:(NSMutableDictionary *)filterParams
+                           page:(NSString *)pageNum
+              completionHandler:(void (^)(NSDictionary *restaurants))completionHandler
+                 failureHandler:(void (^)(id))failureHandler{
+    
+    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setValue:query forKey:@"query"];
+    [params setValue:lat forKey:@"lat"];
+    [params setValue:lng forKey:@"lng"];
+    [params setValue:pageNum forKey:@"page"];
+    [params addEntriesFromDictionary:filterParams];
+    
+    [self.sessionManager GET:API_PLACES parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSMutableArray *result = [NSMutableArray array];
+        NSNumber *nextPg = responseObject[@"next_page"];
+        NSString *nextPgStr = [nextPg stringValue];
+        for (NSDictionary *restDict in responseObject[@"result"]) {
+            TPLRestaurant *restaurant = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:restDict error:nil];
+            TPLDetailedRestaurant *details = [MTLJSONAdapter modelOfClass:[TPLDetailedRestaurant class] fromJSONDictionary:restDict error:nil];
+            [restaurant mergeValuesForKeysFromModel:details];
+            [result addObject:restaurant];
+        }
+        if (result.count == 0) {
+            nextPgStr = @"";
+        }
+        NSDictionary *parsedResults = @{@"nextPage" : nextPgStr, @"results" : result};
+        completionHandler(parsedResults);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSDictionary *userInfo = [error userInfo];
+        NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if (errorData) {
+            //NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            //DLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
+        }
+        failureHandler(error);
     }];
 }
 
@@ -129,7 +173,44 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err);
+            DLog(@"%@", err);
+        }
+        failureHandler(error);
+    }];
+}
+
+- (void)fullRestaurantSearchWithQuery:(NSString *)queryStr
+                           atLocation:(CLLocationCoordinate2D)coordinate
+                    completionHandler:(void (^)(id))completionHandler
+                       failureHandler:(void (^)(id))failureHandler
+{
+    NSString *lat = [[NSNumber numberWithDouble:coordinate.latitude]stringValue];
+    NSString *lng = [[NSNumber numberWithDouble:coordinate.longitude]stringValue];
+    NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+    [paramDict setValue:queryStr forKey:@"query"];
+    [paramDict setValue:lat forKey:@"lat"];
+    [paramDict setValue:lng forKey:@"lng"];
+    
+    [self.sessionManager GET:API_PLACE_SEARCH parameters:paramDict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSMutableArray *result = [NSMutableArray array];
+        //Parse categories first b/c we want to show them first;
+        NSArray *categories = responseObject[@"categories"];
+        for (NSDictionary *cat in categories) {
+            Category *category = [MTLJSONAdapter modelOfClass:[Category class] fromJSONDictionary:cat error:nil];
+            [result addObject:category];
+        }
+        NSArray *suggestions = responseObject[@"suggestions"];
+        for (NSDictionary *sug in suggestions) {
+            TPLRestaurant *suggestion = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:sug error:nil];
+            [result addObject:suggestion];
+        }
+        completionHandler(result);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSDictionary *userInfo = [error userInfo];
+        NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        if (errorData) {
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            DLog(@"%@", err);
         }
         failureHandler(error);
     }];
@@ -171,7 +252,7 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
             NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
             if (errorData) {
                 NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-                NSLog(@"%@", err);
+                DLog(@"%@", err);
             }
             failureHandler(error);
         }else{
@@ -199,7 +280,7 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
             [self runWorkerRecursively:worker_id withParameters:params completionHandler:completionHandler failureHandler:failureHandler];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Error with worker recursion: %@", error.localizedDescription);
+        DLog(@"Error with worker recursion: %@", error.localizedDescription);
     }];
     
 }

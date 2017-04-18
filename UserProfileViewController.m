@@ -134,10 +134,10 @@ static NSString *cellId = @"userPhoto";
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.itemSize = CGSizeMake(itemWidth, itemWidth);
     
-    self.userPhotoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height * 0.45, self.view.frame.size.width, self.view.frame.size.height * 0.55) collectionViewLayout:flowLayout];
-    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
-    self.userPhotoCollection.contentInset = adjustForTabbarInsets;
-    self.userPhotoCollection.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.userPhotoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height * 0.45, self.view.frame.size.width, self.view.frame.size.height * 0.55 - CGRectGetHeight(self.tabBarController.tabBar.frame)) collectionViewLayout:flowLayout];
+//    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+//    self.userPhotoCollection.contentInset = adjustForTabbarInsets;
+//    self.userPhotoCollection.scrollIndicatorInsets = adjustForTabbarInsets;
     self.userPhotoCollection.delegate = self;
     self.userPhotoCollection.dataSource= self;
     self.userPhotoCollection.showsVerticalScrollIndicator = NO;
@@ -247,21 +247,23 @@ static NSString *cellId = @"userPhoto";
 - (void)showNoPhotoPrompt{
     if (![self.noPhotoView superview]) {
         self.noPhotoView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.userPhotoCollection.frame.size.width, self.userPhotoCollection.frame.size.height)];
-        self.noPhotoView.backgroundColor = [UIColor whiteColor];
+        self.noPhotoView.backgroundColor = APPLICATION_BLUE_COLOR;
         [self.userPhotoCollection addSubview:self.noPhotoView];
         
-        self.noPhotoLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.noPhotoView.frame.size.width/2 - self.noPhotoView.frame.size.width * 0.4, self.noPhotoView.frame.size.height * 0.05, self.noPhotoView.frame.size.width * 0.8, self.noPhotoView.frame.size.height * 0.2)];
+        self.noPhotoLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.noPhotoView.frame.size.width/2 - self.noPhotoView.frame.size.width * 0.4, self.noPhotoView.frame.size.height * 0.1, self.noPhotoView.frame.size.width * 0.8, self.noPhotoView.frame.size.height * 0.2)];
         self.noPhotoLabel.backgroundColor = [UIColor clearColor];
         self.noPhotoLabel.textAlignment = NSTextAlignmentCenter;
+        self.noPhotoLabel.textColor = [UIColor whiteColor];
         self.noPhotoLabel.numberOfLines = 2;
-        self.noPhotoLabel.font = [UIFont nun_fontWithSize:self.noPhotoView.frame.size.height * 0.05];
-        self.noPhotoLabel.text = @"You haven't posted any meals yet.\nStart here!";
+        self.noPhotoLabel.font = [UIFont nun_mediumFontWithSize:self.noPhotoView.frame.size.height * 0.06];
+        self.noPhotoLabel.text = @"You haven't shared any meals yet.\nClick on the camera to start!";
         [self.noPhotoView addSubview:self.noPhotoLabel];
         
-        self.noPhotoArrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.noPhotoLabel.frame) - self.noPhotoView.frame.size.width * 0.075, CGRectGetMaxY(self.noPhotoLabel.frame) + self.noPhotoView.frame.size.height * 0.05, self.noPhotoView.frame.size.width * 0.15, self.noPhotoView.frame.size.height * 0.5)];
+        self.noPhotoArrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.tabBarController.tabBar.bounds.size.width * 0.56, self.noPhotoView.bounds.size.height * 0.91, self.view.frame.size.width * 0.17, self.view.frame.size.width * 0.17)];
+        self.noPhotoArrowImg.layer.rasterizationScale = [[UIScreen mainScreen]scale];
+        self.noPhotoArrowImg.layer.shouldRasterize = YES;
         self.noPhotoArrowImg.backgroundColor = [UIColor clearColor];
-        self.noPhotoArrowImg.contentMode = UIViewContentModeScaleAspectFit;
-        [self.noPhotoArrowImg setImage:[UIImage imageNamed:@"profile_arrow"]];
+        [self.noPhotoArrowImg setImage:[UIImage imageNamed:@"owl_full"]];
         [self.noPhotoView addSubview:self.noPhotoArrowImg];
     }
 }

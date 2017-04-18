@@ -26,17 +26,30 @@
               completionHandler:(void (^)(id details))completionHandler
                  failureHandler:(void (^)(id error))failureHandler;
 
-
 - (void)getMediaForRestaurant:(TPLRestaurant *)restaurant
                              page:(NSString *)pageNumber
                  completionHandler:(void (^)(id images))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;
+
+//Returns a dictionary: "nextPg" : page for more results, "results" : current page of results
+- (void)getRestaurantsWithQuery:(NSString *)query
+                     atLocation:(CLLocationCoordinate2D)coordinate
+                        filters:(NSMutableDictionary *)filterParams
+                           page:(NSString *)pageNum
+              completionHandler:(void (^)(NSDictionary *results))completionHandler
+                 failureHandler:(void (^)(id error))failureHandler;
 
 //Autocomplete
 - (void)searchRestaurantsWithQuery:(NSString *)queryStr
                         atLocation:(CLLocationCoordinate2D)coordinate
                  completionHandler:(void (^)(id suggestions))completionHandler
                     failureHandler:(void (^)(id error))failureHandler;
+
+- (void)fullRestaurantSearchWithQuery:(NSString *)queryStr
+                           atLocation:(CLLocationCoordinate2D)coordinate
+                    completionHandler:(void (^)(id results))completionHandler
+                       failureHandler:(void (^)(id error))failureHandler;
+
 //POST Methods
 - (void)submitReviewForRestaurant:(NSString *)restaurantId
                     overallRating:(NSString *)rating

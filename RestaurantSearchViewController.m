@@ -122,6 +122,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.backButton.userInteractionEnabled = YES;
                 self.submitButton.userInteractionEnabled = YES;
+                [SVProgressHUD setMinimumDismissTimeInterval:1.5];
                 [SVProgressHUD showErrorWithStatus:@"Upload failed. Please try again!"];
             });
         }];

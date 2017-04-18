@@ -46,7 +46,7 @@
         [[NSFileManager defaultManager] removeItemAtPath:self.livePhotoCompanionMovieURL.path error:&error];
         
         if ( error ) {
-            NSLog( @"Could not remove file at url: %@", self.livePhotoCompanionMovieURL.path );
+            DLog( @"Could not remove file at url: %@", self.livePhotoCompanionMovieURL.path );
         }
     }
     
@@ -68,7 +68,7 @@
 - (void)captureOutput:(AVCapturePhotoOutput *)captureOutput didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings error:(NSError *)error
 {
     if ( error != nil ) {
-        NSLog( @"Error capturing photo: %@", error );
+        DLog( @"Error capturing photo: %@", error );
         return;
     }
     
@@ -86,7 +86,7 @@
 - (void)captureOutput:(AVCapturePhotoOutput *)captureOutput didFinishProcessingLivePhotoToMovieFileAtURL:(NSURL *)outputFileURL duration:(CMTime)duration photoDisplayTime:(CMTime)photoDisplayTime resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings error:(NSError *)error
 {
     if ( error != nil ) {
-        NSLog( @"Error processing live photo companion movie: %@", error );
+        DLog( @"Error processing live photo companion movie: %@", error );
         return;
     }
     
@@ -96,13 +96,13 @@
 - (void)captureOutput:(AVCapturePhotoOutput *)captureOutput didFinishCaptureForResolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings error:(NSError *)error
 {
     if ( error != nil ) {
-        NSLog( @"Error capturing photo: %@", error );
+        DLog( @"Error capturing photo: %@", error );
         [self didFinish];
         return;
     }
     
     if ( self.photoData == nil ) {
-        NSLog( @"No photo data resource" );
+        DLog( @"No photo data resource" );
         [self didFinish];
         return;
     }
@@ -123,14 +123,14 @@
 //                }
 //            } completionHandler:^( BOOL success, NSError * _Nullable error ) {
 //                if ( ! success ) {
-//                    NSLog( @"Error occurred while saving photo to photo library: %@", error );
+//                    DLog( @"Error occurred while saving photo to photo library: %@", error );
 //                }
 //                
 //                
 //            }];
 //        }
 //        else {
-//            NSLog( @"Not authorized to save photo" );
+//            DLog( @"Not authorized to save photo" );
 //            [self didFinish];
 //        }
 //    }];

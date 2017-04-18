@@ -24,6 +24,7 @@
 #import "ServiceErrorView.h"
 #import "FoodheadAnalytics.h"
 #import "UserProfileViewController.h"
+#import "SearchViewController.h"
 #import "LayoutBounds.h"
 
 
@@ -36,7 +37,6 @@
 
 //Navigation
 @property (nonatomic, strong) UIButton *cameraButton;
-@property (nonatomic, strong) UIButton *searchButton;
 
 //Location
 @property (nonatomic, strong) LocationManager *locationManager;
@@ -92,24 +92,6 @@ static NSString *cellId = @"tabledCollectionCell";
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
-- (void)checkLocationPermissions{
-    [self.locationManager checkLocationAuthorization];
-    if(self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse || self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedAlways)
-    {//If user denies location at first, but allows and comes back into app
-        if ([self.errorView superview] && self.errorView.errorType == ServiceErrorTypeLocation){
-            [self.errorView removeFromSuperview];
-            [self.locationManager retrieveCurrentLocation];
-        }
-    }
-    else
-    {//If user goes to settings and denies location access
-        if (![self.errorView superview]) {
-            self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width , self.view.frame.size.height) andErrorType:ServiceErrorTypeLocation];
-            [self.view addSubview:self.errorView];
-        }
-    }
-}
-
 - (void)dealloc{
     [self removeObservers];
 }
@@ -138,25 +120,13 @@ static NSString *cellId = @"tabledCollectionCell";
 
 #pragma mark - Helper Methods
 
-- (void)setupNavBar{
-    //This back button must be configured in parent view controller so all pushed VCs reflec this change. The back image is set in its respective VC, but this is just to get rid of the "Back" button title.
-    self.navigationController.navigationBar.barTintColor = APPLICATION_BACKGROUND_COLOR;
-
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    
-    self.navigationController.navigationBar.topItem.title = @"Foodhead";
-    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];
-}
-
 - (void)setupUI{
     self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStyleGrouped];
-    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
-    self.tableView.contentInset = adjustForTabbarInsets;
-    self.tableView.scrollIndicatorInsets = adjustForTabbarInsets;
+    UIEdgeInsets adjustForBarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    self.tableView.contentInset = adjustForBarInsets;
+    self.tableView.scrollIndicatorInsets = adjustForBarInsets;
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableCollectionMngr = [[TabledCollectionManager alloc] initWithTableView:self.tableView cellIdentifier:cellId];
     self.tableView.delegate = self.tableCollectionMngr;
@@ -167,9 +137,40 @@ static NSString *cellId = @"tabledCollectionCell";
     [self.view addSubview:self.tableView];
 }
 
+
+- (void)setupNavBar{
+    //This back button must be configured in parent view controller so all pushed VCs reflec this change. The back image is set in its respective VC, but this is just to get rid of the "Back" button title.
+    self.navigationController.navigationBar.barTintColor = APPLICATION_BACKGROUND_COLOR;
+
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    
+    self.navigationController.navigationBar.topItem.title = @"Foodhead";
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];    
+}
+
 - (void)submitFeedback{
     UserFeedbackViewController *feedbackVC = [[UserFeedbackViewController alloc]init];
     [self.navigationController pushViewController:feedbackVC animated:YES];
+}
+
+- (void)checkLocationPermissions{
+    [self.locationManager checkLocationAuthorization];
+    if(self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedWhenInUse || self.locationManager.authorizedStatus == kCLAuthorizationStatusAuthorizedAlways)
+    {//If user denies location at first, but allows and comes back into app
+        if ([self.errorView superview] && self.errorView.errorType == ServiceErrorTypeLocation){
+            [self.errorView removeFromSuperview];
+            [self.locationManager retrieveCurrentLocation];
+        }
+    }
+    else
+    {//If user goes to settings and denies location access
+        if (![self.errorView superview]) {
+            self.errorView = [[ServiceErrorView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width , self.view.frame.size.height) andErrorType:ServiceErrorTypeLocation];
+            [self.view addSubview:self.errorView];
+        }
+    }
 }
 
 #pragma mark - User Session
@@ -179,7 +180,7 @@ static NSString *cellId = @"tabledCollectionCell";
     self.authManager = [UserAuthManager sharedInstance];
     [self.authManager retrieveCurrentUser:^(id user) {
         
-        //TODO:: Refactor this check into AuthManager and just return an error if user ids dont match
+        //TODO:: Refactor this check into AuthManager and just return an error (or nil) if user ids dont match
         NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:LAST_USER_DEFAULT];
         User *lastUser;
         if (data) {
@@ -187,11 +188,9 @@ static NSString *cellId = @"tabledCollectionCell";
         }
         User *currentUser = (User *)user;
         if ([currentUser.userId isEqual: lastUser.userId]) {
-            NSLog(@"Same user, do nothing.");
-        }else{
-            //Take them to login?
+            DLog(@"Same user, do nothing.");
         }
-    } failureHandler:^(id error) {
+    }failureHandler:^(id error) {
         //Anon login handle
     }];
 }
@@ -223,7 +222,7 @@ static NSString *cellId = @"tabledCollectionCell";
 #pragma mark - ServiceErrorViewDelegate methods
 
 - (void)serviceErrorViewToggledRefresh{
-    //Verify connection by verifying user - Could also just check for internet connection
+    //Verify connection and update user info by verifying user - Could also just check for internet connection (should do this instead and put user logic into profile tab)
     [self verifyCurrentUser];
 }
 
@@ -246,6 +245,8 @@ static NSString *cellId = @"tabledCollectionCell";
     UIViewController *root = [[nav viewControllers]firstObject];
     if ([root isKindOfClass:[UserProfileViewController class]]) {
         [FoodheadAnalytics logEvent:PROFILE_TAB_CLICK];
+    }else if ([root isKindOfClass:[SearchViewController class]]){
+        [FoodheadAnalytics logEvent:SEARCH_TAB_CLICK];
     }
 }
 

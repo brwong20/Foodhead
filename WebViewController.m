@@ -25,7 +25,6 @@
     [super viewDidLoad];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitWebView)];
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
     
     self.webView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
@@ -41,6 +40,11 @@
     //[SVProgressHUD setMinimumSize:CGSizeMake(self.view.frame.size.width * 0.4, self.view.frame.size.width * 0.4)];
     [SVProgressHUD setForegroundColor:APPLICATION_BLUE_COLOR];
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
 
 - (void)exitWebView

@@ -73,11 +73,11 @@
             NSArray *hours = [NSArray new];
             hours = [hrArr[i] componentsSeparatedByString:@","];
             if (i == 0) {
-                //First day + hours have constant spacing based on default height (since icon and title not based on dynamic height)
+                //First day and its hours have constant spacing based on default height (since icon and title not based on dynamic height)
                 spacer = RESTAURANT_HOURS_CELL_HEIGHT * 0.15;
             }else{
                 //If day before had multiple hours, need more spacing
-                spacer = self.dynamicHeight * 0.13;
+                spacer = self.dynamicHeight * 0.1;
             }
             
             UILabel *dayLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.hoursTitle.frame), CGRectGetMaxY(anchor) + spacer, APPLICATION_FRAME.size.width * 0.45, RESTAURANT_HOURS_CELL_HEIGHT * 0.2)];
@@ -121,7 +121,7 @@
         [noHoursLabel setText:@"Unavailable"];
         [noHoursLabel setTextColor:UIColorFromRGB(0x505254)];
         [self.contentView addSubview:noHoursLabel];
-    }
+    }    
 }
 
 @end

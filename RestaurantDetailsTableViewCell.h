@@ -11,6 +11,7 @@
 
 @interface RestaurantDetailsTableViewCell : UITableViewCell
 
-- (void)setInfoForRestaurant:(TPLRestaurant *)restaurant;
+//If details not fetched, just set title. This is done solely for UI purposes since we already retrieve half this info when searching.
+- (void)setInfoForRestaurant:(TPLRestaurant *)restaurant detailsFetched:(BOOL)fetched;
 
 @end

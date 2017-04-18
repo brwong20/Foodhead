@@ -49,26 +49,34 @@
     [self.contentView addSubview:self.address];    
 }
 
+//Labels should start off in default position and adjust based on missing info handled in populateRestaurantInfo.
+- (void)prepareForReuse{
+    [super prepareForReuse];
+    self.restaurantName.frame = CGRectMake(APPLICATION_FRAME.size.width * 0.03, SEARCH_CELL_HEIGHT * 0.16, APPLICATION_FRAME.size.width * 0.8, SEARCH_CELL_HEIGHT * 0.3);
+    self.address.numberOfLines = 2;
+    self.address.frame = CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame), APPLICATION_FRAME.size.width * 0.8, SEARCH_CELL_HEIGHT * 0.5);
+}
+
 - (void)populateRestaurantInfo:(TPLRestaurant *)restaurant{
     self.restaurantName.text = restaurant.name;
+    self.address.alpha = 1.0;
     
     NSString *addressString = @"";
     if (![NSString isEmpty:restaurant.suggestion_address]) {
         addressString = [addressString stringByAppendingString:[NSString stringWithFormat:@"%@\n%@, %@", restaurant.suggestion_address, restaurant.suggestion_city, restaurant.suggestion_state]];
     }else if(![NSString isEmpty:restaurant.suggestion_city]) {
+        self.address.frame = CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame), APPLICATION_FRAME.size.width * 0.8, SEARCH_CELL_HEIGHT * 0.25);
+        self.address.numberOfLines = 1;
         addressString = [addressString stringByAppendingString:[NSString stringWithFormat:@"%@, %@", restaurant.suggestion_city, restaurant.suggestion_state]];
     }
+    self.address.text = addressString;
     
     //Final check just in case
-    if (![NSString isEmpty:addressString]) {
-        self.address.text = addressString;
+    if ([NSString isEmpty:addressString]) {
+        self.address.text = @"";
+        self.address.alpha = 0.0;
+        self.restaurantName.frame = CGRectMake(APPLICATION_FRAME.size.width * 0.03, SEARCH_CELL_HEIGHT/2 - SEARCH_CELL_HEIGHT * 0.15, APPLICATION_FRAME.size.width * 0.8, SEARCH_CELL_HEIGHT * 0.3);
     }
-}
-
-- (void)prepareForReuse{
-    self.restaurantName.text = @"";
-    self.address.text = @"";
-    [super prepareForReuse];
 }
 
 @end

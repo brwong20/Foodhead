@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 //Flurry Analytics
 #define FLURRY_API_KEY @"TW3F2PWHGQYK585VK759"
 
-//Event Logs//
+//ANALYTICS - Event Logs//
 
 //Login/Singup
 #define USER_SKIP_LOGIN
@@ -75,6 +75,17 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define REVIEW_FLOW_NEXT @"reviewFlowNext"
 #define REVIEW_SUBMIT @"reviewSubmit"
 
+//Search
+#define SEARCH_TAB_CLICK @"searchTabClick"
+#define SEARCH_FOUND_CATEGORY @"searchFoundCategory"
+#define SEARCH_FOUND_RESTAURANT @"searchFoundRestaurant" //Measures 2 things: User found restaurant on search + they want to look at the restaurants page
+#define SEARCH_CUSTOM_CATEGORY @"didClickCustomCategory"
+#define SEARCH_BUTTON_CLICK @"didClickSearchButton"
+#define SEARCH_BAR_CLICK @"didClickSearchBar"
+
+//Search Filters
+#define SEARCH_FILTER_APPLY @"didApplySearchFilters"
+
 
 //STATUS CODES
 #define STATUS_CODE_OK @"200"
@@ -83,79 +94,52 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define STATUS_CODE_CONFLICT @"409"
 #define STATUS_NO_INTERNET @"The Internet connection appears to be offline."
 
-/*YumDrop API - Staging/Production Server
- ------------*/
-#define STAGING_BASE_URL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com"
+
+/* Foodhead API - API_BASE_URL defined in Prefix.pch file based on scheme */
+
+//Authentication Constants
+#define FB_PROVIDER_PATH @"facebook"
+#define AUTH_TOKEN_PARAM @"AUTHTOKEN"
 
 //Users
-#define API_USER @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/users"
+#define API_USER [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users"]
 #define ANON_USER @"anon"
 #define SIGNUP_NOTIFICATION @"signup"
 
 //Sessions
-#define API_SESSION_STATUS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/sessions"
-#define API_SERVER_STATUS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/sessions/health"
-#define API_SESSION_AUTHORIZE @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/auth/%@/callback"
+#define API_SESSION_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions"]
+#define API_SERVER_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions/health"]
+#define API_SESSION_AUTHORIZE [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/auth/%@/callback"]
 
 //Reviews
-#define API_REVIEW @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@/reviews"
-#define API_USER_REVIEWS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/users/reviews"
+#define API_REVIEW [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/reviews"]
+#define API_USER_REVIEWS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users/reviews"]
 
 //Places
-#define API_PLACES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places"
-#define API_PLACE_DETAIL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@"
-#define API_PLACE_SUGGESTIONS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/suggestions"
-#define API_PLACE_MEDIA @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/places/%@/images"
+#define API_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places"]
+#define API_PLACE_DETAIL [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@"]
+#define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
+#define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
+#define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
 
 //Charts
-#define API_CHARTS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/charts"
+#define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/charts"]
 
 //Categories
-#define API_CATEGORIES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/categories"
+#define API_CATEGORIES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/categories"]
 
 
 //Workers
-#define API_WORKER_PLACES @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/workers/%@/explorer"
-#define API_WORKER_DETAILS @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/workers/%@/details"
+#define API_WORKER_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/explorer"]
+#define API_WORKER_DETAILS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/details"]
 
-//Images
+//User Feedback
+#define API_FEEDBACK [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/feedbacks"]
+
+//Images Types
 #define IMG_TYPE_FOURSQ @"foursquare_photo"
 #define IMG_TYPE_INSTA_MOBILE @"instagram_location"
 //#define IMG_TYPE_INSTA WEB
-
-/*YumDrop API - Development Server
-------------*/
-
-//Authentication & Sessions
-#define YUM_PROVIDER_AUTH @"http://yumdrop-dev.scrij.com/api/auth/%@/callback"
-#define YUM_CHECK_SESSION @"http://yumdrop-dev.scrij.com/api/sessions"
-#define FB_PROVIDER_PATH @"facebook"
-#define AUTH_TOKEN_PARAM @"AUTHTOKEN"
-
-
-#define BASE_URL @"http://yumdrop-dev.scrij.com/api/"
-
-//Users
-#define YUM_GET_USER_INFO @"http://yumdrop-dev.scrij.com/api/users"
-
-//Places
-#define YUM_PLACES_GENERAL @"http://yumdrop-dev.scrij.com/api/places"
-#define YUM_PLACES_DETAILS @"http://yumdrop-dev.scrij.com/api/places/%@"
-
-
-//Charts
-#define YUM_CHARTS @"http://yumdrop-dev.scrij.com/api/charts"
-
-//Reviews
-#define YUM_PLACES_REVIEWS @"http://yumdrop-dev.scrij.com/api/places/%@/reviews"
-
-//Feedback
-#define USER_FEEDBACK_URL @"http://yumdrop-stage.us-west-1.elasticbeanstalk.com/api/feedbacks"
-
-//Workers
-#define YUM_WORKER_GENERAL @"http://yumdrop-dev.scrij.com/api/workers/%@/explorer"
-#define YUM_WORKER_DETAILS @"http://yumdrop-dev.scrij.com/api/workers/%@/details"
-
 
 /*UI Constants
 --------------*/
@@ -187,8 +171,10 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define HEALTH_CONVERSION_COUNT 5
 
 //Search
+#define SEARCH_CONTROLLER_CELL_HEIGHT 55.0
 #define SEARCH_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define MAX_RESULT_COUNT 3
+#define RESULT_CELL_HEIGHT 170.0
 
 //Settings
 #define SETTINGS_CELL_HEIGHT 80.0
@@ -199,7 +185,6 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 /*Helper Macros
  -------------*/
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 #define CHART_TAB_TAG 1
 #define CAMERA_TAB_TAG 2
@@ -211,6 +196,14 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define APPLICATION_PURPLE_COLOR UIColorFromRGB(0xBA9AC1)
 
 #define APPLICATION_FRAME   [UIScreen mainScreen].bounds
+
+
+#define ASSET_PADDING           5
+#define ASSET_FRAME             CGRectMake(0, 0, CGRectGetWidth(APPLICATION_FRAME), CGRectGetHeight(APPLICATION_FRAME))
+#define ASSET_FRAME_LANDSCAPE   CGRectMake(0, 0, CGRectGetHeight(APPLICATION_FRAME), CGRectGetWidth(APPLICATION_FRAME))
+
+#define PREVIEW_FRAME  CGRectMake(0, APPLICATION_FRAME.size.height/2 - APPLICATION_FRAME.size.width/2, APPLICATION_FRAME.size.width, APPLICATION_FRAME.size.width)
+
 
 #define METERS_TO_MILES 0.000621371
 

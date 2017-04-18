@@ -20,13 +20,15 @@
 @property (nonatomic, copy) NSString *website;
 
 @property (nonatomic, copy) NSNumber *foursq_num_ratings;
+@property (nonatomic, copy) NSNumber *foursq_rating;
+@property (nonatomic, copy) NSNumber *foursq_price_tier;
 @property (nonatomic, copy) NSNumber *distance;
 
 @property (nonatomic, copy) NSArray *hours;
 @property (nonatomic, copy) NSArray *categories;
 @property (nonatomic, copy) NSArray *images;
 
-@property (nonatomic, assign)BOOL openNow;
+@property (nonatomic, copy) NSNumber *openNow;
 
 //User metrics
 @property (nonatomic, copy) NSNumber *userOverall;
