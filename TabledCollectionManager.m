@@ -61,8 +61,8 @@
         [self setupRefreshControl];
         self.contentOffsetDictionary = [NSMutableDictionary dictionary];
         self.viewModel = [[TPLChartsViewModel alloc]init];
+        [self bindViewModel];
         [self showChartLoader];
-        [self bindViewModel];        
     }
     return self;
 }
@@ -77,12 +77,14 @@
 
 //Should only show on app launch (when screen is blank)
 - (void)showChartLoader{
-    self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    self.indicatorView.center = CGPointMake(APPLICATION_FRAME.size.width/2, APPLICATION_FRAME.size.height/2.4);
-    CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.3, 1.3);
-    self.indicatorView.transform = scaleUp;
-    [self.tableView addSubview:self.indicatorView];//Show above everything
-    [self.indicatorView startAnimating];
+    if (![self.indicatorView superview]) {
+        self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        self.indicatorView.center = CGPointMake(APPLICATION_FRAME.size.width/2, APPLICATION_FRAME.size.height/2.4);
+        CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.3, 1.3);
+        self.indicatorView.transform = scaleUp;
+        [self.tableView addSubview:self.indicatorView];//Show above everything
+        [self.indicatorView startAnimating];
+    }
 }
 
 - (void)hideChartLoader{
@@ -223,9 +225,9 @@
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
     //Should ONLY show the very first time user enters the app and there's a blank screen. The rest of the loading will be handled by pull to refresh for now.
-    if (!self.refreshControl.refreshing && ![self.errorView superview]) {
-        [self showChartLoader];
-    }
+//    if (!self.refreshControl.refreshing && ![self.errorView superview]) {
+//        [self showChartLoader];
+//    }
     [self.viewModel getChartsAtLocation:coordinate];
 }
 

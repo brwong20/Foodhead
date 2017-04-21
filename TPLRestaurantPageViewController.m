@@ -622,8 +622,16 @@ static NSString *photoCellId = @"photoCell";
             //Must check if thumbnail has loaded first b/c we need the smaller image to perform animation as
             ImageCollectionCell *imgCell = (ImageCollectionCell *)[self.photoCollection cellForItemAtIndexPath:self.selectedIndexPath];
             if (!CGSizeEqualToSize(imgCell.coverImageView.image.size, CGSizeZero)) {
-                NSDictionary *imgInfo = self.restaurantPhotos[self.selectedIndexPath.row];
-                NSURL *imgURL = [NSURL URLWithString:imgInfo[@"url"]];
+                id imgInfo = self.restaurantPhotos[self.selectedIndexPath.row];
+                
+                NSString *imgURLStr;
+                if ([imgInfo isKindOfClass:[NSDictionary class]]) {
+                    imgURLStr = imgInfo[@"url"];
+                }else if([imgInfo isKindOfClass:[UserReview class]]){
+                    UserReview *review = imgInfo;
+                    imgURLStr = review.thumbnailURL;
+                }
+                NSURL *imgURL = [NSURL URLWithString:imgURLStr];
                 
                 //Init the view controller for previewing
                 self.previewVC = [[AnimationPreviewViewController alloc] initWithIndex:0 andImageURL:imgURL withPlaceHolder:imgCell.coverImageView.image];

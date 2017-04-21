@@ -81,16 +81,16 @@
 }
 
 - (void)didTapRefresh{
-    if ([self.delegate respondsToSelector:@selector(serviceErrorViewToggledRefresh)]) {
+    if ([self.delegate respondsToSelector:@selector(serviceErrorViewToggledRefresh)] && !self.refreshIndicator.isAnimating) {
         [self.delegate serviceErrorViewToggledRefresh];
-    }
-    
-    if (_errorType == ServiceErrorTypeData) {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.errorTitle.alpha = 0.0;
-            self.errorTextView.alpha = 0.0;
-            [self.refreshIndicator startAnimating];
-        }];
+        
+        if (_errorType == ServiceErrorTypeData) {
+            [UIView animateWithDuration:0.25 animations:^{
+                self.errorTitle.alpha = 0.0;
+                self.errorTextView.alpha = 0.0;
+                [self.refreshIndicator startAnimating];
+            }];
+        }
     }
 }
 

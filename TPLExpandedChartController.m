@@ -68,6 +68,8 @@ static NSString *loadCellId = @"loadingCell";
 
 - (void)setupNavBar{
     self.navigationItem.title = self.selectedChart.name;
+    
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.06], NSForegroundColorAttributeName : [UIColor blackColor]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exit)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }

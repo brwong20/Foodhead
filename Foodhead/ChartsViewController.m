@@ -93,8 +93,8 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.canScrollToTop = YES;
-    [self setupNavBar];//Need to call here b/c it doesn't interact well with expanded chart VC for some reason
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
+    [self setupNavBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -158,7 +158,7 @@ static NSString *cellId = @"tabledCollectionCell";
     self.navigationController.navigationBar.topItem.title = @"Foodhead";
     self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.06], NSForegroundColorAttributeName : [UIColor blackColor]};
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];
 }
 
 - (void)submitFeedback{
