@@ -8,7 +8,6 @@
 
 #import "TPLChartCollectionCell.h"
 #import "LayoutBounds.h"
-
 #import "UIFont+Extension.h"
 #import "NSString+IsEmpty.h"
 #import "FoodWiseDefines.h"
@@ -16,6 +15,12 @@
 #import <TTTAttributedLabel/TTTAttributedLabel.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 
+@interface TPLChartCollectionCell ()
+
+@property (nonatomic, strong) UIImageView *coverImage;
+@property (nonatomic, strong) TTTAttributedLabel *nameLabel;
+
+@end
 
 @implementation TPLChartCollectionCell
 

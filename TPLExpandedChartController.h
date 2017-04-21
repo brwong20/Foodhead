@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "Chart.h"
+
+
 @interface TPLExpandedChartController : UIViewController
 
-@property (nonatomic, strong) NSDictionary *chartInfo;
+@property (nonatomic, strong) Chart *selectedChart;
 
 @end

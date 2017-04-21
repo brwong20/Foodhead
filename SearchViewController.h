@@ -12,6 +12,4 @@
 
 @interface SearchViewController : UIViewController
 
-@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
-
 @end

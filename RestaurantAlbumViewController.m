@@ -19,6 +19,7 @@
 #import "AnimationPreviewViewController.h"
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
+#import "LayoutBounds.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -30,6 +31,7 @@
 
 @property (nonatomic, strong) UICollectionView *photoCollectionView;
 @property (nonatomic, strong) NSMutableArray *idmPhotos;
+@property (nonatomic, assign) BOOL requestingImages;//Makes sure user doesn't run multiple requests for more images
 
 @property (nonatomic, strong) AnimationPreviewViewController *previewVC;
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGest;
@@ -51,6 +53,7 @@ static NSString *loadingCellId = @"loadingCell";
         
     self.viewModel = [[TPLRestaurantPageViewModel alloc]init];
     self.idmPhotos = [NSMutableArray array];
+    self.requestingImages = NO;
     
     //Sometimes the long press gesture finishes too fast so we use this to track completion.
     self.gestureCancelled = NO;
@@ -78,9 +81,14 @@ static NSString *loadingCellId = @"loadingCell";
     [self setupNavBar];
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.06]};
+}
+
 - (void)setupNavBar{
     self.navigationItem.title = self.restaurant.name;
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:20.0]};
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantAlbum)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
@@ -126,6 +134,7 @@ static NSString *loadingCellId = @"loadingCell";
 
 - (void)loadMoreImages{
     if (![NSString isEmpty:self.nextPg]) {
+        self.requestingImages = YES;
         [self.viewModel retrieveImagesForRestaurant:self.restaurant page:self.nextPg completionHandler:^(id completionHandler) {
             self.nextPg = completionHandler[@"next_page"];
             NSArray *images = completionHandler[@"images"];
@@ -154,10 +163,12 @@ static NSString *loadingCellId = @"loadingCell";
                 }
             }
             dispatch_async(dispatch_get_main_queue(), ^{
+                self.requestingImages = NO;
                 [self.photoCollectionView reloadData];
             });
         } failureHandler:^(id failureHandler) {
-            
+            DLog(@"Failed to get more images: %@", failureHandler);
+            self.requestingImages = NO;
         }];
     }
 }
@@ -225,7 +236,7 @@ static NSString *loadingCellId = @"loadingCell";
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == self.media.count - 6) {
+    if (indexPath.row == self.media.count - 6 && !self.requestingImages) {
         [self loadMoreImages];
     }
 }

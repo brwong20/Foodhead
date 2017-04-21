@@ -18,7 +18,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectTabledCollectionCellAtIndexPath:(NSIndexPath *)indexPath withItem:(id)item;
 
 //When user selects section arrow (nested delegate method which is called from TPLChartSectionView)
-- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(Chart *)chartInfo;
+- (void)tableView:(UITableView *)tableView didSelectChart:(Chart *)chart AtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 

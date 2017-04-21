@@ -90,6 +90,7 @@ static NSString *cellId = @"userPhoto";
 }
 
 - (void)setupNavBar{
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.05], NSForegroundColorAttributeName : [UIColor blackColor]};
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
@@ -159,7 +160,6 @@ static NSString *cellId = @"userPhoto";
     self.currentUser = [self.userManager getCurrentUser];
     if (self.currentUser && (self.currentUser.avatarURL || self.currentUser.avatarImg)) {
         self.navigationController.navigationBar.topItem.title = self.currentUser.username;
-        self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_fontWithSize:22.0], NSForegroundColorAttributeName : [UIColor blackColor]};
         
 #warning If you open this tab quick enough (before charts verifies user), the avatar img might not be present (from the cache) so load the url if anything. Need to re-think this user verification logic and/or loading this page eventually
         if (self.currentUser.avatarImg) {
@@ -255,11 +255,11 @@ static NSString *cellId = @"userPhoto";
         self.noPhotoLabel.textAlignment = NSTextAlignmentCenter;
         self.noPhotoLabel.textColor = [UIColor whiteColor];
         self.noPhotoLabel.numberOfLines = 2;
-        self.noPhotoLabel.font = [UIFont nun_mediumFontWithSize:self.noPhotoView.frame.size.height * 0.06];
+        self.noPhotoLabel.font = [UIFont nun_mediumFontWithSize:REST_PAGE_HEADER_FONT_SIZE * 1.12];
         self.noPhotoLabel.text = @"You haven't shared any meals yet.\nClick on the camera to start!";
         [self.noPhotoView addSubview:self.noPhotoLabel];
         
-        self.noPhotoArrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.tabBarController.tabBar.bounds.size.width * 0.56, self.noPhotoView.bounds.size.height * 0.91, self.view.frame.size.width * 0.17, self.view.frame.size.width * 0.17)];
+        self.noPhotoArrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.tabBarController.tabBar.bounds.size.width * 0.555, self.noPhotoView.bounds.size.height * 0.9, self.view.frame.size.width * 0.17, self.view.frame.size.width * 0.17)];
         self.noPhotoArrowImg.layer.rasterizationScale = [[UIScreen mainScreen]scale];
         self.noPhotoArrowImg.layer.shouldRasterize = YES;
         self.noPhotoArrowImg.backgroundColor = [UIColor clearColor];

@@ -36,7 +36,7 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, UIViewControllerTransitioningDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate>
+@interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, UIViewControllerTransitioningDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate, LocationManagerDelegate>
 
 //UI
 @property (nonatomic, strong) UITableView *detailsTableView;
@@ -62,6 +62,9 @@
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 @property (nonatomic, assign) BOOL gestureCancelled;
 
+//Location
+@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
+@property (nonatomic, strong) LocationManager *locationManager;
 @end
 
 static NSString *cellId = @"detailCell";
@@ -83,18 +86,25 @@ static NSString *photoCellId = @"photoCell";
     self.pageViewModel = [[TPLRestaurantPageViewModel alloc]init];
     self.detailsFetched = NO;
     
-    [self loadRestaurantDetails];
+    self.locationManager = [LocationManager sharedLocationInstance];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self setupNavBar];
     
+    self.locationManager.locationDelegate = self;
     //We should only load images/metrics once in viewDidLoad. If details have already been fetched, this means the user either reopened the app or submitted a review while on the restaurant page.
+    [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
     if (self.detailsFetched) {
         [self refreshMetrics];
         [self loadRestaurantImages];
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    self.locationManager.locationDelegate = nil;
 }
 
 - (void)loadRestaurantDetails{
@@ -208,7 +218,7 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)setupNavBar{
     self.navigationItem.title = @"Foodhead";
-    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.06], NSForegroundColorAttributeName : [UIColor blackColor]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantPage)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
@@ -313,7 +323,7 @@ static NSString *photoCellId = @"photoCell";
         NSString *destinationLat = [NSString stringWithFormat:@"%f", restaurantCoordinate.latitude];
         NSString *destinationLng = [NSString stringWithFormat:@"%f", restaurantCoordinate.longitude];
         
-        CLLocationCoordinate2D currentLocation = [LocationManager sharedLocationInstance].currentLocation;
+        CLLocationCoordinate2D currentLocation = [[LocationManager sharedLocationInstance]currentLocation];
         NSString *currentLat = [NSString stringWithFormat:@"%f", currentLocation.latitude];
         NSString *currentLng = [NSString stringWithFormat:@"%f", currentLocation.longitude];
         
@@ -667,6 +677,17 @@ static NSString *photoCellId = @"photoCell";
     bigImageView = [(AnimationPreviewViewController*)dismissed imageView];
     
     return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
+}
+
+#pragma mark - LocationManagerDelegate methods
+
+- (void)didGetCurrentLocation:(CLLocationCoordinate2D)coordinate{
+    self.currentLocation = coordinate;
+    
+    //Should only be called once the first time the page is opened.
+    if (!self.detailsFetched) {
+        [self loadRestaurantDetails];
+    }
 }
 
 @end

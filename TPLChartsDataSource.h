@@ -32,12 +32,7 @@ typedef void (^ChartOperationCompletionBlock)(Chart *chart, NSError *error);
               completionHandler:(void (^)(id chartData))completionHandler
                  failureHandler:(void (^)(id error))failureHandler;
 
-//To get more restaurants for a specific chart
-- (void)getMoreRestaurantsForChart:(Chart *)chart
-                      atCoordinate:(CLLocationCoordinate2D)coordinate
-                 completionHandler:(void (^)(id chartData))completionHandler
-                    failureHandler:(void (^)(id error))failureHandler;
-
+//Get restaurants for a specific chart. Will retrieve more results if Chart object has a next_page.
 - (void)getRestaurantsForChart:(Chart *)chart
                   atCoordinate:(CLLocationCoordinate2D)coordinate
              completionHandler:(void (^)(id))completionHandler
