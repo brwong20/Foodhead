@@ -92,9 +92,7 @@
     
     UITapGestureRecognizer *dismissKeyboard = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboard)];
     dismissKeyboard.numberOfTapsRequired = 1;
-    [self.view addGestureRecognizer:dismissKeyboard];
-    
-    //[LayoutBounds drawBoundsForAllLayers:self.view];
+    [self.view addGestureRecognizer:dismissKeyboard];    
 }
 
 - (void)exitFeedback{

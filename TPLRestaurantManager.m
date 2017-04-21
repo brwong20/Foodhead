@@ -107,10 +107,10 @@ typedef void(^DetailCompletionBlock)(id restaurantDetails);
         NSDictionary *userInfo = [error userInfo];
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
-            //NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            //DLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
-            failureHandler(error);
+            NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
+            DLog(@"Failed to retrieve restaurant media: %@", err[@"error"]);
         }
+        failureHandler(error);
     }];
 }
 

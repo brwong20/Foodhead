@@ -34,7 +34,7 @@
     self = [super init];
     if (self) {
         self.locationManager = [[CLLocationManager alloc]init];
-        //self.locationManager.distanceFilter = 1000.0;
+        self.locationManager.distanceFilter = 10000.0;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
         self.authorizedStatus = [CLLocationManager authorizationStatus];
         self.locationManager.delegate = self;
