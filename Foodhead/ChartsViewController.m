@@ -67,8 +67,9 @@ static NSString *cellId = @"tabledCollectionCell";
 
     self.tabBarController.delegate = self;
     
-    [self setupNavBar];
     [self setupUI];
+    [self setupNavBar];
+    
     [self verifyCurrentUser];
     
     self.locationManager = [LocationManager sharedLocationInstance];
@@ -84,6 +85,25 @@ static NSString *cellId = @"tabledCollectionCell";
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    self.locationManager.locationDelegate = self;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.canScrollToTop = YES;
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
+    [self setupNavBar];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.canScrollToTop = NO;
+    self.locationManager.locationDelegate = nil;
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
+}
+
 - (void)addObservers{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(checkLocationPermissions) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
@@ -94,18 +114,6 @@ static NSString *cellId = @"tabledCollectionCell";
 
 - (void)dealloc{
     [self removeObservers];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    self.canScrollToTop = YES;
-    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    self.canScrollToTop = NO;
-    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
 }
 
 #pragma mark - Status bar
@@ -123,17 +131,20 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)setupUI{
     self.view.backgroundColor = APPLICATION_BACKGROUND_COLOR;
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStylePlain];
     UIEdgeInsets adjustForBarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
     self.tableView.contentInset = adjustForBarInsets;
     self.tableView.scrollIndicatorInsets = adjustForBarInsets;
     self.tableView.showsVerticalScrollIndicator = NO;
+    self.tableView.backgroundColor = UIColorFromRGB(0xDBDBDB);
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    //Modularized all datasource and delegate into separate class
     self.tableCollectionMngr = [[TabledCollectionManager alloc] initWithTableView:self.tableView cellIdentifier:cellId];
+    self.tableCollectionMngr.delegate = self;
     self.tableView.delegate = self.tableCollectionMngr;
     self.tableView.dataSource = self.tableCollectionMngr;
-    self.tableCollectionMngr.delegate = self;
-    self.tableView.backgroundColor = [UIColor whiteColor];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
     [self.view addSubview:self.tableView];
 }
 
@@ -145,9 +156,9 @@ static NSString *cellId = @"tabledCollectionCell";
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     
     self.navigationController.navigationBar.topItem.title = @"Foodhead";
-    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:24.0], NSForegroundColorAttributeName : APPLICATION_BLUE_COLOR};
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.06], NSForegroundColorAttributeName : [UIColor blackColor]};
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];
 }
 
 - (void)submitFeedback{
@@ -200,17 +211,16 @@ static NSString *cellId = @"tabledCollectionCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectTabledCollectionCellAtIndexPath:(NSIndexPath *)indexPath withItem:(TPLRestaurant *)item{
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = item;
-    restPageVC.currentLocation = [LocationManager sharedLocationInstance].currentLocation;
+    //restPageVC.currentLocation = [LocationManager sharedLocationInstance].currentLocation;
     [FoodheadAnalytics logEvent:OPEN_RESTAURANT_PAGE];
     [self.navigationController pushViewController:restPageVC animated:YES];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectSectionWithChart:(Chart *)chartInfo{
-//    TPLExpandedChartController *chartVC = [[TPLExpandedChartController alloc]init];
-//    chartVC.selectedChart = chartInfo;
-//    chartVC.currentLocation = [[LocationManager sharedLocationInstance]currentLocation];
-//    [FoodheadAnalytics logEvent:EXPANDED_CHART_PAGE withParameters:@{@"chartName" : chartInfo.name}];
-//    [self.navigationController pushViewController:chartVC animated:YES];
+- (void)tableView:(UITableView *)tableView didSelectChart:(Chart *)chart AtIndexPath:(NSIndexPath *)indexPath{
+    TPLExpandedChartController *chartVC = [[TPLExpandedChartController alloc]init];
+    chartVC.selectedChart = chart;
+    [FoodheadAnalytics logEvent:EXPANDED_CHART_PAGE withParameters:@{@"chartName" : chart.name}];
+    [self.navigationController pushViewController:chartVC animated:YES];
 }
 
 #pragma mark - LocationManager delegate methods

@@ -15,7 +15,7 @@
 @property (nonatomic, copy) NSNumber *order_index;
 
 //Merged properties from Places object
-@property (nonatomic, copy) NSMutableArray *places;
+@property (nonatomic, copy) NSArray *places;
 @property (nonatomic, copy) NSNumber *next_page;
 
 @end

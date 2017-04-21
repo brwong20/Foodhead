@@ -12,12 +12,6 @@
 
 @interface TPLChartCollectionCell : UICollectionViewCell
 
-@property (nonatomic, strong) UIImageView *coverImage;
-
-@property (nonatomic, strong) UILabel *nameLabel;
-@property (nonatomic, strong) UILabel *categoryLabel;
-@property (nonatomic, strong) UILabel *priceLabel;
-
 - (void)populateRestauarantInfo:(TPLRestaurant *)restaurant;
 
 @end

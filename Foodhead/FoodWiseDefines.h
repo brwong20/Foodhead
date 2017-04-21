@@ -145,13 +145,15 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 --------------*/
 
 //Charts
-#define CHART_ROW_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.32
-#define CHART_ITEM_SIZE [[UIScreen mainScreen]bounds].size.height * 0.28
+#define CHART_ROW_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.72
+#define CHART_ITEM_SIZE [[UIScreen mainScreen]bounds].size.height * 0.3
 #define CHART_SECTION_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.07
 
 #define CATEGORY_RESTAURANT_CELL_HEIGHT 100.0
 #define CHART_PADDING_PERCENTAGE 0.04
-#define CHART_SPACING 0.05
+#define CHART_SPACING 0.025
+
+#define EXPANDED_CHART_SPACING 
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 7

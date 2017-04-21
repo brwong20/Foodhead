@@ -14,6 +14,5 @@
 @interface TPLRestaurantPageViewController : UIViewController
 
 @property (nonatomic, strong) TPLRestaurant *selectedRestaurant;
-@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
 
 @end

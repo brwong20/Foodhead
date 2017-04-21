@@ -22,14 +22,23 @@
 
 @implementation TPLChartsViewModel
 
-- (instancetype)initWithStore:(TPLChartsDataSource *)store{
+- (instancetype)init{
     self = [super init];
     if(self){
-        self.restaurantDataSrc = store;
+        self.restaurantDataSrc = [[TPLChartsDataSource alloc]init];
         self.completeChartData = [NSMutableArray array];
     }
     return self;
 }
+
+//- (instancetype)initWithStore:(TPLChartsDataSource *)store{
+//    self = [super init];
+//    if(self){
+//        self.restaurantDataSrc = [[TPLChartsDataSource alloc]init];
+//        self.completeChartData = [NSMutableArray array];
+//    }
+//    return self;
+//}
 
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
     @weakify(self);
@@ -67,42 +76,9 @@
         self.chartsLoadFailed = NO;
         DLog(@"Chart info loaded");
     }];
-
-/* Deprecated
-    [self.restaurantDataSrc retrieveChartsForLocation:coordinate completionHandler:^(id chartData){
-        [arrCopy removeAllObjects];
-        NSArray *charts = chartData[@"charts"];
-        for (NSDictionary *chartDetails in charts) {
-            Chart *incompleteChart = [MTLJSONAdapter modelOfClass:[Chart class] fromJSONDictionary:chartDetails error:nil];
-            [arrCopy addObject:incompleteChart];
-        }
-        
-        self.finishedLoading = NO;
-        self.chartsLoadFailed = NO;
-    
-        #warning Need a better way of using RAC here (updating the same object in this array with a dictionary...)
-        [self.restaurantDataSrc getRestaurantsForCharts:arrCopy atCoordinate:coordinate completionHandler:^(id completeChart) {
-            NSNumber *index = completeChart[@"index"];
-            Chart *chart = completeChart[@"chart"];
-            [arrCopy replaceObjectAtIndex:[index integerValue] withObject:chart];
-            
-#warning This doesn't work if we don't load in serial order. Must find a better way to do this
-            //
-            if ([index integerValue] == arrCopy.count - 1) {
-                self.finishedLoading = YES;
-            }
-        } failureHandler:^(id error) {
-            //DLog(@"Failed to get restaurants for charts: %@", error);
-            self.chartsLoadFailed = YES;
-            self.finishedLoading = YES;
-        }];
-    } failureHandler:^(id error) {
-        //Throw bad service alert
-        self.chartsLoadFailed = YES;
-        self.finishedLoading = YES;
-    }];
- */
 }
+
+#pragma mark RACSignals
 
 - (RACSignal *)signalForIncompleteCharts:(CLLocationCoordinate2D)coordinate{
     NSMutableArray *arrCopy = [self mutableArrayValueForKey:@"completeChartData"];
@@ -130,6 +106,19 @@
     return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
         [self.restaurantDataSrc getRestaurantsForChart:chart atCoordinate:coordinate completionHandler:^(Chart *completeChart) {
             [arrCopy replaceObjectAtIndex:[arrCopy indexOfObject:chart] withObject:chart];
+            [subscriber sendCompleted];
+        } failureHandler:^(NSError *error) {
+            [subscriber sendError:error];
+        }];
+        return nil;
+    }];
+}
+
+
+//Since we are passing a reference of an already existing chart, we will observe when new objects are added to its places array instead of completeChartData.
+- (RACSignal *)getMoreRestaurantsForChartSignal:(Chart *)chart atLocation:(CLLocationCoordinate2D)coordinate{
+    return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [self.restaurantDataSrc getRestaurantsForChart:chart atCoordinate:coordinate completionHandler:^(Chart *chart) {
             [subscriber sendCompleted];
         } failureHandler:^(NSError *error) {
             [subscriber sendError:error];

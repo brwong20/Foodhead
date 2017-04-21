@@ -34,9 +34,7 @@
         self.foursquareLogo.backgroundColor = [UIColor clearColor];
         self.foursquareLogo.contentMode = UIViewContentModeScaleAspectFit;
         [self.foursquareLogo setImage:[UIImage imageNamed:@"foursquare_logo"]];
-        [self.contentView addSubview:self.foursquareLogo];
-        
-        //[LayoutBounds drawBoundsForAllLayers:self];
+        [self.contentView addSubview:self.foursquareLogo];        
     }
     return self;
 }

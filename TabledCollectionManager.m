@@ -11,7 +11,6 @@
 #import "TPLChartCollectionCell.h"
 #import "TPLRestaurant.h"
 #import "TPLChartsViewModel.h"
-#import "TPLChartSectionView.h"
 #import "FoodWiseDefines.h"
 #import "LocationManager.h"
 #import "LayoutBounds.h"
@@ -23,7 +22,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 
-@interface TabledCollectionManager () <ChartSectionViewDelegate, ServiceErrorViewDelegate>
+@interface TabledCollectionManager () <ServiceErrorViewDelegate, TabledCollectionCellDelegate>
 
 //Reference to parent table view that uses this delegate/datasource
 @property (nonatomic, strong) UITableView *tableView;
@@ -43,7 +42,12 @@
 //Error View
 @property (nonatomic, strong) ServiceErrorView *errorView;
 
+//Location
+@property (nonatomic, strong) LocationManager *locationManager;
+
 @end
+
+#define NUM_THUMBNAILS 4
 
 @implementation TabledCollectionManager
 
@@ -56,9 +60,9 @@
         [tableview registerClass:[TabledCollectionCell class] forCellReuseIdentifier:cellId];
         [self setupRefreshControl];
         self.contentOffsetDictionary = [NSMutableDictionary dictionary];
-        self.viewModel = [[TPLChartsViewModel alloc]initWithStore:[[TPLChartsDataSource alloc]init]];
-        [self showChartLoader];
+        self.viewModel = [[TPLChartsViewModel alloc]init];
         [self bindViewModel];
+        [self showChartLoader];
     }
     return self;
 }
@@ -73,12 +77,14 @@
 
 //Should only show on app launch (when screen is blank)
 - (void)showChartLoader{
-    self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    self.indicatorView.center = self.tableView.window.center;
-    CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.4, 1.4);
-    self.indicatorView.transform = scaleUp;
-    [self.tableView.window addSubview:self.indicatorView]; //Show above everything
-    [self.indicatorView startAnimating];
+    if (![self.indicatorView superview]) {
+        self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        self.indicatorView.center = CGPointMake(APPLICATION_FRAME.size.width/2, APPLICATION_FRAME.size.height/2.4);
+        CGAffineTransform scaleUp = CGAffineTransformMakeScale(1.3, 1.3);
+        self.indicatorView.transform = scaleUp;
+        [self.tableView addSubview:self.indicatorView];//Show above everything
+        [self.indicatorView startAnimating];
+    }
 }
 
 - (void)hideChartLoader{
@@ -93,6 +99,8 @@
 - (void)refreshCharts{
     if (self.viewModel.finishedLoading) {
         [self.refreshControl beginRefreshing];
+        
+        //Fires delegate method in ChartsViewController and comes back to here 
         [[LocationManager sharedLocationInstance] retrieveCurrentLocation];
     }else{
         [self.refreshControl endRefreshing];
@@ -114,26 +122,18 @@
 {
     NSInteger itemCount = 0;
     if(self.collectionData.count > 0){
-        NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-        Chart *chart = self.collectionData[tableCellIndex.section];
-        if (chart.places) {
-            //Only show 'all' button for section if we have a chart
-            //TPLChartSectionView *sectionView = [self.tableView viewWithTag:[chart.name hash]];
-            //[sectionView showSeeAllButton];
+        IndexedPhotoCollectionView *indexedCollection = (IndexedPhotoCollectionView *)collectionView;
+        Chart *chart = self.collectionData[indexedCollection.indexPath.row];
+        
+        //Only load as many restaurant thumbnails as needed
+        if (chart.places && chart.places.count > NUM_THUMBNAILS) {
+            itemCount = NUM_THUMBNAILS;
+        }else{
             itemCount = chart.places.count;
         }
     }
     return itemCount;
 }
-
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
-    NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-    Chart *chart = self.collectionData[tableCellIndex.section];
-    if (indexPath.row == chart.places.count - 1) {
-        [FoodheadAnalytics logEvent:END_OF_CHART withParameters:@{@"chartName" : chart.name}];
-    }
-}
-
 
 #pragma mark - UICollectionViewDelegate methods
 
@@ -151,41 +151,27 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     TabledCollectionCell *rowCell = (TabledCollectionCell *)[tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
     rowCell.selectionStyle = UITableViewCellSelectionStyleNone;
+    rowCell.delegate = self;
+    Chart *chart = [self.collectionData objectAtIndex:indexPath.row];
+    [rowCell populateCellWithChart:chart];
+    
     return rowCell;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return self.collectionData.count;
+    return 1;
 }
 
 #pragma mark - UITableViewDelegate methods
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *sectionView = nil;
-    if(self.collectionData.count > 0){
-        Chart *chart = [self.collectionData objectAtIndex:section];
-        
-        TPLChartSectionView *chartSection = [[TPLChartSectionView alloc]initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, CHART_SECTION_HEIGHT)];
-        //sectionView.tag = [chart.name hash];//Makes it easier to retrieve this view in other methods
-        chartSection.delegate = self;
-        chartSection.section = section;
-        chartSection.titleLabel.text = chart.name;
-        
-        sectionView = chartSection;
-    }
-    return sectionView;
-}
-
 //Keeps track of each offset for each distinct row of embedded collection views
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     TabledCollectionCell *photoCell = (TabledCollectionCell*)cell;
-    photoCell.collectionView.backgroundColor = [UIColor clearColor];
-    photoCell.collectionView.decelerationRate = UIScrollViewDecelerationRateFast;//Slows down the scroll speed
     [photoCell setCollectionViewDataSourceDelegate:self indexPath:indexPath withCustomCell:[TPLChartCollectionCell class]];
     
-    NSIndexPath *index = [self indexPathForCollectionView:photoCell.collectionView];
-    CGFloat horizontalOffset = [self.contentOffsetDictionary[[@(index.section) stringValue]]floatValue];
-    [photoCell.collectionView setContentOffset:CGPointMake(horizontalOffset, 0)];
+//    NSIndexPath *index = [self indexPathForCollectionView:photoCell.collectionView];
+//    CGFloat horizontalOffset = [self.contentOffsetDictionary[[@(index.section) stringValue]]floatValue];
+//    [photoCell.collectionView setContentOffset:CGPointMake(horizontalOffset, 0)];
 }
 
 
@@ -193,28 +179,28 @@
     return CHART_ROW_HEIGHT;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return CHART_SECTION_HEIGHT;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return CGFLOAT_MIN;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 1;
+    return self.collectionData.count;
+}
+
+#pragma mark - TabledCollectionCellDelegate methods
+
+- (void)didTapSeeAllAtIndexPath:(NSIndexPath *)indexPath{
+    if ([self.delegate respondsToSelector:@selector(tableView:didSelectChart:AtIndexPath:)]) {
+        [self.delegate tableView:self.tableView didSelectChart:self.collectionData[indexPath.row] AtIndexPath:indexPath];
+    }
 }
 
 #pragma mark - UIScrollViewDelegate methods
 //Track the offset of each collection view and store in a map to return to originally scrolled position if loaded again.
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if ([scrollView isKindOfClass:[UICollectionView class]]){
-        CGFloat horizontalOffset = scrollView.contentOffset.x;
-        IndexedPhotoCollectionView *collectionView = (IndexedPhotoCollectionView *)scrollView;
-        NSIndexPath *indexPath = [self indexPathForCollectionView:collectionView];
-        self.contentOffsetDictionary[[@(indexPath.section) stringValue]] = @(horizontalOffset);
-    }
-}
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//    if ([scrollView isKindOfClass:[UICollectionView class]]){
+//        CGFloat horizontalOffset = scrollView.contentOffset.x;
+//        IndexedPhotoCollectionView *collectionView = (IndexedPhotoCollectionView *)scrollView;
+//        NSIndexPath *indexPath = [self indexPathForCollectionView:collectionView];
+//        self.contentOffsetDictionary[[@(indexPath.section) stringValue]] = @(horizontalOffset);
+//    }
+//}
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     if ([scrollView isKindOfClass:[UITableView class]]){
@@ -224,42 +210,24 @@
     }
 }
 
-#pragma mark - ChartsSectionView delegate methods
-
-- (void)didSelectSection:(NSUInteger)section{
-    Chart *chart = [self.collectionData objectAtIndex:section];
-    if (chart) {
-        if ([self.delegate respondsToSelector:@selector(tableView:didSelectSectionWithChart:)]) {
-            [self.delegate tableView:self.tableView didSelectSectionWithChart:chart];
-        }
-    }
-}
-
 #pragma mark - Helper Methods
 
 //Method helps us figure out which row (tableview cell) we're populating the embedded collection view cells for.
 - (TPLRestaurant *)getRestaurantAtIndexPath:(NSIndexPath *)indexPath
                            inCollectionView:(UICollectionView*)collectionView{
-    NSIndexPath *tableCellIndex = [self indexPathForCollectionView:collectionView];
-    Chart *chart = self.collectionData[tableCellIndex.section];
+    IndexedPhotoCollectionView *indexedCollection = (IndexedPhotoCollectionView *)collectionView;
+    Chart *chart = self.collectionData[indexedCollection.indexPath.row];
     NSArray *restaurantArr = chart.places;
     NSDictionary *restaurantDict = restaurantArr[indexPath.row];//Using embedded collection cell index path
     TPLRestaurant *restaurant = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:restaurantDict error:nil];
     return restaurant;
 }
 
-- (NSIndexPath *)indexPathForCollectionView:(UICollectionView *)collectionView{
-    UIView *cellContentView = collectionView.superview;
-    TabledCollectionCell *tableCell = (TabledCollectionCell*)cellContentView.superview;
-    NSIndexPath *tableCellIndex = [self.tableView indexPathForRowAtPoint:tableCell.center];//Used row b/c cellForRowAtIndexPath returns nil if cell isn't visible yet!
-    return tableCellIndex;
-}
-
 - (void)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
     //Should ONLY show the very first time user enters the app and there's a blank screen. The rest of the loading will be handled by pull to refresh for now.
-    if (!self.refreshControl.refreshing && ![self.errorView superview]) {
-        [self showChartLoader];
-    }
+//    if (!self.refreshControl.refreshing && ![self.errorView superview]) {
+//        [self showChartLoader];
+//    }
     [self.viewModel getChartsAtLocation:coordinate];
 }
 
@@ -267,6 +235,8 @@
 - (void)collectionViewReloadData{
     [self.tableView reloadData];
 }
+
+#pragma mark - View Model Helper Methods
 
 - (void)bindViewModel{
     [self bindChartData];
@@ -332,7 +302,7 @@
 
 //Will call ChartsViewController's delegate method which then re-routes back here.
 - (void)serviceErrorViewToggledRefresh{
-    [self getChartsAtLocation:[[LocationManager sharedLocationInstance]currentLocation]];
+    [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
 }
 
 @end

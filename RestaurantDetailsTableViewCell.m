@@ -43,7 +43,7 @@
     self.restaurantName = [[UILabel alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width * 0.03, RESTAURANT_INFO_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.9, RESTAURANT_INFO_CELL_HEIGHT * 0.27)];
     self.restaurantName.numberOfLines = 1;
     self.restaurantName.textAlignment = NSTextAlignmentLeft;
-    self.restaurantName.font = [UIFont nun_fontWithSize:RESTAURANT_INFO_CELL_HEIGHT * 0.23];
+    self.restaurantName.font = [UIFont nun_fontWithSize:RESTAURANT_INFO_CELL_HEIGHT * 0.2];
     self.restaurantName.textColor = [UIColor blackColor];
     [self.contentView addSubview:self.restaurantName];
     

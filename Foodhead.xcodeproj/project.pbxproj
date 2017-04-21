@@ -15,7 +15,6 @@
 		A02B80BE1E6E75A6005EA0CE /* TPLRestaurantManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A02B80BD1E6E75A6005EA0CE /* TPLRestaurantManager.m */; };
 		A02D2EE61E53C501003E65F3 /* TPLChartSectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */; };
 		A02D2EE91E53CAD2003E65F3 /* TPLExpandedChartController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */; };
-		A02D2EEC1E53D044003E65F3 /* ExpandedChartTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */; };
 		A02D2EEF1E5508B4003E65F3 /* UsernamePromptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */; };
 		A02D2EF21E5512FC003E65F3 /* BRWSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */; };
 		A02D2EFC1E566012003E65F3 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EFB1E566012003E65F3 /* User.m */; };
@@ -34,6 +33,7 @@
 		A039F8A01E9C45D80093CE24 /* SearchFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F89F1E9C45D80093CE24 /* SearchFilterView.m */; };
 		A039F8A31E9D3D930093CE24 /* ResultTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */; };
 		A039F8A61E9D7B980093CE24 /* Category.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A51E9D7B980093CE24 /* Category.m */; };
+		A039F8AA1EA805780093CE24 /* ExpandedChartCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A91EA805780093CE24 /* ExpandedChartCollectionViewCell.m */; };
 		A04B99621E70016E004AE07A /* PriceFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99611E70016E004AE07A /* PriceFilterView.m */; };
 		A04B996C1E7204AA004AE07A /* UIFont+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B996B1E7204AA004AE07A /* UIFont+Extension.m */; };
 		A04B99861E720A51004AE07A /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99801E72087A004AE07A /* Nunito-Regular.ttf */; };
@@ -121,8 +121,6 @@
 		A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartSectionView.m; sourceTree = "<group>"; };
 		A02D2EE71E53CAD2003E65F3 /* TPLExpandedChartController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLExpandedChartController.h; sourceTree = "<group>"; };
 		A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLExpandedChartController.m; sourceTree = "<group>"; };
-		A02D2EEA1E53D044003E65F3 /* ExpandedChartTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpandedChartTableViewCell.h; sourceTree = "<group>"; };
-		A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpandedChartTableViewCell.m; sourceTree = "<group>"; };
 		A02D2EED1E5508B4003E65F3 /* UsernamePromptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UsernamePromptViewController.h; sourceTree = "<group>"; };
 		A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UsernamePromptViewController.m; sourceTree = "<group>"; };
 		A02D2EF01E5512FC003E65F3 /* BRWSearchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRWSearchView.h; sourceTree = "<group>"; };
@@ -159,6 +157,8 @@
 		A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultTableViewCell.m; sourceTree = "<group>"; };
 		A039F8A41E9D7B980093CE24 /* Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Category.h; sourceTree = "<group>"; };
 		A039F8A51E9D7B980093CE24 /* Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Category.m; sourceTree = "<group>"; };
+		A039F8A81EA805780093CE24 /* ExpandedChartCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpandedChartCollectionViewCell.h; sourceTree = "<group>"; };
+		A039F8A91EA805780093CE24 /* ExpandedChartCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpandedChartCollectionViewCell.m; sourceTree = "<group>"; };
 		A04B995A1E6F94AC004AE07A /* FoodWiseDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FoodWiseDefines.h; sourceTree = "<group>"; };
 		A04B99601E70016E004AE07A /* PriceFilterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriceFilterView.h; sourceTree = "<group>"; };
 		A04B99611E70016E004AE07A /* PriceFilterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriceFilterView.m; sourceTree = "<group>"; };
@@ -396,10 +396,10 @@
 			children = (
 				A02D2EE41E53C501003E65F3 /* TPLChartSectionView.h */,
 				A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */,
-				A02D2EEA1E53D044003E65F3 /* ExpandedChartTableViewCell.h */,
-				A02D2EEB1E53D044003E65F3 /* ExpandedChartTableViewCell.m */,
 				A08B823C1E5FA7AD00132F6B /* TPLChartCollectionCell.h */,
 				A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */,
+				A039F8A81EA805780093CE24 /* ExpandedChartCollectionViewCell.h */,
+				A039F8A91EA805780093CE24 /* ExpandedChartCollectionViewCell.m */,
 			);
 			name = Charts;
 			sourceTree = "<group>";
@@ -980,7 +980,6 @@
 				A08742D61E8DB7EE00C2AACC /* FoodheadAnalytics.m in Sources */,
 				A033E5A41E43E7C600D4B9AC /* NSString+Trim.m in Sources */,
 				A039F8811E99F5280093CE24 /* CategoryCollectionViewCell.m in Sources */,
-				A02D2EEC1E53D044003E65F3 /* ExpandedChartTableViewCell.m in Sources */,
 				A04B99A31E74CE7E004AE07A /* SuggestionTableViewCell.m in Sources */,
 				A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */,
 				A0529A881E4AA66500150557 /* TasteFilterView.m in Sources */,
@@ -1018,6 +1017,7 @@
 				A0E844081E28034000BE98B1 /* AppDelegate.m in Sources */,
 				A028D5431E7858B2001C7E89 /* RestaurantDetailsTableViewCell.m in Sources */,
 				A02D2EFC1E566012003E65F3 /* User.m in Sources */,
+				A039F8AA1EA805780093CE24 /* ExpandedChartCollectionViewCell.m in Sources */,
 				A0EDD6B41E980947007A2445 /* SearchTableViewCell.m in Sources */,
 				A039F8851E9A0D560093CE24 /* AnimationPreviewViewController.m in Sources */,
 				A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */,

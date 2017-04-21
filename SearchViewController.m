@@ -8,7 +8,6 @@
 
 #import "SearchViewController.h"
 #import "FoodWiseDefines.h"
-#import "ExpandedChartTableViewCell.h"
 #import "TPLRestaurantManager.h"
 #import "SuggestionTableViewCell.h"
 #import "SearchTableViewCell.h"
@@ -26,8 +25,9 @@
 
 #import "SearchFilterView.h"
 
-@interface SearchViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SearchFilterViewDelegate>
+@interface SearchViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, SearchFilterViewDelegate, LocationManagerDelegate>
 
+@property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
 @property (nonatomic, strong) TPLRestaurantManager *restManager;
 
 //Search UI
@@ -50,11 +50,15 @@
 @property (nonatomic, strong) UIButton *filterButton;
 @property (nonatomic, strong) SearchFilterView *filterView;
 @property (nonatomic, strong) NSMutableDictionary *filters;
+@property (nonatomic, strong) NSArray *filterValues;
 
 //Paging
 @property (nonatomic, strong) NSString *nextPage;
 @property (nonatomic, strong) UIActivityIndicatorView *loadMoreIndicator;
 @property (nonatomic, strong) UILabel *loadMoreLabel;
+
+//
+@property (nonatomic, strong) LocationManager *locationManager;
 
 @end
 
@@ -77,9 +81,13 @@ static NSString *exploreCellId = @"exploreCell";
     
     [self addObservers];
     
+    self.locationManager = [LocationManager sharedLocationInstance];
+    
     self.categoryTitles = @[@"Coffee", @"Salad", @"Juice", @"Mexican", @"Breakfast", @"Sushi", @"Asian", @"Burgers", @"Noodle Soup", @"Drinks", @"Dessert", @"Fancy", @"Vegetarian" , @"Pizza", @"Steakhouse"];
     
     self.categoryValues = @[@"Coffee", @"Salad place", @"Juice, Smoothie", @"Mexican", @"Pancake, Breakfast", @"Sushi", @"Asian Restaurant", @"Burger", @"Ramen, Pho", @"Cocktail", @"Dessert, Ice+cream", @"Food", @"Vegetarian", @"Pizza", @"Steakhouse"];
+    
+    //self.filterValues = @[@"Coffee Shop", @"Salad Place", @"Juice Bar, Smoothie Shop", @"Mexican Restaurant", @"Breakfast Spot", @"Sushi Restaurant", @"Asian Restaurant", @"Burger Joint", @"Ramen Restaurant", @"Nightlife Spot, Bar", @"Dessert Shop, Ice Cream Shop", @"Food", @"Vegetarian / Vegan Restaurant", @"Pizza Place", @"Steakhouse"];
     
     CGSize adjustedFrame = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height - (CGRectGetHeight(self.tabBarController.tabBar.frame) + (CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) + self.navigationController.navigationBar.frame.size.height)));
     
@@ -134,6 +142,7 @@ static NSString *exploreCellId = @"exploreCell";
     self.filterView = [[SearchFilterView alloc]initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, adjustedFrame.height)];
     self.filterView.delegate = self;
     
+    
     self.indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.indicatorView.center = CGPointMake(self.resultsTableView.center.x, self.resultsTableView.center.y - CGRectGetHeight(self.tabBarController.tabBar.frame));
     [self.resultsTableView addSubview:self.indicatorView];
@@ -150,8 +159,8 @@ static NSString *exploreCellId = @"exploreCell";
     [super viewWillAppear:animated];
     [self setupNavBar];
 
-#warning Once we have custom location setting, this will be changed
-    self.currentLocation = [[LocationManager sharedLocationInstance] currentLocation];
+    self.locationManager.locationDelegate = self;
+    [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -161,6 +170,7 @@ static NSString *exploreCellId = @"exploreCell";
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    self.locationManager.locationDelegate = nil;
     [self dismissKeyboard];
     [self resetNavBar];
 }
@@ -216,7 +226,7 @@ static NSString *exploreCellId = @"exploreCell";
             [self dismissKeyboard];
             TPLRestaurant *restaurant = suggestion;
             TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
-            restPageVC.currentLocation = self.currentLocation;
+            //restPageVC.currentLocation = self.currentLocation;
             restPageVC.selectedRestaurant = restaurant;
             [FoodheadAnalytics logEvent:SEARCH_FOUND_RESTAURANT];
             [self.navigationController pushViewController:restPageVC animated:YES];
@@ -231,7 +241,7 @@ static NSString *exploreCellId = @"exploreCell";
         //Opening rest page from ResultTableViewCell
         TPLRestaurant *restaurant = self.searchResults[indexPath.row];
         TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
-        restPageVC.currentLocation = self.currentLocation;
+        //restPageVC.currentLocation = self.currentLocation;
         restPageVC.selectedRestaurant = restaurant;
         [self.navigationController pushViewController:restPageVC animated:YES];
         [FoodheadAnalytics logEvent:SEARCH_FOUND_RESTAURANT];
@@ -374,6 +384,8 @@ static NSString *exploreCellId = @"exploreCell";
     
     self.filters = [NSMutableDictionary dictionary];
     [self.filters setObject:self.categoryValues[indexPath.row] forKey:@"query"];
+    //[self.filters setObject:self.filterValues[indexPath.row] forKey:@"query_categories"];
+    
     if (indexPath.row == FANCY_INDEX) {
         [self.filters setObject:@"3,4" forKey:@"price"];
     }
@@ -606,6 +618,11 @@ static NSString *exploreCellId = @"exploreCell";
         self.resultsTableView.contentInset = adjustForBarInsets;
         self.resultsTableView.scrollIndicatorInsets = adjustForBarInsets;
     }];
+}
+
+#pragma mark - LocationManagerDelegate methods
+- (void)didGetCurrentLocation:(CLLocationCoordinate2D)coordinate{
+    self.currentLocation = coordinate;
 }
 
 @end

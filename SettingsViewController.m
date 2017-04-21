@@ -43,7 +43,7 @@ static NSString *cellId = @"settingCell";
 
 - (void)setupNavBar{
     [self.navigationItem setTitle:@"Settings"];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_boldFontWithSize:20.0]};
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.05], NSForegroundColorAttributeName : [UIColor blackColor]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitSettings)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
