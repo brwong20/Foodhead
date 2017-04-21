@@ -101,7 +101,9 @@
 
 - (void)prepareForReuse{
     [super prepareForReuse];
+    
     self.chartTitle.text = @"";
+    [self.seeAllView removeFromSuperview];
 }
 
 - (void)layoutSubviews{
