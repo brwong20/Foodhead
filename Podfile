@@ -12,6 +12,9 @@ def essential_pods
 	pod 'SVProgressHUD'
 	pod 'IDMPhotoBrowser'
 	pod 'Flurry-iOS-SDK/FlurrySDK'
+	pod 'CHTCollectionViewWaterfallLayout'
+	pod 'Texture', '>= 2.0'
+	pod "XCDYouTubeKit", "~> 2.5"
 end 
 
 target 'Foodhead' do
