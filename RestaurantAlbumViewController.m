@@ -165,7 +165,7 @@ static NSString *loadingCellId = @"loadingCell";
             for (NSDictionary *photoInfo in images) {
                 BOOL isVideo = photoInfo[@"isVideo"];
                 if (isVideo) {
-                    NSLog(@"VIDEOOOO : %@", photoInfo);
+                    continue;
                 }
                 
                 if ([photoInfo[@"type"] isEqualToString:USER_REVIEW_PHOTO]) {
