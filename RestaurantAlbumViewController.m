@@ -20,24 +20,33 @@
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
 #import "LayoutBounds.h"
+#import "VideoPlayerNode.h"
+#import "AlbumCellNode.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <SDWebImage/SDWebImagePrefetcher.h>
+#import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface RestaurantAlbumViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, IDMPhotoBrowserDelegate, UIViewControllerTransitioningDelegate>
+#import <AsyncDisplayKit/AsyncDisplayKit.h>
 
+@interface RestaurantAlbumViewController ()<UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, IDMPhotoBrowserDelegate, UIViewControllerTransitioningDelegate, ASCollectionDelegate, ASCollectionDataSource>
+
+//Texture
+@property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) ASCollectionNode *collectionNode;
+
+//Data source
 @property (nonatomic, strong) TPLRestaurantPageViewModel *viewModel;
-
-@property (nonatomic, strong) UICollectionView *photoCollectionView;
+@property (nonatomic, strong) AVAsset *asset;
+@property (nonatomic, strong) NSMutableArray *videoAssets;//Cache video assets to prevent reloading of videos for ASVideoNode
 @property (nonatomic, strong) NSMutableArray *idmPhotos;
-@property (nonatomic, assign) BOOL requestingImages;//Makes sure user doesn't run multiple requests for more images
 
+//Hold to preview
 @property (nonatomic, strong) AnimationPreviewViewController *previewVC;
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGest;
 @property (nonatomic, assign) BOOL gestureCancelled;
-
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
+
 
 @end
 
@@ -48,12 +57,30 @@ static NSString *loadingCellId = @"loadingCell";
 
 @implementation RestaurantAlbumViewController
 
+- (instancetype)initWithMedia:(NSMutableArray *)media nextPage:(NSString *)nextPg forRestuarant:(TPLRestaurant *)restaurant{
+    if (!(self = [super init])) { return nil; }
+    
+    _flowLayout = [[UICollectionViewFlowLayout alloc]init];
+    _flowLayout.minimumLineSpacing = 1.0;
+    _flowLayout.minimumInteritemSpacing = 1.0;
+    
+    _collectionNode = [[ASCollectionNode alloc] initWithCollectionViewLayout:_flowLayout];
+    _collectionNode.delegate = self;
+    _collectionNode.dataSource = self;
+    
+    _media = media;
+    _nextPg = nextPg;
+    _restaurant = restaurant;
+    
+    return self;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+
     self.viewModel = [[TPLRestaurantPageViewModel alloc]init];
     self.idmPhotos = [NSMutableArray array];
-    self.requestingImages = NO;
     
     //Sometimes the long press gesture finishes too fast so we use this to track completion.
     self.gestureCancelled = NO;
@@ -73,16 +100,14 @@ static NSString *loadingCellId = @"loadingCell";
         }
         [self.idmPhotos addObject:photo];
     }
+    
     [self setupAlbum];
 }
+
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self setupNavBar];
-}
-
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
 }
 
 - (void)setupNavBar{
@@ -109,143 +134,67 @@ static NSString *loadingCellId = @"loadingCell";
 - (void)setupAlbum{
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    flowLayout.minimumLineSpacing = 1.0;
-    flowLayout.minimumInteritemSpacing = 1.0;
-        
-    self.photoCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) collectionViewLayout:flowLayout];
-    self.photoCollectionView.backgroundColor = [UIColor whiteColor];
-    self.photoCollectionView.delegate = self;
-    self.photoCollectionView.dataSource = self;
+    _collectionNode.view.frame = self.view.bounds;
+    [self.view addSubnode:_collectionNode];
+    
+    _collectionNode.view.leadingScreensForBatching = 1.0;
+    _collectionNode.backgroundColor = [UIColor whiteColor];
+    
     UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
-    self.photoCollectionView.contentInset = adjustForTabbarInsets;
-    self.photoCollectionView.scrollIndicatorInsets = adjustForTabbarInsets;
-    self.photoCollectionView.showsVerticalScrollIndicator = NO;
-    [self.photoCollectionView registerClass:[ImageCollectionCell class] forCellWithReuseIdentifier:cellId];
-    [self.view addSubview:self.photoCollectionView];
+    self.collectionNode.view.contentInset = adjustForTabbarInsets;
+    self.collectionNode.view.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.collectionNode.view.showsVerticalScrollIndicator = NO;
     
     self.longPressGest = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
     self.longPressGest.minimumPressDuration = 0.15;
-    [self.photoCollectionView addGestureRecognizer:self.longPressGest];
+    [self.collectionNode.view addGestureRecognizer:self.longPressGest];
 }
 
 #pragma mark - Networking
 
-- (void)loadMoreImages{
+- (void)loadMoreImagesWithContext:(ASBatchContext *)context{
     if (![NSString isEmpty:self.nextPg]) {
-        self.requestingImages = YES;
         [self.viewModel retrieveImagesForRestaurant:self.restaurant page:self.nextPg completionHandler:^(id completionHandler) {
             self.nextPg = completionHandler[@"next_page"];
             NSArray *images = completionHandler[@"images"];
+            
+            NSMutableArray *moreMedia = [NSMutableArray array];
             
             if ([NSString isEmpty:self.nextPg] || images.count == 0) return;
             
             for (NSDictionary *photoInfo in images) {
                 BOOL isVideo = photoInfo[@"isVideo"];
                 if (isVideo) {
-                    continue;
+                    NSLog(@"VIDEOOOO : %@", photoInfo);
                 }
                 
                 if ([photoInfo[@"type"] isEqualToString:USER_REVIEW_PHOTO]) {
                     UserReview *review = [MTLJSONAdapter modelOfClass:[UserReview class] fromJSONDictionary:photoInfo error:nil];
                     User *user = [MTLJSONAdapter modelOfClass:[User class] fromJSONDictionary:photoInfo error:nil];
                     [review mergeValuesForKeysFromModel:user];
-                    [self.media addObject:review];
+                    [moreMedia addObject:review];
                     NSURL *photoURL = [[NSURL alloc]initWithString:review.imageURL];
                     IDMPhoto *photo = [IDMPhoto photoWithURL:photoURL];
                     [self.idmPhotos addObject:photo];
                 }else{
-                    [self.media addObject:photoInfo];
+                    [moreMedia addObject:photoInfo];
                     NSURL *photoURL = [[NSURL alloc]initWithString:photoInfo[@"url"]];
                     IDMPhoto *photo = [IDMPhoto photoWithURL:photoURL];
                     [self.idmPhotos addObject:photo];
                 }
             }
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.requestingImages = NO;
-                [self.photoCollectionView reloadData];
+                [self insertItemsInCollection:moreMedia];
+                [context completeBatchFetching:YES];
             });
         } failureHandler:^(id failureHandler) {
             DLog(@"Failed to get more images: %@", failureHandler);
-            self.requestingImages = NO;
+            [context cancelBatchFetching];
         }];
     }
 }
 
-#pragma mark - UICollectionViewDatasource methods
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    return [self photoCellForIndexPath:indexPath];
-}
-
-- (UICollectionViewCell *)photoCellForIndexPath:(NSIndexPath *)indexPath {
-    ImageCollectionCell *cell = [self.photoCollectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
-    
-    id photo = self.media[indexPath.row];
-    NSURL *photoURL;
-    if ([photo isKindOfClass:[UserReview class]]) {
-        UserReview *userReview = (UserReview *)photo;
-        photoURL = [NSURL URLWithString:userReview.thumbnailURL];
-    }else{
-        NSDictionary *imgInfo = self.media[indexPath.row];
-        NSString *imgURL = imgInfo[@"thumbnail_url"];
-        photoURL = [NSURL URLWithString:imgURL];
-    }
-    
-    [cell.coverImageView sd_setImageWithURL:photoURL placeholderImage:[UIImage new] options:SDWebImageRetryFailed completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-        if (cacheType == SDImageCacheTypeNone) {
-            cell.coverImageView.alpha = 0.0;
-            [UIView animateWithDuration:0.25 animations:^{
-                cell.coverImageView.alpha = 1.0;
-            }];
-        }else{
-            cell.coverImageView.alpha = 1.0;
-        }
-    }];
-    return cell;
-}
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.media.count;
-}
-
-#pragma mark - UICollectionViewDelegate methods
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc]initWithPhotos:self.idmPhotos];
-    browser.delegate = self;
-    browser.useWhiteBackgroundColor = YES;
-    browser.displayDoneButton = NO;
-    browser.dismissOnTouch = YES;
-    browser.displayToolbar = NO;
-    browser.autoHideInterface = NO;
-    browser.forceHideStatusBar = YES;
-    browser.usePopAnimation = YES;
-    browser.disableVerticalSwipe = YES;
-    browser.progressTintColor = APPLICATION_BLUE_COLOR;
-    [browser trackPageCount];
-    
-    
-    [browser setInitialPageIndex:indexPath.row];
-    [self presentViewController:browser animated:YES completion:nil];
-}
-
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == self.media.count - 6 && !self.requestingImages) {
-        [self loadMoreImages];
-    }
-}
-
-#pragma mark - UICollectionViewDelegateFlowLayout 
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    CGFloat itemWidth = (CGRectGetWidth(self.view.frame) - (NUM_COLUMNS - 1.0)) / NUM_COLUMNS;
-    return CGSizeMake(itemWidth, itemWidth);
-}
 
 #pragma mark IDMPhotoBrowserDelegate Methods
 
@@ -271,17 +220,17 @@ static NSString *loadingCellId = @"loadingCell";
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer{
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         self.gestureCancelled = NO;
-        CGPoint p = [gestureRecognizer locationInView:self.photoCollectionView];
-        self.selectedIndexPath = [self.photoCollectionView indexPathForItemAtPoint:p];
+        CGPoint p = [gestureRecognizer locationInView:self.collectionNode.view];
+        self.selectedIndexPath = [self.collectionNode.view indexPathForItemAtPoint:p];
         
         //Must check if thumbnail has loaded first b/c we need the smaller image to perform animation as
-        ImageCollectionCell *imgCell = (ImageCollectionCell *)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
-        if (!CGSizeEqualToSize(imgCell.coverImageView.image.size, CGSizeZero)) {
+        AlbumCellNode *imgCell = (AlbumCellNode *)[self.collectionNode nodeForItemAtIndexPath:self.selectedIndexPath];
+        if (!CGSizeEqualToSize(imgCell.imageNode.image.size, CGSizeZero)) {
             NSDictionary *imgInfo = self.media[self.selectedIndexPath.row];
             NSURL *imgURL = [NSURL URLWithString:imgInfo[@"url"]];
             
             //Init the view controller for previewing
-            self.previewVC = [[AnimationPreviewViewController alloc] initWithIndex:0 andImageURL:imgURL withPlaceHolder:imgCell.coverImageView.image];
+            self.previewVC = [[AnimationPreviewViewController alloc] initWithIndex:0 andImageURL:imgURL withPlaceHolder:imgCell.imageNode.image];
             self.previewVC.modalPresentationCapturesStatusBarAppearance = YES;//Must use this in order to hide the status bar
             self.previewVC.transitioningDelegate = self;
             [self.previewVC setModalPresentationStyle:UIModalPresentationCustom];
@@ -308,10 +257,10 @@ static NSString *loadingCellId = @"loadingCell";
     UIImageView *bigImageView;
     
     //First lets get the current cell
-    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
+    AlbumCellNode* cell = (AlbumCellNode*)[self.collectionNode nodeForItemAtIndexPath:self.selectedIndexPath];
     
     //Now lets get the current image
-    smallImageView = cell.coverImageView;
+    smallImageView = (UIImageView *)cell.imageNode.view;
     
     //Now lets get the Animation Imageview
     bigImageView = [(AnimationPreviewViewController*)presented imageView];
@@ -324,15 +273,108 @@ static NSString *loadingCellId = @"loadingCell";
     UIImageView *bigImageView;
     
     //First lets get the current cell
-    ImageCollectionCell* cell = (ImageCollectionCell*)[self.photoCollectionView cellForItemAtIndexPath:self.selectedIndexPath];
+    AlbumCellNode* cell = (AlbumCellNode*)[self.collectionNode nodeForItemAtIndexPath:self.selectedIndexPath];
     
     //Now lets get the current image
-    smallImageView = cell.coverImageView;
+    smallImageView = (UIImageView *)cell.imageNode.view;
     
     //Now lets get the Animation Imageview
     bigImageView = [(AnimationPreviewViewController*)dismissed imageView];
     
     return [[PreviewAnimation alloc] initWithSmallImageView:smallImageView ToBigImageView:bigImageView];
 }
+
+#pragma mark - ASCollectionNodeDatasource methods
+
+- (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath{
+    id photo = self.media[indexPath.row];
+    NSURL *photoURL;
+    if ([photo isKindOfClass:[UserReview class]]) {
+        UserReview *userReview = (UserReview *)photo;
+        photoURL = [NSURL URLWithString:userReview.thumbnailURL];
+    }else{
+        NSDictionary *imgInfo = self.media[indexPath.row];
+        NSString *imgURL = imgInfo[@"url"];
+        photoURL = [NSURL URLWithString:imgURL];
+    }
+
+//        photoURL = [NSURL URLWithString:@"https://scontent-lax3-2.cdninstagram.com/t50.2886-16/18190272_395231627529194_4587912867637886976_n.mp4"];
+    return ^{
+        AlbumCellNode *vidNode = [[AlbumCellNode alloc]initWithPhotoURL:photoURL];
+        return vidNode;
+    };
+    
+}
+
+- (ASSizeRange)collectionView:(ASCollectionView *)collectionView constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat itemWidth = ((CGRectGetWidth(self.view.bounds) - (NUM_COLUMNS - 1.0)) / NUM_COLUMNS) - _flowLayout.minimumInteritemSpacing/2;
+    CGSize itemSize = CGSizeMake(itemWidth, itemWidth);
+    return ASSizeRangeMake(itemSize);
+}
+
+- (NSInteger)numberOfSectionsInCollectionNode:(ASCollectionNode *)collectionNode{
+    return 1;
+}
+
+- (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section{
+    return self.media.count;
+}
+
+#pragma mark - ASCollectionDelegate methods
+
+- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc]initWithPhotos:self.idmPhotos];
+    browser.delegate = self;
+    browser.useWhiteBackgroundColor = YES;
+    browser.displayDoneButton = NO;
+    browser.dismissOnTouch = YES;
+    browser.displayToolbar = NO;
+    browser.autoHideInterface = NO;
+    browser.forceHideStatusBar = YES;
+    browser.usePopAnimation = YES;
+    browser.disableVerticalSwipe = YES;
+    browser.progressTintColor = APPLICATION_BLUE_COLOR;
+    [browser trackPageCount];
+    
+    [browser setInitialPageIndex:indexPath.row];
+    [self presentViewController:browser animated:YES completion:nil];
+}
+
+#pragma mark - Helper methods
+
+- (void)insertItemsInCollection:(NSMutableArray *)items{
+    NSInteger section = 0;
+    NSMutableArray *indexPaths = [NSMutableArray array];
+    
+    NSUInteger newTotalNumberOfPhotos = self.media.count + items.count;
+    for (NSUInteger row = self.media.count; row < newTotalNumberOfPhotos; row++) {
+        NSIndexPath *path = [NSIndexPath indexPathForRow:row inSection:section];
+        [indexPaths addObject:path];
+    }
+    
+    [self.media addObjectsFromArray:items];
+    [self.collectionNode insertItemsAtIndexPaths:indexPaths];
+}
+
+- (BOOL)shouldBatchFetchForCollectionNode:(ASCollectionNode *)collectionNode{
+    if (self.nextPg) {
+        return YES;
+    }
+    return NO;
+}
+
+- (void)collectionNode:(ASCollectionNode *)collectionNode willBeginBatchFetchWithContext:(ASBatchContext *)context{
+    [self loadMoreImagesWithContext:context];
+}
+
+- (void)collectionView:(ASCollectionView *)collectionView willDisplayNodeForItemAtIndexPath:(NSIndexPath *)indexPath{
+//    if (indexPath.row % 5 == 0) {
+//        AlbumCellNode *videoNode = (VideoPlayerNode *)[collectionView nodeForItemAtIndexPath:indexPath];
+//        videoNode.playerNode.asset = self.asset;
+//    }
+}
+
+#pragma mark - ScrollViewDelegate methods
+
 
 @end

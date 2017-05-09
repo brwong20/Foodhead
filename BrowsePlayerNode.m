@@ -9,7 +9,6 @@
 #import "BrowsePlayerNode.h"
 #import "FoodWiseDefines.h"
 #import "UIFont+Extension.h"
-#import "VideoControView.h"
 #import "UIImage+Utilities.h"
 
 @interface BrowsePlayerNode () <ASVideoPlayerNodeDelegate>

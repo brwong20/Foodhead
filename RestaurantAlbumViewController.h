@@ -15,4 +15,6 @@
 @property (nonatomic, strong) NSString *nextPg;
 @property (nonatomic, strong) NSMutableArray *media;
 
+-(instancetype)initWithMedia:(NSMutableArray *)media nextPage:(NSString *)nextPg forRestuarant:(TPLRestaurant *)restaurant;
+
 @end
