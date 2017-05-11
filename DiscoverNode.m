@@ -48,14 +48,17 @@
         _thumbnailImageNode.contentMode = UIViewContentModeScaleAspectFill;
         _thumbnailImageNode.delegate = self;
         
-        __weak typeof(self) weakSelf = self;
-        [_thumbnailImageNode setImageModificationBlock:^UIImage *(UIImage *image){
-            //Round corners on a background thread since it's a very inefficient UIKit property
-            //https://github.com/facebookarchive/AsyncDisplayKit/issues/490
-            weakSelf.thumbnailImageNode.cornerRadius = 7.0;
-            weakSelf.thumbnailImageNode.clipsToBounds = YES;
-            return image;
-        }];
+        _thumbnailImageNode.cornerRadius = 7.0;
+        _thumbnailImageNode.clipsToBounds = YES;
+        
+        //__weak typeof(self) weakSelf = self;
+//        [_thumbnailImageNode setImageModificationBlock:^UIImage *(UIImage *image){
+//            //Round corners on a background thread since it's a very inefficient UIKit property
+//            //https://github.com/facebookarchive/AsyncDisplayKit/issues/490
+//            weakSelf.thumbnailImageNode.cornerRadius = 7.0;
+//            weakSelf.thumbnailImageNode.clipsToBounds = YES;
+//            return image;
+//        }];
 
         _bookmarkNode = [[ASButtonNode alloc]init];
         _bookmarkNode.backgroundColor = [UIColor clearColor];
