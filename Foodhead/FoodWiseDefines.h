@@ -121,6 +121,10 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
 #define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
 #define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
+#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places"]
+
+//Browse
+#define API_PLACES_BROWSE_POSTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/posts"]
 
 //Charts
 #define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/charts"]
@@ -153,7 +157,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define CHART_PADDING_PERCENTAGE 0.04
 #define CHART_SPACING 0.025
 
-#define EXPANDED_CHART_SPACING 
+#define DISCOVER_NODE_SPACING 28.0
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 7
@@ -191,6 +195,8 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define CHART_TAB_TAG 1
 #define CAMERA_TAB_TAG 2
 #define PROFILE_TAB_TAG 3
+#define SEARCH_TAB_TAG 4
+#define BROWSE_TAB_TAG 5
 
 #define APPLICATION_BACKGROUND_COLOR [UIColor whiteColor];
 #define APPLICATION_FONT_COLOR   UIColorFromRGB(0x274B64)

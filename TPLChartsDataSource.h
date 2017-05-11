@@ -38,4 +38,13 @@ typedef void (^ChartOperationCompletionBlock)(Chart *chart, NSError *error);
              completionHandler:(void (^)(id))completionHandler
                 failureHandler:(void (^)(id))failureHandler;
 
+//Get recent insta posts for places in a specified location
+
+- (void)getRecentMediaAtCoordinate:(CLLocationCoordinate2D)coordinate
+                              page:(NSString *)pageNum
+                             withLimit:(NSString *)limitPerPage
+             completionHandler:(void (^)(id))completionHandler
+                    failureHandler:(void (^)(id))failureHandler;
+
+
 @end

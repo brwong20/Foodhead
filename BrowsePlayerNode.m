@@ -55,7 +55,7 @@
         self.controlsHidden = YES;
         
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
-        _sourceImgNode.URL = [NSURL URLWithString:@"https://s-media-cache-ak0.pinimg.com/originals/c6/34/03/c634035de2d41fbe8e98f61961fe6179.png"];
+        _sourceImgNode.URL = [NSURL URLWithString:videoInfo.thumbnailLink];
         [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
             return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.height/2];
         }];
@@ -66,7 +66,7 @@
         NSDictionary *textAttributes = @{NSFontAttributeName : [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : [UIColor blackColor]};
 
         _sourceNameNode = [[ASTextNode alloc]init];
-        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : [UIColor blackColor]}];
+        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _sourceNameNode.maximumNumberOfLines = 1;
         
         _categoryNode = [[ASTextNode alloc]init];
@@ -116,6 +116,15 @@
     }
     return self;
 }
+
+//- (void)didEnterVisibleState{
+//    [super didEnterVisibleState];
+//}
+//
+//- (void)didExitVisibleState{
+//    [super didExitVisibleState];
+//    self.videoNode.asset = nil;
+//}
 
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {

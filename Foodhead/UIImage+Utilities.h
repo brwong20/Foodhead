@@ -10,4 +10,7 @@
 
 @interface UIImage (Utilities)
 
+//Corner radius is an expensive UIKit property that runs on the main trhead so we will use this round corners on a background thread instead (with Texture)
++ (UIImage *)drawRoundedCornersForImage:(UIImage *)image withCornerRadius:(CGFloat)rad;
+
 @end

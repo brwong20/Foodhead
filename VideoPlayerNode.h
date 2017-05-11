@@ -1,5 +1,5 @@
 //
-//  VideoNode.h
+//  VideoPlayerNode.h
 //  Foodhead
 //
 //  Created by Brian Wong on 4/28/17.
@@ -8,8 +8,12 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 
-@interface VideoNode : ASCellNode
+#import "TPLRestaurant.h"
 
-- (instancetype)initWithVideoURL:(NSURL *)url;
+@interface VideoPlayerNode : ASCellNode
+
+- (instancetype)initWithRestaurant:(TPLRestaurant *)restaurant;
+
+@property (nonatomic, strong) ASVideoNode *playerNode;
 
 @end

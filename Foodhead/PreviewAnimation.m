@@ -76,7 +76,7 @@
     [transitionContext.containerView addSubview:toViewController.view];
     
     //Setup frame for Orientation and aspect ration
-    CGRect frame = PREVIEW_FRAME;
+//    CGRect frame = PREVIEW_FRAME;
 //    if (self.smallImageViewRef.image.size.width > self.smallImageViewRef.image.size.height) {
 //        frame = ASSET_FRAME_LANDSCAPE;
 //    }
@@ -84,6 +84,14 @@
 //    {
 //        frame = ASSET_FRAME;
 //    }
+    
+    float widthRatio = APPLICATION_FRAME.size.width / _smallImageViewRef.image.size.width;
+    float heightRatio = APPLICATION_FRAME.size.height / _smallImageViewRef.image.size.height;
+    float scale = MIN(widthRatio, heightRatio);
+    float imageWidth = scale * _smallImageViewRef.image.size.width;
+    float imageHeight = scale * _smallImageViewRef.image.size.height;
+    
+    CGRect frame = CGRectMake(APPLICATION_FRAME.size.width/2 - imageWidth/2, APPLICATION_FRAME.size.height/2 - imageHeight/2, imageWidth, imageHeight);;
     
     CGRect transitionViewFinalFrame = AVMakeRectWithAspectRatioInsideRect(self.smallImageViewRef.image.size, frame);
     
@@ -116,14 +124,8 @@
     CGRect transitionViewInitialFrame = [transitionContext.containerView convertRect:self.bigImageViewRef.bounds
                                                                             fromView:self.bigImageViewRef];
     
-    transitionViewInitialFrame = PREVIEW_FRAME;
-//    if (self.bigImageViewRef.image.size.width > self.bigImageViewRef.image.size.height) {
-//        transitionViewInitialFrame = ASSET_FRAME_LANDSCAPE;
-//    }
-//    else
-//    {
-//        transitionViewInitialFrame = ASSET_FRAME;
-//    }
+    //Must set to image frame's aspect to have a smooth transition going backwards from any aspect ratio
+    transitionViewInitialFrame = self.bigImageViewRef.frame;
     
     // Compute the final frame for the temporary view based on the reference
     // image view
