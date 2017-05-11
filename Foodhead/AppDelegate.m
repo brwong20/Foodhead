@@ -92,7 +92,7 @@
         UserProfileViewController *profileVC = [[UserProfileViewController alloc]init];
         UINavigationController *profileNav = [[UINavigationController alloc]initWithRootViewController:profileVC];
         
-        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, browseNav, searchNav ,profileNav, nil];
+        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, browseNav, searchNav, nil];
         self.tabBarController.viewControllers = controllers;
         
         UIEdgeInsets tabItemInsets = UIEdgeInsetsMake(7.0, 0.0, -7.0, 0.0);
