@@ -31,7 +31,7 @@
     return self;
 }
 
-- (ASStackLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize{
+- (ASStackLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize{    
     ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec verticalStackLayoutSpec];
     
     CGFloat ratio = constrainedSize.max.height / constrainedSize.max.width;

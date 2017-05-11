@@ -107,7 +107,6 @@
 }
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
-    [super layoutSpecThatFits:constrainedSize];
     
     ASStackLayoutSpec *verticalStack = [ASStackLayoutSpec verticalStackLayoutSpec];
     verticalStack.spacing = 2.0;
@@ -127,10 +126,10 @@
                                          child:self.thumbnailImageNode];
     mediaRatioSpec.alignSelf = ASStackLayoutAlignSelfCenter;
     
-    //Always place bookmark button in bottom right corner relative to ratio layout.
-    _bookmarkNode.style.preferredSize = CGSizeMake(40.0, 40.0);
-    ASRelativeLayoutSpec *relativeSpec = [ASRelativeLayoutSpec relativePositionLayoutSpecWithHorizontalPosition:ASRelativeLayoutSpecPositionEnd verticalPosition:ASRelativeLayoutSpecPositionEnd sizingOption:ASRelativeLayoutSpecSizingOptionDefault child:_bookmarkNode];
-    ASOverlayLayoutSpec *imageSpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:mediaRatioSpec overlay:relativeSpec];
+//    //Always place bookmark button in bottom right corner relative to ratio layout.
+//    _bookmarkNode.style.preferredSize = CGSizeMake(40.0, 40.0);
+//    ASRelativeLayoutSpec *relativeSpec = [ASRelativeLayoutSpec relativePositionLayoutSpecWithHorizontalPosition:ASRelativeLayoutSpecPositionEnd verticalPosition:ASRelativeLayoutSpecPositionEnd sizingOption:ASRelativeLayoutSpecSizingOptionDefault child:_bookmarkNode];
+//    ASOverlayLayoutSpec *imageSpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:mediaRatioSpec overlay:relativeSpec];
     
     UIEdgeInsets detailsInsets = UIEdgeInsetsMake(0.0, 6.0, 0.0, 6.0);
     UIEdgeInsets blogInsets = UIEdgeInsetsMake(4.0, 6.0, 0.0, 6.0);
@@ -159,7 +158,7 @@
 //    detailStack.style.flexBasis = ASDimensionMake(@"10%");
     
     verticalStack.justifyContent = ASStackLayoutJustifyContentStart;
-    verticalStack.children = @[imageSpec, detailStack];
+    verticalStack.children = @[mediaRatioSpec, detailStack];
     
     return verticalStack;
 }

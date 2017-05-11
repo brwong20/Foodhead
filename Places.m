@@ -23,7 +23,10 @@
     return [MTLValueTransformer transformerUsingForwardBlock:^id(NSArray *places, BOOL *success, NSError *__autoreleasing *error) {
         NSMutableArray *mutableArr = [NSMutableArray arrayWithArray:places];
         return mutableArr;
-    }reverseBlock:nil];
+    }reverseBlock:^id(NSMutableArray *places, BOOL *success, NSError *__autoreleasing *error) {
+        //Convert to array
+        return [NSArray arrayWithArray:places];
+    }];
 }
 
 @end
