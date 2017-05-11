@@ -27,10 +27,9 @@
 #import "SearchViewController.h"
 #import "LayoutBounds.h"
 
-
 #import "NSString+IsEmpty.h"
 
-@interface ChartsViewController () <LocationManagerDelegate, TabledCollectionDelegate, ServiceErrorViewDelegate>
+@interface ChartsViewController () <UITabBarControllerDelegate, LocationManagerDelegate, TabledCollectionDelegate, ServiceErrorViewDelegate>
 
 //Authentication
 @property (nonatomic, strong) UserAuthManager *authManager;
@@ -213,6 +212,11 @@ static NSString *cellId = @"tabledCollectionCell";
     restPageVC.selectedRestaurant = item;
     //restPageVC.currentLocation = [LocationManager sharedLocationInstance].currentLocation;
     [FoodheadAnalytics logEvent:OPEN_RESTAURANT_PAGE];
+    
+//    VideoPlayerView *player = [[VideoPlayerView alloc]initWithFrame:APPLICATION_FRAME];
+//    [player playVideo:@"https://renditions3-tastemade.akamaized.net/219d4d69-sardine-steamed-rice-pc/mp4/219d4d69-sardine-steamed-rice-pc-640-730-mp4.mp4"];
+//    [self.tableView.window addSubview:player];
+//    
     [self.navigationController pushViewController:restPageVC animated:YES];
 }
 

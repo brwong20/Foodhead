@@ -181,23 +181,23 @@ static NSString *loadCellId = @"loadingCell";
 
 #pragma mark View Model Helper methods
 
-- (void)getMoreRestaurants{
-    if (!self.loadMoreSpinner.isAnimating && self.selectedChart.next_page) {
-        [self.loadMoreLabel setHidden:YES];
-        [self.loadMoreSpinner startAnimating];
-        
-        @weakify(self);
-        [[self.viewModel getMoreRestaurantsForChartSignal:self.selectedChart atLocation:self.currentLocation] subscribeError:^(NSError * _Nullable error) {
-            NSLog(@"Couldn't load more restaurants: %@", error);
-        } completed:^{
-            @strongify(self);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.loadMoreSpinner stopAnimating];
-                [self.collectionView reloadData];
-            });
-        }];
-    }
-}
+//- (void)getMoreRestaurants{
+//    if (!self.loadMoreSpinner.isAnimating && self.selectedChart.next_page) {
+//        [self.loadMoreLabel setHidden:YES];
+//        [self.loadMoreSpinner startAnimating];
+//        
+//        @weakify(self);
+//        [[self.viewModel getMoreRestaurantsForChartSignal:self.selectedChart atLocation:self.currentLocation] subscribeError:^(NSError * _Nullable error) {
+//            NSLog(@"Couldn't load more restaurants: %@", error);
+//        } completed:^{
+//            @strongify(self);
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self.loadMoreSpinner stopAnimating];
+//                [self.collectionView reloadData];
+//            });
+//        }];
+//    }
+//}
 
 #pragma mark - LocationManagerDelegate methods
 

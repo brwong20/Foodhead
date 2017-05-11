@@ -15,6 +15,8 @@
 #import "FoodWiseDefines.h"
 #import "FoodheadAnalytics.h"
 #import "SearchViewController.h"
+#import "DiscoverViewController.h"
+#import "BrowseViewController.h"
 
 #import "Flurry.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -76,37 +78,42 @@
         [[UITabBar appearance]setBackgroundColor:[UIColor whiteColor]];
         self.tabBarController.tabBar.translucent = NO;
     
-        ChartsViewController *chartsVC = [[ChartsViewController alloc]init];
-        UINavigationController *chartsNav = [[UINavigationController alloc]initWithRootViewController:chartsVC];
+        //ChartsViewController *chartsVC = [[ChartsViewController alloc]init];
+        DiscoverViewController *discoverVC = [[DiscoverViewController alloc]init];
+        UINavigationController *chartsNav = [[UINavigationController alloc]initWithRootViewController:discoverVC];
         
         SearchViewController *searchVC = [[SearchViewController alloc]init];
         UINavigationController *searchNav = [[UINavigationController alloc]initWithRootViewController:searchVC];
         
-        TabCameraViewController *camVC = [[TabCameraViewController alloc]init];
-        UINavigationController *camNav = [[UINavigationController alloc]initWithRootViewController:camVC];
+        BrowseViewController *browseVC = [[BrowseViewController alloc]init];
+        //TabCameraViewController *camVC = [[TabCameraViewController alloc]init];
+        UINavigationController *browseNav = [[UINavigationController alloc]initWithRootViewController:browseVC];
         
         UserProfileViewController *profileVC = [[UserProfileViewController alloc]init];
         UINavigationController *profileNav = [[UINavigationController alloc]initWithRootViewController:profileVC];
         
-        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, searchNav, camNav ,profileNav, nil];
+        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, browseNav, searchNav ,profileNav, nil];
         self.tabBarController.viewControllers = controllers;
         
-        chartsVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"home"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        chartsVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -15.0, -5.0, 15.0);
-        chartsVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"home_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        chartsVC.tabBarItem.tag = CHART_TAB_TAG;
+        UIEdgeInsets tabItemInsets = UIEdgeInsetsMake(7.0, 0.0, -7.0, 0.0);
+        
+        discoverVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"home"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        discoverVC.tabBarItem.imageInsets = tabItemInsets;
+        discoverVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"home_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        discoverVC.tabBarItem.tag = CHART_TAB_TAG;
+        
+        browseVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"browse"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
+        browseVC.tabBarItem.imageInsets = tabItemInsets;
+        browseVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"browse_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        browseVC.tabBarItem.tag = BROWSE_TAB_TAG;
         
         searchVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"search"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        searchVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, -8.0, -5.0, 8.0);
+        searchVC.tabBarItem.imageInsets = tabItemInsets;
         searchVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"search_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        searchVC.tabBarItem.tag = 10;
-        
-        camVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"camera_tab"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        camVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 8.0, -5.0, -8.0);
-        camVC.tabBarItem.tag = CAMERA_TAB_TAG;
+        searchVC.tabBarItem.tag = SEARCH_TAB_TAG;
 
         profileVC.tabBarItem = [[UITabBarItem alloc]initWithTitle:nil image:[[UIImage imageNamed:@"profile"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:nil];
-        profileVC.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 15.0, -5.0, -15.0);
+        profileVC.tabBarItem.imageInsets = tabItemInsets;
         profileVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"profile_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         profileVC.tabBarItem.tag = PROFILE_TAB_TAG;
         
@@ -122,6 +129,13 @@
         }else{
             [self.window setRootViewController:root];
             [self.window makeKeyAndVisible];
+        }
+        
+        //Pre load the video metadata on app launch
+        for(UINavigationController * viewController in self.tabBarController.viewControllers){
+//            if ([viewController isKindOfClass:[BrowseViewController class]]) {
+                [[viewController.viewControllers firstObject] view];
+//            }
         }
     }
 }

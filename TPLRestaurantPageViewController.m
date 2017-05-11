@@ -253,7 +253,7 @@ static NSString *photoCellId = @"photoCell";
     flowLayout.minimumLineSpacing = 1.0;
     CGFloat itemWidth = (CGRectGetWidth(self.view.frame) - (NUM_COLUMNS - 1.0)) / NUM_COLUMNS;
     flowLayout.itemSize = CGSizeMake(itemWidth - 0.5, itemWidth);
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
     self.photoCollection = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, (self.view.frame.size.width/3) * 2) collectionViewLayout:flowLayout];
     self.photoCollection.backgroundColor = [UIColor whiteColor];
@@ -579,7 +579,8 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)didTapSeeAllButton{
     [FoodheadAnalytics logEvent:OPEN_RESTAURANT_ALBUM];
-    RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc]init];
+    
+    RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc] initWithMedia:self.restaurantPhotos nextPage:self.nextPg forRestuarant:self.selectedRestaurant];
     albumVC.media = self.restaurantPhotos;
     albumVC.nextPg = self.nextPg;
     albumVC.restaurant = self.selectedRestaurant;

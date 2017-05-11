@@ -10,7 +10,12 @@
 
 @interface Places : MTLModel<MTLJSONSerializing>
 
-@property (nonatomic, copy) NSArray *places;
+//General model class to hold our place results from either foursquare or instagram
+@property (nonatomic, strong) NSMutableArray *places;
 @property (nonatomic, copy) NSNumber *next_page; //For pagination to retrieve more places
+
+//For blog posts
+@property (nonatomic, copy) NSNumber *total_pages;
+@property (nonatomic, copy) NSNumber *current_page;
 
 @end

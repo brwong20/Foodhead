@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface ChartsViewController : UIViewController <UITabBarControllerDelegate>
+@interface ChartsViewController : UIViewController
 
 @end
 

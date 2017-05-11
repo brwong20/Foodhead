@@ -10,8 +10,7 @@
 #import "FoodWiseDefines.h"
 #import "UIDeviceHardware.h"
 
-#import <SDWebImage/SDWebImageManager.h>
-#import <SDWebImage/UIImageView+WebCache.h>
+#import <PINRemoteImage/PINImageView+PINRemoteImage.h>
 
 @interface AssetPreviewViewController()
 
@@ -51,10 +50,10 @@
     
     self.view.clipsToBounds = YES;
     
-    _imageView = [[UIImageView alloc] initWithFrame:PREVIEW_FRAME];
-    [self.imageView setContentMode:UIViewContentModeScaleAspectFill];
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, APPLICATION_FRAME.size.width, APPLICATION_FRAME.size.height)];
+    [self.imageView setContentMode:UIViewContentModeScaleAspectFit];
     
-    self.imageView.backgroundColor = [UIColor redColor];
+    self.imageView.backgroundColor = [UIColor clearColor];
     
     //First lets setup the imageview
     [self.imageView setUserInteractionEnabled:YES];
@@ -96,11 +95,18 @@
 
 - (void)loadImageFromURL{
     [self.imageView setImage:self.placeHolderImg];//Load lower res image first while waiting for higher one to download
-    SDWebImageManager *manager = [SDWebImageManager sharedManager];
     
-    [manager downloadImageWithURL:self.currentImgURL options:SDWebImageHighPriority|SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-        [self displayImage:image];
+    [self.imageView setPin_updateWithProgress:YES];
+    [self.imageView pin_setImageFromURL:self.currentImgURL completion:^(PINRemoteImageManagerResult * _Nonnull result) {
+        
+        //Resize frame based on downloaded image's aspect ratio
+        float widthRatio = _imageView.bounds.size.width / _imageView.image.size.width;
+        float heightRatio = _imageView.bounds.size.height / _imageView.image.size.height;
+        float scale = MIN(widthRatio, heightRatio);
+        float imageWidth = scale * _imageView.image.size.width;
+        float imageHeight = scale * _imageView.image.size.height;
+        
+        self.imageView.frame = CGRectMake(APPLICATION_FRAME.size.width/2 - imageWidth/2, APPLICATION_FRAME.size.height/2 - imageHeight/2, imageWidth, imageHeight);
     }];
 }
 
