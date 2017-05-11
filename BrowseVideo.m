@@ -18,8 +18,9 @@
              @"videoLink" : @"url_to_post",
              @"width" : @"width",
              @"height" : @"height",
-             @"isYoutubeVideo" : @"youtube_video"
-    };
+             @"isYoutubeVideo" : @"youtube_video",
+             @"viewCount" : @"views"
+            };
 }
 
 @end

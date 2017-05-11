@@ -19,5 +19,6 @@
 @property (nonatomic, copy) NSNumber *height;
 @property (nonatomic, copy) NSNumber *width;
 @property (nonatomic, copy) NSNumber *isYoutubeVideo;
+@property (nonatomic, copy) NSNumber *viewCount;
 
 @end
