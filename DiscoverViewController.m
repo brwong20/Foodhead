@@ -25,7 +25,7 @@
 
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface DiscoverViewController ()<UITabBarControllerDelegate,ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate>
+@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, CHTCollectionViewDelegateWaterfallLayout>
 
 //UI
 @property (nonatomic, assign) BOOL canScrollToTop;
