@@ -175,12 +175,17 @@
 #pragma mark - ASCollectionDelegate methods
 - (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     ASCellNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
+    TPLRestaurant *restInfo;
     if ([node isKindOfClass:[DiscoverNode class]]) {
-        DiscoverNode *restNode = (DiscoverNode *)node;
-        TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
-        restPageVC.selectedRestaurant = restNode.restaurantInfo;
-        [self.navigationController pushViewController:restPageVC animated:YES];
+        DiscoverNode *discoverNode = (DiscoverNode *)node;
+        restInfo = discoverNode.restaurantInfo;
+    }else{
+        VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
+        restInfo = vidNode.restaurantInfo;
     }
+    TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
+    restPageVC.selectedRestaurant = restInfo;
+    [self.navigationController pushViewController:restPageVC animated:YES];
     
 }
 
@@ -212,8 +217,8 @@
         VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
         //Foursquare id is used to retrieve asset link for faster lookup
         NSDictionary *assetDict = [self.videoAssets objectForKey:restaurant.foursqId];
-        AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
-        if (cachedAsset) {
+        if (assetDict) {
+            AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
             //If we have already loaded an asset, use it.
             NSArray *keys = @[@"playable", @"tracks", @"duration"];
             [cachedAsset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
@@ -239,13 +244,13 @@
         }else{
             //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                NSURL *vidURL = [NSURL URLWithString:assetDict[ASSET_LINK_KEY]];
+                NSURL *vidURL = [NSURL URLWithString:restaurant.blogVideoLink];
                 AVAsset *asset = [AVAsset assetWithURL:vidURL];
                 NSArray *keys = @[@"playable", @"tracks", @"duration"];
                 [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
                     NSError *error;
                     for (NSString *key in keys) {
-                        AVKeyValueStatus keyStatus = [cachedAsset statusOfValueForKey:key error:&error];
+                        AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
                         if (keyStatus == AVKeyValueStatusFailed) {
                             DLog(@"Failed to load key : %@ with error: %@", key, error);
                         }
@@ -320,6 +325,7 @@
 #pragma mark - ScrollViewDelegate methods
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    self.isInitialLoad = NO;//Shouldn't autoplay if user scrolled because methods below will handle this.
     NSArray *visibleNodes = [self.collectionNode indexPathsForVisibleItems];
     for (NSIndexPath *index in visibleNodes) {
         ASCellNode *node = [self.collectionNode nodeForItemAtIndexPath:index];
