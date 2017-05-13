@@ -294,11 +294,10 @@ static NSString *loadingCellId = @"loadingCell";
         photoURL = [NSURL URLWithString:userReview.thumbnailURL];
     }else{
         NSDictionary *imgInfo = self.media[indexPath.row];
-        NSString *imgURL = imgInfo[@"url"];
+        NSString *imgURL = imgInfo[@"thumbnail_url"];
         photoURL = [NSURL URLWithString:imgURL];
     }
 
-//        photoURL = [NSURL URLWithString:@"https://scontent-lax3-2.cdninstagram.com/t50.2886-16/18190272_395231627529194_4587912867637886976_n.mp4"];
     return ^{
         AlbumCellNode *vidNode = [[AlbumCellNode alloc]initWithPhotoURL:photoURL];
         return vidNode;
@@ -368,10 +367,7 @@ static NSString *loadingCellId = @"loadingCell";
 }
 
 - (void)collectionView:(ASCollectionView *)collectionView willDisplayNodeForItemAtIndexPath:(NSIndexPath *)indexPath{
-//    if (indexPath.row % 5 == 0) {
-//        AlbumCellNode *videoNode = (VideoPlayerNode *)[collectionView nodeForItemAtIndexPath:indexPath];
-//        videoNode.playerNode.asset = self.asset;
-//    }
+
 }
 
 #pragma mark - ScrollViewDelegate methods

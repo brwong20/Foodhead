@@ -13,8 +13,6 @@
 
 @interface VideoPlayerNode () <ASVideoNodeDelegate, ASVideoPlayerNodeDelegate>
 
-@property (nonatomic, strong) TPLRestaurant *restaurantInfo;
-
 @property (nonatomic, strong) ASButtonNode *bookmarkNode;
 @property (nonatomic, strong) ASTextNode *titleNode;
 @property (nonatomic, strong) ASNetworkImageNode *sourceImgNode;
@@ -64,7 +62,7 @@
         _sourceNode.backgroundColor = [UIColor clearColor];
         _sourceNode.maximumNumberOfLines = 1;
         _sourceNode.layerBacked = YES;
-        _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:_restaurantInfo.blogName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:_restaurantInfo.blogTitle attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         
         //self.sourceNode.backgroundColor = [UIColor greenColor];
         //self.sourceImgNode.backgroundColor = [UIColor blueColor];
@@ -117,7 +115,6 @@
     [videoNode.player seekToTime:kCMTimeZero];
     [videoNode.player play];
 }
-
 
 #pragma mark - Helper methods
 - (void)bookmarkClicked{

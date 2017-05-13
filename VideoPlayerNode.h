@@ -15,5 +15,6 @@
 - (instancetype)initWithRestaurant:(TPLRestaurant *)restaurant;
 
 @property (nonatomic, strong) ASVideoNode *playerNode;
+@property (nonatomic, strong) TPLRestaurant *restaurantInfo;
 
 @end
