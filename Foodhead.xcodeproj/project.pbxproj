@@ -84,7 +84,6 @@
 		A088C5BF1E84B4C400ACA764 /* UserFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5BE1E84B4C400ACA764 /* UserFeedbackViewController.m */; };
 		A08B823E1E5FA7AD00132F6B /* TPLChartCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */; };
 		A093388A1EB3F8DA000DCD3C /* DiscoverNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A09338891EB3F8DA000DCD3C /* DiscoverNode.m */; };
-		A093388D1EB4197B000DCD3C /* VideoPlayerNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A093388C1EB4197B000DCD3C /* VideoPlayerNode.m */; };
 		A0B28F5D1E93844B00656253 /* AttributionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */; };
 		A0BED0D41E7A622F00D21298 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D31E7A622F00D21298 /* AlbumViewController.m */; };
 		A0BED0D71E7A7ACE00D21298 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D61E7A7ACE00D21298 /* WebViewController.m */; };
@@ -105,6 +104,8 @@
 		A0ED828B1E427BCB0029D96E /* TPLRestaurantPageViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A0ED828A1E427BCB0029D96E /* TPLRestaurantPageViewModel.m */; };
 		A0EDD6B01E9762A3007A2445 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */; };
 		A0EDD6B41E980947007A2445 /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */; };
+		A0F0D3BD1EC5169100B60040 /* DiscoverRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F0D3BC1EC5169100B60040 /* DiscoverRealm.m */; };
+		A0F0D3C01EC5169E00B60040 /* BrowseVideoRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F0D3BF1EC5169E00B60040 /* BrowseVideoRealm.m */; };
 		A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCC91E3811F0003D56A9 /* LocationManager.m */; };
 		A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */; };
 		A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */; };
@@ -260,8 +261,6 @@
 		A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartCollectionCell.m; sourceTree = "<group>"; };
 		A09338881EB3F8DA000DCD3C /* DiscoverNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverNode.h; sourceTree = "<group>"; };
 		A09338891EB3F8DA000DCD3C /* DiscoverNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverNode.m; sourceTree = "<group>"; };
-		A093388B1EB4197B000DCD3C /* VideoPlayerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayerNode.h; sourceTree = "<group>"; };
-		A093388C1EB4197B000DCD3C /* VideoPlayerNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerNode.m; sourceTree = "<group>"; };
 		A0B28F5B1E93844B00656253 /* AttributionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributionTableViewCell.h; sourceTree = "<group>"; };
 		A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributionTableViewCell.m; sourceTree = "<group>"; };
 		A0BED0D21E7A622F00D21298 /* AlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumViewController.h; sourceTree = "<group>"; };
@@ -298,6 +297,10 @@
 		A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
 		A0EDD6B21E980947007A2445 /* SearchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchTableViewCell.h; sourceTree = "<group>"; };
 		A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchTableViewCell.m; sourceTree = "<group>"; };
+		A0F0D3BB1EC5169100B60040 /* DiscoverRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverRealm.h; sourceTree = "<group>"; };
+		A0F0D3BC1EC5169100B60040 /* DiscoverRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverRealm.m; sourceTree = "<group>"; };
+		A0F0D3BE1EC5169E00B60040 /* BrowseVideoRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowseVideoRealm.h; sourceTree = "<group>"; };
+		A0F0D3BF1EC5169E00B60040 /* BrowseVideoRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowseVideoRealm.m; sourceTree = "<group>"; };
 		A0F4CCC81E3811F0003D56A9 /* LocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationManager.h; sourceTree = "<group>"; };
 		A0F4CCC91E3811F0003D56A9 /* LocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationManager.m; sourceTree = "<group>"; };
 		A0F4CCCB1E3836B7003D56A9 /* TPLRestaurant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLRestaurant.h; sourceTree = "<group>"; };
@@ -607,8 +610,6 @@
 			children = (
 				A09338881EB3F8DA000DCD3C /* DiscoverNode.h */,
 				A09338891EB3F8DA000DCD3C /* DiscoverNode.m */,
-				A093388B1EB4197B000DCD3C /* VideoPlayerNode.h */,
-				A093388C1EB4197B000DCD3C /* VideoPlayerNode.m */,
 			);
 			name = "Main Page";
 			sourceTree = "<group>";
@@ -784,6 +785,7 @@
 		A0D418D91E3695C6004DDC6C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A0F0D3BA1EC5160600B60040 /* Realm Objects */,
 				A06AFC661E3FB413006ED71E /* Mantle Objects */,
 			);
 			name = Model;
@@ -904,6 +906,17 @@
 				A039F89F1E9C45D80093CE24 /* SearchFilterView.m */,
 			);
 			name = Search;
+			sourceTree = "<group>";
+		};
+		A0F0D3BA1EC5160600B60040 /* Realm Objects */ = {
+			isa = PBXGroup;
+			children = (
+				A0F0D3BB1EC5169100B60040 /* DiscoverRealm.h */,
+				A0F0D3BC1EC5169100B60040 /* DiscoverRealm.m */,
+				A0F0D3BE1EC5169E00B60040 /* BrowseVideoRealm.h */,
+				A0F0D3BF1EC5169E00B60040 /* BrowseVideoRealm.m */,
+			);
+			name = "Realm Objects";
 			sourceTree = "<group>";
 		};
 		A0F4CCCE1E38385C003D56A9 /* Networking */ = {
@@ -1089,6 +1102,7 @@
 				A039F8A01E9C45D80093CE24 /* SearchFilterView.m in Sources */,
 				A0F4CCD81E38408C003D56A9 /* TabledCollectionManager.m in Sources */,
 				A03448AC1EB6594B00C37BE4 /* BrowseVideo.m in Sources */,
+				A0F0D3BD1EC5169100B60040 /* DiscoverRealm.m in Sources */,
 				A04B99931E72676F004AE07A /* RestaurantReview.m in Sources */,
 				A04B998F1E7265D0004AE07A /* RestaurantSearchViewController.m in Sources */,
 				A0BED0D41E7A622F00D21298 /* AlbumViewController.m in Sources */,
@@ -1121,13 +1135,13 @@
 				A0EDD6B41E980947007A2445 /* SearchTableViewCell.m in Sources */,
 				A039F8851E9A0D560093CE24 /* AnimationPreviewViewController.m in Sources */,
 				A0F4CCCA1E3811F0003D56A9 /* LocationManager.m in Sources */,
+				A0F0D3C01EC5169E00B60040 /* BrowseVideoRealm.m in Sources */,
 				A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */,
 				A033E5A11E43E76300D4B9AC /* NSString+IsEmpty.m in Sources */,
 				A0084D8F1EB5BAB700976F4A /* BrowsePlayerNode.m in Sources */,
 				A088C57F1E7CDB0700ACA764 /* Chart.m in Sources */,
 				A0EDD6B01E9762A3007A2445 /* SearchViewController.m in Sources */,
 				A02D2F181E58EED1003E65F3 /* MetricsDisplayCell.m in Sources */,
-				A093388D1EB4197B000DCD3C /* VideoPlayerNode.m in Sources */,
 				A088C5741E7B4C1900ACA764 /* PermissionViewController.m in Sources */,
 				A084A6671E3D3A3A008A3DCE /* TPLChartsViewModel.m in Sources */,
 				A039F88D1E9AB8D90093CE24 /* PreviewAnimation.m in Sources */,

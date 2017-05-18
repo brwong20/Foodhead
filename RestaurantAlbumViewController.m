@@ -20,7 +20,6 @@
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
 #import "LayoutBounds.h"
-#import "VideoPlayerNode.h"
 #import "AlbumCellNode.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>

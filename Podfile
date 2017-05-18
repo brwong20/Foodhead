@@ -15,6 +15,7 @@ def essential_pods
 	pod 'CHTCollectionViewWaterfallLayout'
 	pod 'Texture', '>= 2.0'
 	pod "XCDYouTubeKit", "~> 2.5"
+	pod 'Realm'
 end 
 
 target 'Foodhead' do

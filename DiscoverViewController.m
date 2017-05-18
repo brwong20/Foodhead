@@ -10,7 +10,6 @@
 #import "FoodWiseDefines.h"
 #import "TPLChartsViewModel.h"
 #import "LocationManager.h"
-#import "VideoPlayerNode.h"
 #import "TPLRestaurantPageViewController.h"
 #import "UserProfileViewController.h"
 #import "SearchViewController.h"
@@ -19,13 +18,14 @@
 #import "AnimationPreviewViewController.h"
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
+#import "DiscoverRealm.h"
 
 #import "Chart.h"
 #import "Places.h"
 
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, CHTCollectionViewDelegateWaterfallLayout>
+@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, CHTCollectionViewDelegateWaterfallLayout, DiscoverNodeDelegate, RestaurantPageDelegate>
 
 //UI
 @property (nonatomic, assign) BOOL canScrollToTop;
@@ -41,9 +41,16 @@
 
 //Datasource
 @property (nonatomic, strong) NSMutableArray *collectionData;
+@property (nonatomic, strong) NSMutableSet *restIdSet;//Create a reference table of restaurant ids to avoid duplicates for now...
+
 @property (nonatomic, strong) NSMutableArray *blogData;
 @property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 @property (nonatomic, assign) NSInteger blogIndex;//Keeps track of which blog post we should use next
+@property (nonatomic, strong) RLMResults *favoritedRestaurants;
+
+//Every time we add or delete, store the primary key (foursqId) with index in here locally and save the index since our RLMResults indexing doesn't match with ours (neccessary for updating the cells as favorites or not).
+@property (nonatomic, strong) NSMutableDictionary *favoritedIndexes;
+@property (nonatomic, strong) RLMNotificationToken *favNotif;
 
 //View Model
 @property (nonatomic, strong) TPLChartsViewModel *viewModel;
@@ -55,8 +62,6 @@
 
 #define NUM_COLUMNS 2
 #define DETAILS_HEIGHT 35
-#define ASSET_KEY @"asset"
-#define ASSET_LINK_KEY @"assetLink"
 
 @implementation DiscoverViewController
 
@@ -82,14 +87,16 @@
     
     //Necessary to play background media along with videos
     //TODO: Mute or turn down background in browse
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
+    //[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryOptionDuckOthers withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
     
     self.tabBarController.delegate = self;
     self.isInitialLoad = YES;
     
     self.viewModel = [[TPLChartsViewModel alloc]init];
     self.collectionData = [NSMutableArray array];
+    self.favoritedIndexes = [NSMutableDictionary dictionary];
     self.videoAssets = [NSMutableDictionary dictionary];
+    self.restIdSet = [NSMutableSet set];
     self.blogData = [NSMutableArray array];
     self.blogIndex = 0;
     
@@ -97,25 +104,33 @@
     self.locationManager.locationDelegate = self;
     [self.locationManager retrieveCurrentLocation];
     
-    _collectionNode.backgroundColor = [UIColor whiteColor];
-    _collectionNode.view.frame = self.view.bounds;
-    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
-    self.collectionNode.view.contentInset = adjustForTabbarInsets;
-    self.collectionNode.view.scrollIndicatorInsets = adjustForTabbarInsets;
-    self.collectionNode.view.showsVerticalScrollIndicator = NO;
-    [self.view addSubnode:_collectionNode];
+    [self setupUI];
     
-    //Will make our status bar opaque
-    UIView *statusBarBg = [[UIView alloc]initWithFrame:[UIApplication sharedApplication].statusBarFrame];
-    statusBarBg.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:statusBarBg];
+    self.favoritedRestaurants = [DiscoverRealm allObjects];
+    
+    __weak typeof(self) weakSelf = self;
+    self.favNotif = [self.favoritedRestaurants addNotificationBlock:^(RLMResults * _Nullable results, RLMCollectionChange * _Nullable change, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Couldn't create discover realm token");
+        }
+        
+        //Change is nil for the intial run of realm query, so just load whatever we have
+        if (!change) {
+            return;
+        }
+        
+        //Change is not nil so something changed during the app lifetime
+        [weakSelf.collectionNode beginUpdates];
+        //if ([change insertionsInSection:0].count > 0) [weakSelf addFavorites:[change insertionsInSection:0]];
+        if ([change deletionsInSection:0].count > 0) [weakSelf deleteFavorites:[change deletionsInSection:0]];
+        [weakSelf.collectionNode endUpdatesAnimated:NO];
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.locationManager.locationDelegate = self;
     [self.navigationController.navigationBar setHidden:YES];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -132,6 +147,11 @@
 
 }
 
+- (void)dealloc{
+    [self.favNotif stop];
+    self.favNotif = nil;
+}
+
 #pragma mark - LocationManager delegate methods
 
 //TODO: REFACTOR randomization logic into VM
@@ -145,7 +165,10 @@
     //Get all blog posts first, then keep appending them to newly collected chart data
     [[[self.viewModel getRecentBlogPostsAtLocation:coordinate forPage:nil withLimit:@"50"]deliverOnMainThread]subscribeNext:^(Places *blogPosts) {
         @strongify(self);
-        [self.blogData addObjectsFromArray:blogPosts.places];
+        for (TPLRestaurant *restaurant in blogPosts.places) {
+            [self.blogData addObject:restaurant];
+            [self.restIdSet addObject:restaurant.foursqId];//Blog posts should always be shown instead of the Foursqaure result so make sure they're all added in our set first.
+        }
     }error:^(NSError * _Nullable error) {
         DLog(@"Error retrieving blog posts: %@", error);
     }completed:^{
@@ -153,13 +176,19 @@
             @strongify(self);
             //Reset tempArr each time since we're adding in items as they come. If we reuse tempArr with our insertItemInCollection method, the data we've already added will be shown again for each new chart.
             [tempArr removeAllObjects];
-            [tempArr addObjectsFromArray:restaurants.places];
-        
-            //For each new set of data that comes in, append the latest blog content in "random spots".
-            for (int i = blogIndex; i < tempArr.count; ++i) {
-                if (i % 3 == 0 && blogIndex < self.blogData.count) {//Insert blog post for every 4th cell
-                    [tempArr insertObject:self.blogData[blogIndex] atIndex:i];
+            
+            for (NSUInteger i = 0; i < restaurants.places.count; ++i) {
+                if (i % 4 == 0 && blogIndex < self.blogData.count) {//For every fourth result, make it a blog post.
+                    [tempArr addObject:self.blogData[blogIndex]];
                     ++blogIndex;
+                }else{
+                    TPLRestaurant *restaurant = restaurants.places[i];
+                    //If restaurant has already been added based on our stored rest ids, skip it.
+                    BOOL restaurantAdded = [self.restIdSet containsObject:restaurant.foursqId];
+                    if (!restaurantAdded) {
+                        [tempArr addObject:restaurant];
+                        [self.restIdSet addObject:restaurant.foursqId];
+                    }
                 }
             }
             
@@ -167,26 +196,35 @@
         }error:^(NSError * _Nullable error) {
             DLog(@"Error retrieving charts: %@", error);
         } completed:^{
-            DLog(@"Successfully retrieved all charts!");
+            //DLog(@"Successfully retrieved all charts!");
         }];
     }];
 }
 
 #pragma mark - ASCollectionDelegate methods
 - (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    ASCellNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
-    TPLRestaurant *restInfo;
-    if ([node isKindOfClass:[DiscoverNode class]]) {
-        DiscoverNode *discoverNode = (DiscoverNode *)node;
-        restInfo = discoverNode.restaurantInfo;
-    }else{
-        VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
-        restInfo = vidNode.restaurantInfo;
-    }
+    DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
+    TPLRestaurant *restInfo = node.restaurantInfo;
+    
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = restInfo;
+    restPageVC.favoritesDict = self.favoritedIndexes;
+    restPageVC.favRestaurants = self.favoritedRestaurants;
+    restPageVC.delegate = self;
+    restPageVC.indexPath = indexPath;
     [self.navigationController pushViewController:restPageVC animated:YES];
+}
+
+- (void)discoverNode:(DiscoverNode *)node didClickVideoWithRestaurant:(TPLRestaurant *)restInfo{
+    NSIndexPath *indexPath = [self.collectionNode indexPathForNode:node];
     
+    TPLRestaurantPageViewController *restPage = [[TPLRestaurantPageViewController alloc]init];
+    restPage.selectedRestaurant = restInfo;
+    restPage.favoritesDict = self.favoritedIndexes;
+    restPage.favRestaurants = self.favoritedRestaurants;
+    restPage.delegate = self;
+    restPage.indexPath = indexPath;
+    [self.navigationController pushViewController:restPage animated:YES];
 }
 
 #pragma mark - ASCollectionNodeDatasource methods
@@ -197,24 +235,27 @@
 
 - (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath{
     TPLRestaurant *restaurant = self.collectionData[indexPath.row];
-    if (restaurant.hasVideo.boolValue) {
-        return ^{
-            VideoPlayerNode *vidNode = [[VideoPlayerNode alloc]initWithRestaurant:restaurant];
-            return vidNode;
-        };
-    }else{
-        return ^{
-            DiscoverNode *imgNode = [[DiscoverNode alloc]initWithRestauarnt:restaurant];
-            return imgNode;
-        };
+    
+    //Check if restaurant is a favorite through its primary key
+    RLMResults *favResult = [self.favoritedRestaurants objectsWithPredicate:[NSPredicate predicateWithFormat:@"foursqId == %@", restaurant.foursqId]];
+    DiscoverRealm *favRest = [favResult firstObject];
+    NSString *primaryKey;
+    if (favRest) {
+        primaryKey = favRest.foursqId;
     }
+    
+    return ^{
+        DiscoverNode *imgNode = [[DiscoverNode alloc]initWithRestauarnt:restaurant andPrimaryKey:primaryKey];
+        imgNode.delegate = self;
+        return imgNode;
+    };
 }
 
 - (void)collectionNode:(ASCollectionNode *)collectionNode willDisplayItemWithNode:(ASCellNode *)node{
     NSIndexPath *indexPath = [self.collectionNode indexPathForNode:node];
     TPLRestaurant *restaurant = self.collectionData[indexPath.row];
-    if ([node isKindOfClass:[VideoPlayerNode class]] && restaurant.hasVideo.boolValue) {
-        VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
+    if (restaurant.hasVideo.boolValue) {
+        DiscoverNode *vidNode = (DiscoverNode *)node;
         //Foursquare id is used to retrieve asset link for faster lookup
         NSDictionary *assetDict = [self.videoAssets objectForKey:restaurant.foursqId];
         if (assetDict) {
@@ -312,14 +353,42 @@
         
     }
     
-    [self.collectionData addObjectsFromArray:items];
-    
-//    while(self.collectionData.count % 2 != 0 && self.blogIndex < self.blogData.count) {
-//        [self.collectionData addObject:self.blogData[self.blogIndex]];
-//        self.blogIndex += 1;
-//    }
+    //Cache the favorited restaurant index so we can easily delete them later.
+    for (TPLRestaurant *restaurant in items) {
+        [self.collectionData addObject:restaurant];
+        RLMResults *favResult = [self.favoritedRestaurants objectsWithPredicate:[NSPredicate predicateWithFormat:@"foursqId == %@", restaurant.foursqId]];
+        DiscoverRealm *favRest = [favResult firstObject];
+        if (favRest) {
+            NSUInteger collectionIndex = [self.collectionData indexOfObject:restaurant];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:collectionIndex inSection:0];
+            [self.favoritedIndexes setObject:indexPath forKey:restaurant.foursqId];
+        }
+    }
     
     [self.collectionNode insertItemsAtIndexPaths:indexPaths];
+}
+
+- (void)deleteFavorites:(NSArray<NSIndexPath*> *)deleted{
+    //Find the deleted restaurant(s) based on our cached collection
+    NSArray *favIds = [self.favoritedIndexes allKeys];
+    for (NSString *restId in favIds) {
+        //If the restaurant was deleted we shouldn't be able to find it in our updated RLMResults. Guaranteed to only return one object since the foursqId is a primary key
+        RLMResults *results = [self.favoritedRestaurants objectsWithPredicate:[NSPredicate predicateWithFormat:@"foursqId == %@", restId]];
+        DiscoverRealm *isFav = [results firstObject];
+        if (!isFav) {
+            //If not a favorite anymore, get the node at previously stored index path and update it
+            DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:[self.favoritedIndexes objectForKey:restId]];
+            [node unfavoriteNode];
+            //Finally, update our local favorite dictionary.
+            [self.favoritedIndexes removeObjectForKey:restId];
+        }
+    }
+}
+
+//Restaurant was favorited, store it's position in our dictionary
+- (void)discoverNode:(DiscoverNode *)node didFavoriteRestaurant:(DiscoverRealm *)favorite{
+    NSIndexPath *nodeIndex = [self.collectionNode indexPathForNode:node];
+    [self.favoritedIndexes setObject:nodeIndex forKey:favorite.foursqId];
 }
 
 #pragma mark - ScrollViewDelegate methods
@@ -328,12 +397,9 @@
     self.isInitialLoad = NO;//Shouldn't autoplay if user scrolled because methods below will handle this.
     NSArray *visibleNodes = [self.collectionNode indexPathsForVisibleItems];
     for (NSIndexPath *index in visibleNodes) {
-        ASCellNode *node = [self.collectionNode nodeForItemAtIndexPath:index];
-        if ([node isKindOfClass:[VideoPlayerNode class]]) {
-            VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
-            if (vidNode.playerNode.isPlaying) {
-                [vidNode.playerNode pause];
-            }
+        DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:index];
+        if (node.playerNode.isPlaying) {
+            [node.playerNode pause];
         }
     }
 }
@@ -353,14 +419,11 @@
     NSArray *visibleNodes = [self.collectionNode indexPathsForVisibleItems];
     
     for (NSIndexPath *index in visibleNodes) {
-        ASCellNode *node = [self.collectionNode nodeForItemAtIndexPath:index];
-        if ([node isKindOfClass:[VideoPlayerNode class]]) {
-            UICollectionViewLayoutAttributes *vidCellAttribute = [self.collectionNode.view layoutAttributesForItemAtIndexPath:index];
-            BOOL completelyVisible = CGRectContainsRect(self.collectionNode.view.bounds, vidCellAttribute.frame);
-            VideoPlayerNode *vidNode = (VideoPlayerNode *)node;
-            if (completelyVisible) {
-                [vidNode.playerNode play];
-            }
+        DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:index];
+        UICollectionViewLayoutAttributes *vidCellAttribute = [self.collectionNode.view layoutAttributesForItemAtIndexPath:index];
+        BOOL completelyVisible = CGRectContainsRect(self.collectionNode.view.bounds, vidCellAttribute.frame);
+        if (completelyVisible) {
+            [node.playerNode play];
         }
     }
 }
@@ -380,6 +443,36 @@
     }else if ([root isKindOfClass:[SearchViewController class]]){
         [FoodheadAnalytics logEvent:SEARCH_TAB_CLICK];
     }
+}
+
+#pragma mark - UI
+
+- (void)setupUI{
+    _collectionNode.backgroundColor = [UIColor whiteColor];
+    _collectionNode.view.frame = self.view.bounds;
+    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    self.collectionNode.view.contentInset = adjustForTabbarInsets;
+    self.collectionNode.view.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.collectionNode.view.showsVerticalScrollIndicator = NO;
+    [self.view addSubnode:_collectionNode];
+    
+    //Will make our status bar opaque
+    UIView *statusBarBg = [[UIView alloc]initWithFrame:[UIApplication sharedApplication].statusBarFrame];
+    statusBarBg.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:statusBarBg];
+}
+
+#pragma mark - RestaurantPageDelegate methods
+- (void)restaurantPageDidFavorite:(DiscoverRealm *)fav atIndexPath:(NSIndexPath *)indexPath{
+    DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
+    [node favoriteNodeWithInfo:fav];
+    [self.favoritedIndexes setObject:indexPath forKey:fav.foursqId];
+}
+
+- (void)restaurantPageDidUnfavorite:(NSString *)primaryKey{
+    DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:[self.favoritedIndexes objectForKey:primaryKey]];
+    [node unfavoriteNode];
+    [self.favoritedIndexes removeObjectForKey:primaryKey];
 }
 
 @end

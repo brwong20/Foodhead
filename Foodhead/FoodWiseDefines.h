@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
 #define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
 #define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
-#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places"]
+#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places_new"]
 
 //Browse
 #define API_PLACES_BROWSE_POSTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/posts"]
@@ -158,6 +158,9 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define CHART_SPACING 0.025
 
 #define DISCOVER_NODE_SPACING 28.0
+
+#define ASSET_KEY @"asset"
+#define ASSET_LINK_KEY @"assetLink"
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 7

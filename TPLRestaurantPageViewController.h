@@ -8,11 +8,24 @@
 
 #import <UIKit/UIKit.h>
 #import "TPLRestaurant.h"
+#import "DiscoverRealm.h"
 
 @import CoreLocation;
+
+@protocol RestaurantPageDelegate <NSObject>
+
+- (void)restaurantPageDidFavorite:(DiscoverRealm *)fav atIndexPath:(NSIndexPath *)indexPath;
+- (void)restaurantPageDidUnfavorite:(NSString *)primaryKey;
+
+@end
 
 @interface TPLRestaurantPageViewController : UIViewController
 
 @property (nonatomic, strong) TPLRestaurant *selectedRestaurant;
+@property (nonatomic, strong) RLMResults *favRestaurants;
+@property (nonatomic, strong) NSMutableDictionary *favoritesDict;
+@property (nonatomic, strong) NSIndexPath *indexPath;
+
+@property (nonatomic, weak) id<RestaurantPageDelegate>delegate;
 
 @end

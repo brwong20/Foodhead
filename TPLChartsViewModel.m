@@ -77,8 +77,8 @@
                                     forPage:(NSString *)pageNum
                                   withLimit:(NSString *)resultLimit{
     return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-        [self.restaurantDataSrc getRecentMediaAtCoordinate:coordinate page:pageNum withLimit:resultLimit completionHandler:^(Places *blogPosts) {
-            //Convert places into TPLRestaurants
+        [self.restaurantDataSrc getRecentMediaAtCoordinate:coordinate page:pageNum withTimeframe:@"36" limitPerPage:resultLimit  limitMostRecent:@"6" completionHandler:^(Places *blogPosts) {
+            //Convert places into TPLRestaurants            
             for (int i = 0; i < blogPosts.places.count; ++i) {
                 NSDictionary *restInfo = blogPosts.places[i];
                 TPLRestaurant *rest = [MTLJSONAdapter modelOfClass:[TPLRestaurant class] fromJSONDictionary:restInfo error:nil];

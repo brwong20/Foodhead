@@ -71,12 +71,12 @@
 //These modularized location updates allow us to get the current location again if need be.
 - (void)startUpdatingLocation
 {
-    DLog(@"///Location updates started///");
+    //DLog(@"///Location updates started///");
     [self.locationManager startUpdatingLocation];
 }
 
 - (void)stopUpdatingLocation{
-    DLog(@"///Location updates stopped///");
+    //DLog(@"///Location updates stopped///");
     [self.locationManager stopUpdatingLocation];
     
     /*

@@ -31,6 +31,7 @@
 #import "AnimationPreviewViewController.h"
 #import "PreviewAnimation.h"
 #import "NSString+IsEmpty.h"
+#import "DiscoverRealm.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -42,6 +43,8 @@
 @property (nonatomic, strong) UITableView *detailsTableView;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, assign) CGFloat dynamicHoursHeight;//For dynamic resizing of hours cell height
+@property (nonatomic, strong) UIButton *favButton;
+@property (nonatomic, assign) BOOL isFavorite;
 
 //Photos
 @property (nonatomic, strong) UICollectionView *photoCollection;
@@ -51,6 +54,7 @@
 @property (nonatomic, strong) NSMutableArray *restaurantPhotos;
 @property (nonatomic, strong) NSMutableArray *idmPhotos;
 @property (nonatomic, strong) NSMutableArray *userReviews;
+@property (nonatomic, strong) RLMNotificationToken *favNotif;
 
 //View Model
 @property (nonatomic, strong) TPLRestaurantPageViewModel *pageViewModel;
@@ -65,7 +69,10 @@
 //Location
 @property (nonatomic, assign) CLLocationCoordinate2D currentLocation;
 @property (nonatomic, strong) LocationManager *locationManager;
+
+
 @end
+
 
 static NSString *cellId = @"detailCell";
 static NSString *photoCellId = @"photoCell";
@@ -87,6 +94,28 @@ static NSString *photoCellId = @"photoCell";
     self.detailsFetched = NO;
     
     self.locationManager = [LocationManager sharedLocationInstance];
+    
+    __weak typeof(self) weakSelf = self;
+    self.favNotif = [self.favRestaurants addNotificationBlock:^(RLMResults * _Nullable results, RLMCollectionChange * _Nullable change, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Couldn't create discover realm token");
+        }
+        
+        //Change is nil for the intial run of realm query, so just load whatever we have
+        if (!change) {
+            return;
+        }
+        
+        if ([change insertionsInSection:0].count > 0) {
+            [weakSelf checkForFavorite];
+        }
+        
+        if ([change deletionsInSection:0].count > 0) {
+            [weakSelf checkForUnfavorite];
+        }
+    }];
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -245,6 +274,22 @@ static NSString *photoCellId = @"photoCell";
     self.detailsTableView.showsVerticalScrollIndicator = NO;
     
     [self.view addSubview:self.detailsTableView];
+    
+    self.favButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2, self.view.bounds.size.height * 0.05, 35.0, 35.0)];
+    self.favButton.backgroundColor = [UIColor clearColor];
+    self.favButton.contentMode = UIViewContentModeScaleAspectFit;
+    
+    NSIndexPath *favIndex = [self.favoritesDict objectForKey:self.selectedRestaurant.foursqId];
+    if (favIndex) {
+        _isFavorite = YES;
+        [self.favButton setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+    }else{
+        _isFavorite = NO;
+        [self.favButton setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+    }
+    [self.favButton addTarget:self action:@selector(toggleFavoriteButton) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.detailsTableView addSubview:self.favButton];
 }
 
 - (void)setupPhotoCollection{
@@ -297,6 +342,92 @@ static NSString *photoCellId = @"photoCell";
         cellHeight = RESTAURANT_HOURS_CELL_HEIGHT + APPLICATION_FRAME.size.height * 0.02;
     }
     return cellHeight;
+}
+
+- (void)toggleFavoriteButton{
+    RLMRealm *realm = [RLMRealm defaultRealm];
+
+    if (_isFavorite) {
+        NSError *error;
+        [realm transactionWithBlock:^{
+            [realm deleteObject:[DiscoverRealm objectForPrimaryKey:self.selectedRestaurant.foursqId]];
+        } error:&error];
+        
+        if (!error) {
+            [self.favButton setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+            if([self.delegate respondsToSelector:@selector(restaurantPageDidUnfavorite:)]){
+                [self.delegate restaurantPageDidUnfavorite:self.selectedRestaurant.foursqId];
+            }
+            _isFavorite = NO;
+        }else{
+            DLog(@"Couldn't unfavorite specific restaurant: %@", error);
+        }
+    }else{
+        DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
+        discoverRlm.name = _selectedRestaurant.name;
+        discoverRlm.foursqId = _selectedRestaurant.foursqId;
+        discoverRlm.distance = _selectedRestaurant.distance;
+        discoverRlm.hasVideo = _selectedRestaurant.hasVideo;
+        if (_selectedRestaurant.categories.count > 0) {
+            discoverRlm.primaryCategory = [_selectedRestaurant.categories firstObject];
+        }
+        discoverRlm.lat = _selectedRestaurant.latitude;
+        discoverRlm.lng = _selectedRestaurant.longitude;
+        
+        if (_selectedRestaurant.hasVideo.boolValue) {
+            discoverRlm.thumbnailVideoLink = _selectedRestaurant.blogVideoLink;
+            discoverRlm.thumbnailVideoWidth = _selectedRestaurant.blogVideoWidth;
+            discoverRlm.thumbnailVideoHeight = _selectedRestaurant.blogVideoHeight;
+        }else{
+            if(_selectedRestaurant.blogPhotoLink){
+                discoverRlm.thumbnailPhotoLink = _selectedRestaurant.blogPhotoLink;
+                discoverRlm.thumbnailPhotoWidth = _selectedRestaurant.blogPhotoWidth;
+                discoverRlm.thumbnailPhotoHeight = _selectedRestaurant.blogPhotoHeight;
+            }else{
+                discoverRlm.thumbnailPhotoLink = _selectedRestaurant.thumbnail;
+                discoverRlm.thumbnailPhotoWidth = _selectedRestaurant.thumbnailWidth;
+                discoverRlm.thumbnailPhotoHeight = _selectedRestaurant.thumbnailHeight;
+            }
+        }
+        
+        discoverRlm.sourceBlogName = _selectedRestaurant.blogTitle;
+        discoverRlm.sourceBlogProfilePhoto = _selectedRestaurant.blogPhotoLink;
+        discoverRlm.creationDate = [NSDate date];
+        
+        NSError *error;
+        [realm transactionWithBlock:^{
+            [realm addObject:discoverRlm];
+        } error:&error];
+        
+        if (!error) {
+            [self.favButton setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+            if ([self.delegate respondsToSelector:@selector(restaurantPageDidFavorite:atIndexPath:)]) {
+                [self.delegate restaurantPageDidFavorite:discoverRlm atIndexPath:self.indexPath];
+            }
+            _isFavorite = YES;
+        }else{
+            DLog(@"Couldn't favorite specific restaurant: %@", error);
+        }
+    }
+}
+
+- (void)checkForUnfavorite{
+    //Check to see if it was this restaurant that was deleted from favorites
+    RLMResults *favResults = [self.favRestaurants objectsWithPredicate:[NSPredicate predicateWithFormat:@"foursqId == %@", _selectedRestaurant.foursqId]];
+    DiscoverRealm *isFavorite = [favResults firstObject];
+                              
+    if (!isFavorite) {
+        [self.favButton setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)checkForFavorite{
+    RLMResults *favResults = [self.favRestaurants objectsWithPredicate:[NSPredicate predicateWithFormat:@"foursqId == %@", _selectedRestaurant.foursqId]];
+    DiscoverRealm *addedFav = [favResults firstObject];
+    
+    if (addedFav) {
+        [self.favButton setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+    }
 }
 
 #pragma mark - Map Restaurant

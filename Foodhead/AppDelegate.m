@@ -92,7 +92,7 @@
         UserProfileViewController *profileVC = [[UserProfileViewController alloc]init];
         UINavigationController *profileNav = [[UINavigationController alloc]initWithRootViewController:profileVC];
         
-        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, browseNav, searchNav, nil];
+        NSArray *controllers = [NSArray arrayWithObjects:chartsNav, browseNav, searchNav, profileNav, nil];
         self.tabBarController.viewControllers = controllers;
         
         UIEdgeInsets tabItemInsets = UIEdgeInsetsMake(7.0, 0.0, -7.0, 0.0);
@@ -131,11 +131,9 @@
             [self.window makeKeyAndVisible];
         }
         
-        //Pre load the video metadata on app launch
+        //Load all tabs at once
         for(UINavigationController * viewController in self.tabBarController.viewControllers){
-//            if ([viewController isKindOfClass:[BrowseViewController class]]) {
-                [[viewController.viewControllers firstObject] view];
-//            }
+            [[viewController.viewControllers firstObject] view];
         }
     }
 }

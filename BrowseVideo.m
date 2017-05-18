@@ -11,7 +11,8 @@
 @implementation BrowseVideo
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey{
-    return @{@"profileURLStr" : @"profile_photo",
+    return @{@"videoId" : @"id",
+             @"profileURLStr" : @"profile_photo",
              @"uploaderName" : @"uploader_name",
              @"caption" : @"caption",
              @"tag" : @"tag",

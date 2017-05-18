@@ -42,8 +42,10 @@ typedef void (^ChartOperationCompletionBlock)(Chart *chart, NSError *error);
 
 - (void)getRecentMediaAtCoordinate:(CLLocationCoordinate2D)coordinate
                               page:(NSString *)pageNum
-                             withLimit:(NSString *)limitPerPage
-             completionHandler:(void (^)(id))completionHandler
+                     withTimeframe:(NSString *)timeframe
+                      limitPerPage:(NSString *)limitPerPage
+                   limitMostRecent:(NSString *)limitMostRecent
+                 completionHandler:(void (^)(id))completionHandler
                     failureHandler:(void (^)(id))failureHandler;
 
 
