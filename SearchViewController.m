@@ -113,7 +113,7 @@ static NSString *exploreCellId = @"exploreCell";
     self.resultsTableView.dataSource = self;
     self.resultsTableView.contentInset = adjustForBarInsets;
     self.resultsTableView.scrollIndicatorInsets = adjustForBarInsets;
-    self.resultsTableView.backgroundColor = UIColorFromRGB(0xDBDBDB);
+    self.resultsTableView.backgroundColor = [UIColor whiteColor];
     self.resultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.resultsTableView.showsVerticalScrollIndicator = NO;
     [self.resultsTableView registerClass:[SearchTableViewCell class] forCellReuseIdentifier:searchCellId];
@@ -315,7 +315,9 @@ static NSString *exploreCellId = @"exploreCell";
     loadCell.backgroundColor = [UIColor clearColor];
     
     UIView *loadView = [[UIView alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width/2 - APPLICATION_FRAME.size.width * 0.44, SEARCH_CONTROLLER_CELL_HEIGHT/2 - SEARCH_CONTROLLER_CELL_HEIGHT * 0.43, APPLICATION_FRAME.size.width * 0.88, SEARCH_CONTROLLER_CELL_HEIGHT * 0.86)];
-    loadView.backgroundColor = [UIColor whiteColor];
+    loadView.backgroundColor = UIColorFromRGB(0xF9F9F9);
+    loadView.layer.borderColor = UIColorFromRGB(0x979797).CGColor;
+    loadView.layer.borderWidth = 1.0;
     loadView.layer.cornerRadius = 7.0;
     [loadCell.contentView addSubview:loadView];
     
@@ -323,7 +325,7 @@ static NSString *exploreCellId = @"exploreCell";
     self.loadMoreLabel.text = @"Tap to load more restaurants";
     self.loadMoreLabel.textAlignment = NSTextAlignmentCenter;
     self.loadMoreLabel.backgroundColor = [UIColor clearColor];
-    self.loadMoreLabel.font = [UIFont nun_fontWithSize:16.0];
+    self.loadMoreLabel.font = [UIFont nun_mediumFontWithSize:16.0];
     [loadView addSubview:self.loadMoreLabel];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(loadMoreResults)];

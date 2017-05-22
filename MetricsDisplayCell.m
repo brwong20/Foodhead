@@ -77,7 +77,7 @@
     self.overallLabel.center = CGPointMake(CGRectGetMidX(self.overallTitle.frame), CGRectGetMinY(self.overallTitle.frame) - METRIC_CELL_HEIGHT * 0.18);
     self.overallLabel.alpha = 0.0;
     self.overallLabel.backgroundColor = [UIColor clearColor];
-    [self.overallLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
+    [self.overallLabel setFont:[UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.overallLabel setTextColor:[UIColor blackColor]];
     [self.overallLabel setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.overallLabel];
@@ -85,7 +85,7 @@
     self.avgPriceTitle = [[UILabel alloc]initWithFrame:CGRectMake((CGRectGetMaxX(self.sep1.frame) + CGRectGetMinX(self.sep2.frame))/2 - screen.size.width * 0.14, CGRectGetMinY(self.overallTitle.frame), screen.size.width * 0.28, METRIC_CELL_HEIGHT * 0.34)];
     self.avgPriceTitle.backgroundColor = [UIColor clearColor];
     self.avgPriceTitle.alpha = 0.0;
-    [self.avgPriceTitle setFont:[UIFont nun_lightFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
+    [self.avgPriceTitle setFont:[UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.avgPriceTitle setTextColor:[UIColor lightGrayColor]];
     [self.avgPriceTitle setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.avgPriceTitle];
@@ -93,7 +93,7 @@
     self.avgPriceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.avgPriceTitle.frame) - screen.size.width * 0.13, CGRectGetMidY(self.overallLabel.frame) - METRIC_CELL_HEIGHT * 0.15, screen.size.width * 0.26, METRIC_CELL_HEIGHT * 0.3)];
     self.avgPriceLabel.backgroundColor = [UIColor clearColor];
     self.avgPriceTitle.alpha = 0.0;
-    [self.avgPriceLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.044]];
+    [self.avgPriceLabel setFont:[UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.width * 0.044]];
     [self.avgPriceLabel setTextColor:[UIColor blackColor]];
     [self.avgPriceLabel setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.avgPriceLabel];
@@ -106,7 +106,7 @@
     self.healthLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMidX(self.healthTitle.frame) - screen.size.width * 0.1, CGRectGetMinY(self.overallLabel.frame), screen.size.width * 0.2, METRIC_CELL_HEIGHT * 0.3)];
     self.healthLabel.alpha = 0.0;
     self.healthLabel.backgroundColor = [UIColor clearColor];
-    [self.healthLabel setFont:[UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
+    [self.healthLabel setFont:[UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [self.healthLabel setTextColor:[UIColor blackColor]];
     [self.healthLabel setTextAlignment:NSTextAlignmentCenter];
     [self.contentView addSubview:self.healthLabel];    

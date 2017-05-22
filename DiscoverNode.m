@@ -24,6 +24,7 @@
 //IMPORTANT : need to do this because we can't acess our RLMObject's properties on different threads (which layoutAspecThatFits run on) so create a copy of our RLMObject's properties to be used on any thread we want...
 @property (nonatomic, assign) CGFloat mediaWidth;
 @property (nonatomic, assign) CGFloat mediaHeight;
+@property (nonatomic, assign) BOOL isBlogContent;
 
 @end
 
@@ -32,10 +33,7 @@
 - (instancetype)initWithRestauarnt:(TPLRestaurant *)restaurant andPrimaryKey:(NSString *)primaryKey{
     self = [super init];
     if (self) {
-        //[[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
-        
         self.selectionStyle = UITableViewCellSelectionStyleNone;
-        
         _restaurantInfo = restaurant;
         
         if (restaurant.hasVideo.boolValue) {
@@ -97,15 +95,17 @@
         
         NSString *sourceName;
         NSString *sourceImg;
-        if (_restaurantInfo.blogName) {
+        if (_restaurantInfo.blogTitle) {
             sourceName = _restaurantInfo.blogTitle;
             sourceImg = _restaurantInfo.blogProfileLink;
+            _isBlogContent = YES;
         }else{
             if(_restaurantInfo.categories.count > 0){
                 sourceName = [_restaurantInfo.categories firstObject];
             }else{
                 sourceName = @"";
             }
+            _isBlogContent = NO;
         }
         _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:sourceName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         
@@ -210,8 +210,10 @@
         if (_savedRestaurantInfo.sourceBlogName) {
             sourceName = _savedRestaurantInfo.sourceBlogName;
             sourceImg = _savedRestaurantInfo.sourceBlogProfilePhoto;
+            _isBlogContent = YES;
         }else{
             sourceName = _savedRestaurantInfo.primaryCategory;
+            _isBlogContent = NO;
         }
         _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:sourceName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
@@ -282,7 +284,7 @@
     sourceStack.alignItems = ASStackLayoutAlignItemsCenter;
     _sourceImgNode.style.preferredSize = CGSizeMake(25.0, 25.0);
     
-    if (_restaurantInfo.blogName) {
+    if (self.isBlogContent) {
         sourceStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:blogInsets child:_sourceImgNode], [ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsMake(5.0, 0.0, 0.0, 0.0) child:_sourceNode]];
     }else{
         sourceStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_sourceNode]];
@@ -319,6 +321,7 @@
     }else{
         DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
         discoverRlm.name = self.restaurantInfo.name;
+        discoverRlm.foursq_rating = self.restaurantInfo.foursq_rating;
         discoverRlm.foursqId = self.restaurantInfo.foursqId;
         discoverRlm.distance = self.restaurantInfo.distance;
         discoverRlm.hasVideo = self.restaurantInfo.hasVideo;
@@ -357,10 +360,6 @@
             DLog(@"Failed to save bookmark to Realm DB: %@", error);
         }else{
             [self favoriteNodeWithInfo:discoverRlm];
-            
-            if ([self.delegate respondsToSelector:@selector(discoverNode:didFavoriteRestaurant:)]) {
-                [self.delegate discoverNode:self didFavoriteRestaurant:discoverRlm];
-            }
         }
     }
 }

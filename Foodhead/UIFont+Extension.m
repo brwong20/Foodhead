@@ -10,7 +10,7 @@
 
 @implementation UIFont (Extension)
 
-#define NUNITO_FONT_NAME @"Nunito"
+#define NUNITO_FONT_NAME @"HelveticaNeue"
 
 
 +(UIFont*)nun_lightFontWithSize:(CGFloat)fontSize
@@ -20,7 +20,7 @@
 
 +(UIFont*)nun_fontWithSize:(CGFloat)fontSize
 {
-    return [UIFont fontWithName:[NUNITO_FONT_NAME stringByAppendingString:@"-Regular"] size:fontSize];
+    return [UIFont fontWithName:[NUNITO_FONT_NAME stringByAppendingString:@""] size:fontSize];
 }
 
 +(UIFont*)nun_mediumFontWithSize:(CGFloat)fontSize
@@ -28,10 +28,10 @@
     return [UIFont fontWithName:[NUNITO_FONT_NAME stringByAppendingString:@"-Medium"] size:fontSize];
 }
 
-+(UIFont*)nun_semiboldFontWithSize:(CGFloat)fontSize
-{
-    return [UIFont fontWithName:[NUNITO_FONT_NAME stringByAppendingString:@"-Semibold"] size:fontSize];
-}
+//+(UIFont*)nun_semiboldFontWithSize:(CGFloat)fontSize
+//{
+//    return [UIFont fontWithName:[NUNITO_FONT_NAME stringByAppendingString:@"-Semibold"] size:fontSize];
+//}
 
 +(UIFont*)nun_boldFontWithSize:(CGFloat)fontSize
 {

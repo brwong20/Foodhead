@@ -74,23 +74,28 @@
         _sourceImgNode.backgroundColor = [UIColor whiteColor];
         
         _sourceNameNode = [[ASTextNode alloc]init];
-        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:16.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _sourceNameNode.maximumNumberOfLines = 1;
         
         _categoryNode = [[ASTextNode alloc]init];
         _categoryNode.backgroundColor = [UIColor clearColor];
-        _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.tag attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.tag attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _categoryNode.maximumNumberOfLines = 1;
         
         _titleNode = [[ASTextNode alloc]init];
         _titleNode.backgroundColor = [UIColor clearColor];
-        _titleNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.caption attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:16.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _titleNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.caption attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _titleNode.layerBacked = YES;
         
         _bookmarkNode = [[ASButtonNode alloc]init];
         _bookmarkNode.backgroundColor = [UIColor clearColor];
         _bookmarkNode.contentMode = UIViewContentModeScaleAspectFit;
-        [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+        
+        if (primaryKey) {
+            [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+        }else{
+            [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+        }
         [_bookmarkNode addTarget:self action:@selector(bookmarkClicked) forControlEvents:ASControlNodeEventTouchUpInside];
         
         _viewsImgNode = [[ASImageNode alloc]init];
@@ -99,7 +104,7 @@
         _viewsImgNode.layerBacked = YES;
         
         _viewCountNode = [[ASTextNode alloc]init];
-        _viewCountNode.attributedText = [[NSAttributedString alloc]initWithString:_videoInfo.viewCount.stringValue attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _viewCountNode.attributedText = [[NSAttributedString alloc]initWithString:_videoInfo.viewCount.stringValue attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _viewCountNode.backgroundColor = [UIColor clearColor];
         _viewCountNode.maximumNumberOfLines = 1;
         _viewCountNode.layerBacked = YES;
@@ -162,17 +167,17 @@
         _sourceImgNode.backgroundColor = [UIColor whiteColor];
         
         _sourceNameNode = [[ASTextNode alloc]init];
-        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:16.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _sourceNameNode.maximumNumberOfLines = 1;
         
         _categoryNode = [[ASTextNode alloc]init];
         _categoryNode.backgroundColor = [UIColor clearColor];
-        _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.tag attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.tag attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _categoryNode.maximumNumberOfLines = 1;
         
         _titleNode = [[ASTextNode alloc]init];
         _titleNode.backgroundColor = [UIColor clearColor];
-        _titleNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.caption attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:16.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _titleNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.caption attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _titleNode.layerBacked = YES;
         //_titleNode.maximumNumberOfLines = 2;
         
@@ -188,7 +193,7 @@
         _viewsImgNode.layerBacked = YES;
         
         _viewCountNode = [[ASTextNode alloc]init];
-        _viewCountNode.attributedText = [[NSAttributedString alloc]initWithString:_savedVideoInfo.viewCount.stringValue attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        _viewCountNode.attributedText = [[NSAttributedString alloc]initWithString:_savedVideoInfo.viewCount.stringValue attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _viewCountNode.backgroundColor = [UIColor clearColor];
         _viewCountNode.maximumNumberOfLines = 1;
         _viewCountNode.layerBacked = YES;

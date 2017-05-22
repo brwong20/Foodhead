@@ -26,6 +26,9 @@
 #import "DiscoverRealm.h"
 #import "BrowseVideoRealm.h"
 #import "FoodWiseDefines.h"
+#import "BookmarkSegmentControl.h"
+#import "LayoutBounds.h"
+#import "TPLRestaurantPageViewController.h"
 
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
@@ -33,7 +36,7 @@
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 
-@interface UserProfileViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, IDMPhotoBrowserDelegate, CHTCollectionViewDelegateWaterfallLayout, ASCollectionDelegate, ASCollectionDataSource, ASTableDelegate, ASTableDataSource, BrowsePlayerNodeDelegate>
+@interface UserProfileViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, IDMPhotoBrowserDelegate, CHTCollectionViewDelegateWaterfallLayout, ASCollectionDelegate, ASCollectionDataSource, ASTableDelegate, ASTableDataSource, BrowsePlayerNodeDelegate, BookmarkSegmentControlDelegate, DiscoverNodeDelegate>
 
 @property (nonatomic, strong) UserAuthManager *userManager;
 @property (nonatomic, strong) User *currentUser;
@@ -47,6 +50,7 @@
 @property (nonatomic, assign) BOOL scrollViewFullscreen;
 @property (nonatomic, assign) CGFloat lastTableOffset;
 @property (nonatomic, assign) CGFloat lastCollectionOffset;
+@property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
 
 //Overlaid on the photo collection if user has no meals
 @property (nonatomic, strong) UIView *noPhotoView;
@@ -60,7 +64,7 @@
 @property (nonatomic, strong) UIActivityIndicatorView *reloadView;
 
 //Filter between restaurants and videos
-@property (nonatomic, strong) UISegmentedControl *segmentedControl;
+@property (nonatomic, strong) BookmarkSegmentControl *segmentedControl;
 @property (nonatomic, strong) CHTCollectionViewWaterfallLayout *waterfallLayout;
 @property (nonatomic, strong) ASCollectionNode *restaurantCollectionNode;
 @property (nonatomic, strong) ASTableNode *videoTableNode;
@@ -104,7 +108,6 @@ static NSString *cellId = @"userPhoto";
         self.waterfallLayout.columnCount = NUM_COLUMNS;
         self.waterfallLayout.minimumColumnSpacing = 10.0;
         self.waterfallLayout.minimumInteritemSpacing = 5.0;
-        self.waterfallLayout.sectionInset = UIEdgeInsetsMake(15.0, 10.0, 0.0, 10.0);
         
         _restaurantCollectionNode = [[ASCollectionNode alloc]initWithCollectionViewLayout:_waterfallLayout];
         _restaurantCollectionNode.delegate = self;
@@ -139,8 +142,10 @@ static NSString *cellId = @"userPhoto";
 }
 
 - (void)setupNavBar{
-    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.05], NSForegroundColorAttributeName : [UIColor blackColor]};
+    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)setupUI{
@@ -148,7 +153,7 @@ static NSString *cellId = @"userPhoto";
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
     
-    self.profileImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.75 - self.view.frame.size.width * 0.125, self.view.frame.size.height * 0.15, self.view.frame.size.width * 0.25, self.view.frame.size.width * 0.25)];
+    self.profileImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.78 - self.view.frame.size.width * 0.125, self.view.frame.size.height * 0.11, self.view.frame.size.width * 0.25, self.view.frame.size.width * 0.25)];
     //self.profileImageView.contentMode ;
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.backgroundColor = [UIColor clearColor];
@@ -162,62 +167,51 @@ static NSString *cellId = @"userPhoto";
     avatarGesture.numberOfTapsRequired = 1;
     [self.profileImageView addGestureRecognizer:avatarGesture];
     
-    self.usernameLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.4, CGRectGetMinX(self.profileImageView.frame) - self.view.frame.size.height * 0.1, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.06)];
-    self.usernameLabel.textAlignment = NSTextAlignmentCenter;
-    self.usernameLabel.textAlignment = NSTextAlignmentCenter;
+    self.usernameLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMidY(self.profileImageView.frame) - self.view.frame.size.height * 0.01, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.06)];
+    self.usernameLabel.textAlignment = NSTextAlignmentLeft;
     self.usernameLabel.backgroundColor = [UIColor clearColor];
     self.usernameLabel.textColor = [UIColor blackColor];
     [self.usernameLabel setFont:[UIFont nun_fontWithSize:self.view.frame.size.height * 0.05]];
     [self.view addSubview:self.usernameLabel];
      
-    self.locationLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.2, CGRectGetMaxY(self.usernameLabel.frame) + 4.0, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.03)];
+    self.locationLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMaxY(self.usernameLabel.frame) + 2.0, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.03)];
     self.locationLabel.backgroundColor = [UIColor clearColor];
     self.locationLabel.textColor = [UIColor grayColor];
-    self.locationLabel.textAlignment = NSTextAlignmentCenter;
+    self.locationLabel.textAlignment = NSTextAlignmentLeft;
+    //self.locationLabel.text = @"Some random shit";
     self.locationLabel.font = [UIFont nun_fontWithSize:self.view.frame.size.height * 0.02];
     [self.view addSubview:self.locationLabel];
     
-    NSDictionary *attributes = @{NSFontAttributeName : [UIFont nun_boldFontWithSize:16.0], NSForegroundColorAttributeName : [UIColor blackColor]};
-    
-    self.segmentedControl = [[UISegmentedControl alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.475, CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.01, self.view.bounds.size.width * 0.95, self.view.bounds.size.height * 0.07)];
-    self.segmentedControl.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.segmentedControl.tintColor = [UIColor clearColor];
-    self.segmentedControl.layer.cornerRadius = 7.0;
-    self.segmentedControl.clipsToBounds = YES;
-    
-//    [self.segmentedControl setBackgroundImage:[UIImage imageNamed:@"segment-button-selected"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-//    [self.segmentedControl setBackgroundImage:[UIImage imageNamed:@"segment-button"] forState:UIControlStateSelected barMetrics:UIBarMetricsDefault];
-    
-    [self.segmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    
-    [self.segmentedControl insertSegmentWithTitle:@"Restaurants" atIndex:0 animated:YES];
-    [self.segmentedControl insertSegmentWithTitle:@"Videos" atIndex:1 animated:YES];
-    [self.segmentedControl addTarget:self action:@selector(changeView:) forControlEvents:UIControlEventValueChanged];
-    //Default start on restaurant list
-    self.segmentedControl.selectedSegmentIndex = 0;
+    self.segmentedControl = [[BookmarkSegmentControl alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.46, CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.05, self.view.bounds.size.width * 0.92, self.view.bounds.size.height * 0.065)];
+    self.segmentedControl.delegate = self;
+    [self didSelectSegment:0];
     [self.view addSubview:self.segmentedControl];
     
-    UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    UIEdgeInsets paddingInset = UIEdgeInsetsMake(10.0, 0.0, 0.0, 0.0);//Adjust for tab bar height covering views
 
-    _restaurantCollectionNode.frame = CGRectMake(self.segmentedControl.frame.origin.x, CGRectGetMaxY(self.segmentedControl.frame), self.segmentedControl.bounds.size.width, self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
-    _restaurantCollectionNode.view.contentInset = adjustForTabbarInsets;
-    _restaurantCollectionNode.view.scrollIndicatorInsets = adjustForTabbarInsets;
+    _restaurantCollectionNode.frame = CGRectMake(self.segmentedControl.frame.origin.x, CGRectGetMaxY(self.segmentedControl.frame), self.segmentedControl.bounds.size.width, (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame)) - CGRectGetHeight(self.tabBarController.tabBar.frame));
+    _restaurantCollectionNode.view.contentInset = paddingInset;
+    _restaurantCollectionNode.view.scrollIndicatorInsets = paddingInset;
     _restaurantCollectionNode.hidden = NO;
-    _restaurantCollectionNode.view.bounces = NO;
     _restaurantCollectionNode.view.showsVerticalScrollIndicator = NO;
+    _restaurantCollectionNode.view.bounces = NO;
+    _restaurantCollectionNode.layer.borderColor = [UIColor redColor].CGColor;
+    _restaurantCollectionNode.layer.borderWidth = 2.0;
     
-    _videoTableNode.frame = CGRectMake(self.segmentedControl.frame.origin.x, CGRectGetMaxY(self.segmentedControl.frame), self.segmentedControl.bounds.size.width, self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
-    _videoTableNode.view.contentInset = adjustForTabbarInsets;
-    _videoTableNode.view.scrollIndicatorInsets = adjustForTabbarInsets;
+    _videoTableNode.frame = CGRectMake(0.0, CGRectGetMaxY(self.segmentedControl.frame), self.view.bounds.size.width, (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame)) - CGRectGetHeight(self.tabBarController.tabBar.frame));
+    _videoTableNode.view.contentInset = paddingInset;
+    _videoTableNode.view.scrollIndicatorInsets = paddingInset;
     _videoTableNode.hidden = YES;
-    _videoTableNode.view.bounces = NO;
     _videoTableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     _videoTableNode.view.showsVerticalScrollIndicator = NO;
-    
+    _videoTableNode.view.bounces = NO;
+
     self.scrollViewFullscreen = NO;
+    self.panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(didFakeScrollWithGesture:)];
     
     [self.view addSubnode:_restaurantCollectionNode];
     [self.view addSubnode:_videoTableNode];
+    
 }
 
 - (void)retrieveFavorites{
@@ -269,7 +263,6 @@ static NSString *cellId = @"userPhoto";
         [weakSelf.videoTableNode.view beginUpdates];
         [weakSelf.videoTableNode insertRowsAtIndexPaths:[change insertionsInSection:0] withRowAnimation:UITableViewRowAnimationNone];
         [weakSelf.videoTableNode deleteRowsAtIndexPaths:[change deletionsInSection:0] withRowAnimation:UITableViewRowAnimationNone];
-        [weakSelf.videoTableNode reloadRowsAtIndexPaths:[change modificationsInSection:0] withRowAnimation:UITableViewRowAnimationNone];
         [weakSelf.videoTableNode.view endUpdates];
         
         //Delete the cached asset if deleted from bookmarks
@@ -298,9 +291,9 @@ static NSString *cellId = @"userPhoto";
             [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.currentUser.avatarURL] placeholderImage:[UIImage new] options:SDWebImageRetryFailed];
         }
         self.usernameLabel.text = [NSString stringWithFormat:@"%@ %@", self.currentUser.firstName, self.currentUser.lastName];
-        if (self.currentUser.location) {
-            self.locationLabel.text = self.currentUser.location;
-        }
+//        if (self.currentUser.location) {
+//            self.locationLabel.text = self.currentUser.location;
+//        }
     }else{
         [self.profileImageView setImage:[UIImage imageNamed:@"empty_profile"]];
     }
@@ -411,25 +404,25 @@ static NSString *cellId = @"userPhoto";
 - (void)addObservers{
     //Update user info and photos if they login from profile
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(populateUserData) name:SIGNUP_NOTIFICATION object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateUserPhotos) name:SIGNUP_NOTIFICATION object:nil];
+    //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateUserPhotos) name:SIGNUP_NOTIFICATION object:nil];
 }
 
 - (void)removeObservers{
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:SIGNUP_NOTIFICATION object:nil];
+    //[[NSNotificationCenter defaultCenter]removeObserver:self name:SIGNUP_NOTIFICATION object:nil];
     self.restaurantsNotif = nil;
     self.videosNotif = nil;
 }
 
-- (void)changeView:(UISegmentedControl *)segmentControl{
-    switch (segmentControl.selectedSegmentIndex) {
+- (void)didSelectSegment:(NSUInteger)segment{
+    switch (segment) {
         case 0:{
-            [_videoTableNode.view setContentOffset:CGPointZero animated:NO];
+            [_videoTableNode.view setContentOffset:CGPointMake(0.0, -10.0) animated:NO];
             _videoTableNode.hidden = YES;
             _restaurantCollectionNode.hidden = NO;
             break;
         }
         case 1:{
-            [_restaurantCollectionNode.view setContentOffset:CGPointZero animated:NO];
+            [_restaurantCollectionNode.view setContentOffset:CGPointMake(0.0, -10.0) animated:NO];
             _restaurantCollectionNode.hidden = YES;
             _videoTableNode.hidden = NO;
             break;
@@ -448,6 +441,7 @@ static NSString *cellId = @"userPhoto";
         RLMRealm *realm = [RLMRealm defaultRealm];
         DiscoverRealm *threadRef = [realm resolveThreadSafeReference:restRef];
         DiscoverNode *imgNode = [[DiscoverNode alloc]initWithSavedRestaurant:threadRef];
+        imgNode.delegate = self;
         return imgNode;
     };
 }
@@ -546,6 +540,70 @@ static NSString *cellId = @"userPhoto";
     
     //We calculated the size of the image, but let Texture calculate the rest of the cell (size for cell captions)
     return ASSizeRangeMake(size, CGSizeMake(size.width, INFINITY));
+}
+
+#pragma mark - ASCollectionDelegate methods
+- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    DiscoverRealm *savedInfo = self.savedRestaurants[indexPath.row];
+    TPLRestaurant *savedRestInfo = [self convertSavedRestaurant:savedInfo];
+    
+    TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
+    restPageVC.selectedRestaurant = savedRestInfo;
+    restPageVC.indexPath = indexPath;
+    [self.navigationController pushViewController:restPageVC animated:YES];
+}
+
+- (void)discoverNode:(DiscoverNode *)node didClickVideoWithRestaurant:(TPLRestaurant *)restInfo{
+    NSIndexPath *indexPath = [self.restaurantCollectionNode indexPathForNode:node];
+    
+    //restInfo is always nil since it's a saved restaurant being tapped
+    DiscoverRealm *savedInfo = self.savedRestaurants[indexPath.row];
+    TPLRestaurant *savedRestInfo = [self convertSavedRestaurant:savedInfo];
+    
+    TPLRestaurantPageViewController *restPage = [[TPLRestaurantPageViewController alloc]init];
+    restPage.selectedRestaurant = savedRestInfo;
+    restPage.indexPath = indexPath;
+    [self.navigationController pushViewController:restPage animated:YES];
+}
+
+- (TPLRestaurant *)convertSavedRestaurant:(DiscoverRealm *)savedInfo{
+    TPLRestaurant *restInfo = [[TPLRestaurant alloc]init];
+    
+    restInfo.foursqId = savedInfo.foursqId;
+    restInfo.foursq_rating = savedInfo.foursq_rating;
+    restInfo.latitude = savedInfo.lat;
+    restInfo.longitude = savedInfo.lng;
+    restInfo.name = savedInfo.name;
+    restInfo.distance = savedInfo.distance;
+    
+    if (savedInfo.primaryCategory) {
+        restInfo.categories = [NSArray arrayWithObject:savedInfo.primaryCategory];
+    }
+    
+    restInfo.blogName = savedInfo.sourceBlogName;
+    restInfo.blogProfileLink = savedInfo.sourceBlogProfilePhoto;
+    
+    if (savedInfo.hasVideo.boolValue) {
+        restInfo.hasVideo = @(1);
+        restInfo.blogVideoLink = savedInfo.thumbnailVideoLink;
+        restInfo.blogVideoWidth = savedInfo.thumbnailVideoWidth;
+        restInfo.blogVideoHeight = savedInfo.thumbnailVideoHeight;
+    }else{
+        if (savedInfo.sourceBlogName) {
+            restInfo.blogPhotoLink = savedInfo.thumbnailPhotoLink;
+            restInfo.blogPhotoWidth = savedInfo.thumbnailPhotoWidth;
+            restInfo.blogPhotoHeight = savedInfo.thumbnailPhotoHeight;
+        }else{
+            restInfo.thumbnail = savedInfo.thumbnailPhotoLink;
+            restInfo.thumbnailWidth = savedInfo.thumbnailPhotoWidth;
+            restInfo.thumbnailHeight = savedInfo.thumbnailPhotoHeight;
+        }
+    }
+    return restInfo;
+}
+
+- (void)collectionNode:(ASCollectionNode *)collectionNode didEndDisplayingItemWithNode:(ASCellNode *)node{
+    [self adjustScrollView:collectionNode.view withUpdatedContentHeight:collectionNode.view.contentSize.height - node.frame.size.height];
 }
 
 #pragma mark - ASTableNodeDataSource methods
@@ -666,7 +724,8 @@ static NSString *cellId = @"userPhoto";
     }
 }
 
-- (void)tableNode:(ASTableNode *)tableNode didEndDisplayingRowWithNode:(ASCellNode *)node{
+- (void)tableNode:(ASTableNode *)tableNode didEndDisplayingRowWithNode:(ASCellNode *)node {
+    [self adjustScrollView:tableNode.view withUpdatedContentHeight:_videoTableNode.view.contentSize.height - node.frame.size.height];
     BrowsePlayerNode *vidNode = (BrowsePlayerNode *)node;
     NSIndexPath *index = [self.videoTableNode indexPathForNode:node];
     //Asset might not have loaded yet so don't try saving
@@ -709,8 +768,56 @@ static NSString *cellId = @"userPhoto";
     [assetDict setObject:playerNode.videoNode.asset forKey:@"asset"];
     CGFloat seconds = CMTimeGetSeconds(playerNode.videoNode.videoNode.player.currentTime);
     [assetDict setObject:@(seconds) forKey:@"lastPlayTime"];
-    
     return assetDict;
+}
+
+//Takes care of the edge case when a user deletes a video/restaurant and the scroll view gets locked because it's in fullscreen
+- (void)adjustScrollView:(UIScrollView *)scrollView withUpdatedContentHeight:(CGFloat)contentHeight{
+    if (self.scrollViewFullscreen && contentHeight < scrollView.frame.size.height) {
+        [self exitFullScreenScroll];
+        
+        //Just in case
+        if (self.panGesture.view) {
+            [self.panGesture.view removeGestureRecognizer:self.panGesture];
+        }
+    }
+}
+
+- (void)didFakeScrollWithGesture:(UIGestureRecognizer *)gesture{
+    if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]) {
+        [self exitFullScreenScroll];
+        [gesture.view removeGestureRecognizer:self.panGesture];
+    }
+}
+
+- (void)exitFullScreenScroll{
+    [UIView animateWithDuration:0.2 animations:^{
+        CGRect segmentFrame = self.segmentedControl.frame;
+        CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
+        CGRect tableFrame = self.videoTableNode.view.frame;
+        
+        segmentFrame.origin.y = CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.05;
+        collectionFrame.origin.y = CGRectGetMaxY(segmentFrame);
+        tableFrame.origin.y = CGRectGetMaxY(segmentFrame);
+        
+        self.segmentedControl.frame = segmentFrame;
+        self.restaurantCollectionNode.frame = collectionFrame;
+        self.videoTableNode.frame = tableFrame;
+    }completion:^(BOOL finished) {
+        self.scrollViewFullscreen = NO;
+        if (finished) {
+            [UIView animateWithDuration:0.3 animations:^{
+                CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
+                CGRect tableFrame = self.videoTableNode.view.frame;
+                
+                collectionFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
+                tableFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
+                
+                self.restaurantCollectionNode.frame = collectionFrame;
+                self.videoTableNode.frame = tableFrame;
+            }];
+        }
+    }];
 }
 
 #pragma mark - ScrollViewDelegate methods
@@ -737,51 +844,19 @@ static NSString *cellId = @"userPhoto";
     CGFloat currentCollectionOffset = scrollView.contentOffset.y;
     CGFloat percentageCollectionOffset = currentCollectionOffset / maxCollectionOffset;
 
-//    CGFloat maxCollectionOffset = _restaurantCollectionNode.view.contentSize.height - CGRectGetHeight(_restaurantCollectionNode.view.frame);
-//    CGFloat currentCollectionOffset = _restaurantCollectionNode.view.contentOffset.y;
-//    CGFloat percentageCollectionOffset = currentCollectionOffset / maxCollectionOffset;
-//    
-//    CGFloat maximumTableOffset = _videoTableNode.view.contentSize.height - CGRectGetHeight(_videoTableNode.view.frame);
-//    CGFloat currentTableOffset = _videoTableNode.view.contentOffset.y;
-//    CGFloat percentageTableOffset = currentTableOffset / maximumTableOffset;
-
-    //If scrolling down: Take the max of the two offsets since we want the animation to be reflected in the scroll view with a shorter offset
-    //If scrolling up: Take the min
-    
-//    CGFloat overallOffset;
-    
-    //Check which container is being scrolled
-//    if ([scrollView isKindOfClass:[self.restaurantCollectionNode.view class]]) {
-//        if (percentageCollectionOffset < self.lastCollectionOffset) {
-//            overallOffset = MIN(percentageTableOffset, percentageCollectionOffset);
-//        }else{
-//            overallOffset = MAX(percentageTableOffset, percentageCollectionOffset);
-//        }
-//        self.lastCollectionOffset = percentageCollectionOffset;
-//    }else if ([scrollView isKindOfClass:[self.videoTableNode.view class]]){
-//        if (percentageTableOffset < self.lastTableOffset) {
-//            overallOffset = MIN(percentageTableOffset, percentageCollectionOffset);
-//        }else{
-//            overallOffset = MAX(percentageTableOffset, percentageCollectionOffset);
-//        }
-//        self.lastTableOffset = percentageTableOffset;
-//    }
-    
     //Set maximum + minimum pointsand thresholds to animate so we don't perform uneccssary animations even though user has scroll past a certain point
-    //Since we always keep both collection and table frames longer than the actual view, we just need to animate their positions.
-    if(percentageCollectionOffset > 0.2 && !self.scrollViewFullscreen){
-        
+    if(percentageCollectionOffset > 0.25 && !self.scrollViewFullscreen){
         CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
         CGRect tableFrame = self.videoTableNode.view.frame;
         
-        collectionFrame.size.height = self.view.bounds.size.height - CGRectGetHeight(self.segmentedControl.frame);
-        tableFrame.size.height = self.view.bounds.size.height - CGRectGetHeight(self.segmentedControl.frame);
+        collectionFrame.size.height = (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
+        tableFrame.size.height = (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
         
         self.restaurantCollectionNode.frame = collectionFrame;
         self.videoTableNode.frame = tableFrame;
         
         //Start pushing segmented control up
-        [UIView animateWithDuration:0.25 animations:^{
+        [UIView animateWithDuration:0.2 animations:^{
             CGRect segmentFrame = self.segmentedControl.frame;
             CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
             CGRect tableFrame = self.videoTableNode.view.frame;
@@ -795,37 +870,15 @@ static NSString *cellId = @"userPhoto";
             self.videoTableNode.frame = tableFrame;
         }completion:^(BOOL finished) {
             self.scrollViewFullscreen = YES;
-        }];
-    }else if(percentageCollectionOffset < 0.2 && self.scrollViewFullscreen){
-        //Start pulling view back down
-        [UIView animateWithDuration:0.25 animations:^{
-            CGRect segmentFrame = self.segmentedControl.frame;
-            CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-            CGRect tableFrame = self.videoTableNode.view.frame;
             
-            segmentFrame.origin.y = CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.01;
-            collectionFrame.origin.y = CGRectGetMaxY(segmentFrame);
-            tableFrame.origin.y = CGRectGetMaxY(segmentFrame);
-            
-            self.segmentedControl.frame = segmentFrame;
-            self.restaurantCollectionNode.frame = collectionFrame;
-            self.videoTableNode.frame = tableFrame;
-        }completion:^(BOOL finished) {
-            self.scrollViewFullscreen = NO;
-            
-            if (finished) {
-                [UIView animateWithDuration:0.3 animations:^{
-                    CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-                    CGRect tableFrame = self.videoTableNode.view.frame;
-                    
-                    collectionFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
-                    tableFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
-                    
-                    self.restaurantCollectionNode.frame = collectionFrame;
-                    self.videoTableNode.frame = tableFrame;
-                }];
+            //Can't scroll if content size is smaller than fullscreen frame so force it to pick up scroll gesture
+            if (!self.panGesture.view && scrollView.contentSize.height < scrollView.frame.size.height) {
+                [scrollView addGestureRecognizer:self.panGesture];
             }
         }];
+    }else if(percentageCollectionOffset < 0.25 && self.scrollViewFullscreen){
+        //Start pulling view back down
+        [self exitFullScreenScroll];
     }
     
     //ensure that the end of scroll is fired.

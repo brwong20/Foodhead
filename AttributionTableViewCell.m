@@ -30,7 +30,7 @@
         sepLine.alpha = 0.15;
         [self.contentView addSubview:sepLine];
         
-        self.foursquareLogo = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMinX(SEP_LINE_RECT) + 1.5, (ATTRIBUTION_CELL_HEIGHT/2 - ATTRIBUTION_CELL_HEIGHT * 0.17) + 2.0, APPLICATION_FRAME.size.width * 0.5, ATTRIBUTION_CELL_HEIGHT * 0.34)];
+        self.foursquareLogo = [[UIImageView alloc]initWithFrame:CGRectMake(APPLICATION_FRAME.size.width/2 - APPLICATION_FRAME.size.width * 0.25, (ATTRIBUTION_CELL_HEIGHT/2 - ATTRIBUTION_CELL_HEIGHT * 0.17) + 2.0, APPLICATION_FRAME.size.width * 0.5, ATTRIBUTION_CELL_HEIGHT * 0.34)];
         self.foursquareLogo.backgroundColor = [UIColor clearColor];
         self.foursquareLogo.contentMode = UIViewContentModeScaleAspectFit;
         [self.foursquareLogo setImage:[UIImage imageNamed:@"foursquare_logo"]];

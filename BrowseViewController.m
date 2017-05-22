@@ -143,81 +143,54 @@
     NSIndexPath *indexPath = [self.tableNode indexPathForNode:node];
     BrowsePlayerNode *vidNode = (BrowsePlayerNode *)node;
     
-    if (vidNode.videoNode.asset == nil) {
-        NSDictionary *cachedAsset = self.assetArr[indexPath.row];
-        if (![cachedAsset isEqual:[NSNull null]]) {
-            //If we have already loaded an asset, use it.
-            AVAsset *asset = cachedAsset[@"asset"];
-            NSNumber *lastPlayTime = cachedAsset[@"lastPlayTime"];
-            
-            UIImage *lastFrame = cachedAsset[@"lastFrame"];
-            [vidNode setPlaceholderImage:lastFrame];
-            
-            //If video has been played, resume the last time the user stopped at.
-            NSArray *keys = @[@"playable", @"duration", @"tracks"];
-            [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
-                NSError *error;
-                for (NSString *key in keys) {
-                    AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
-                    if (keyStatus == AVKeyValueStatusFailed) {
-                        DLog(@"Failed to load key : %@ with error: %@", key, error);
-                    }
+    NSDictionary *cachedAsset = self.assetArr[indexPath.row];
+    if (![cachedAsset isEqual:[NSNull null]]) {
+        //If we have already loaded an asset, use it.
+        AVAsset *asset = cachedAsset[@"asset"];
+        NSNumber *lastPlayTime = cachedAsset[@"lastPlayTime"];
+        
+        UIImage *lastFrame = cachedAsset[@"lastFrame"];
+        [vidNode setPlaceholderImage:lastFrame];
+        
+        //If video has been played, resume the last time the user stopped at.
+        NSArray *keys = @[@"playable", @"duration", @"tracks"];
+        [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
+            NSError *error;
+            for (NSString *key in keys) {
+                AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
+                if (keyStatus == AVKeyValueStatusFailed) {
+                    DLog(@"Failed to load key : %@ with error: %@", key, error);
                 }
-                
-                if (!error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        vidNode.videoNode.asset = asset;
-                        int32_t timeScale = asset.duration.timescale;
-                        CMTime time = CMTimeMakeWithSeconds(lastPlayTime.floatValue, timeScale);
-                        [vidNode.videoNode.videoNode.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-                    });
-                }
+            }
+            
+            if (!error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    vidNode.videoNode.asset = asset;
+                    int32_t timeScale = asset.duration.timescale;
+                    CMTime time = CMTimeMakeWithSeconds(lastPlayTime.floatValue, timeScale);
+                    [vidNode.videoNode.videoNode.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+                });
+            }
+        }];
+    }else{
+        BrowseVideo *video = self.videoArr[indexPath.row];
+        NSString *vidLink = video.videoLink;
+        if ([video.isYoutubeVideo boolValue]) {
+            NSString *thumbURL = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vidLink];
+            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+            [manager downloadImageWithURL:[NSURL URLWithString:thumbURL] options:SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                [vidNode setPlaceholderImage:image];
             }];
-        }else{
-            BrowseVideo *video = self.videoArr[indexPath.row];
-            NSString *vidLink = video.videoLink;
-            if ([video.isYoutubeVideo boolValue]) {
-                NSString *thumbURL = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vidLink];
-                SDWebImageManager *manager = [SDWebImageManager sharedManager];
-                [manager downloadImageWithURL:[NSURL URLWithString:thumbURL] options:SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                    [vidNode setPlaceholderImage:image];
-                }];
-                
-                [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:video.videoLink completionHandler:^(XCDYouTubeVideo * _Nullable video, NSError * _Nullable error) {
-                    if (error) {
-                        NSLog(@"%@", error);
-                    }else{
-                        //TODO: Eventually load 720p only if fullscreen?
-                        NSURL *vidURL = [video.streamURLs objectForKey:@(XCDYouTubeVideoQualityMedium360)];
-                        AVAsset *asset = [AVAsset assetWithURL:vidURL];
-                        
-                        NSArray *keys = @[@"playable", @"duration", @"tracks"];//This is an extra optimization to not load the asset into the video player unless it's completely ready to be played.
-                        [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
-                            NSError *error;
-                            for (NSString *key in keys) {
-                                AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
-                                if (keyStatus == AVKeyValueStatusFailed) {
-                                    DLog(@"Failed to load key : %@ with error: %@", key, error);
-                                }
-                            }
-                            
-                            if (!error) {
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    vidNode.videoNode.asset = asset;
-                                });
-                            }
-                        }];
-                    }
-                }];
-            }else{
-                //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                    NSURL *vidURL;
-                    vidURL = [NSURL URLWithString:vidLink];
+            
+            [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:video.videoLink completionHandler:^(XCDYouTubeVideo * _Nullable video, NSError * _Nullable error) {
+                if (error) {
+                    NSLog(@"%@", error);
+                }else{
+                    //TODO: Eventually load 720p only if fullscreen?
+                    NSURL *vidURL = [video.streamURLs objectForKey:@(XCDYouTubeVideoQualityMedium360)];
                     AVAsset *asset = [AVAsset assetWithURL:vidURL];
-                    //[self loadPlaceHolderWithAsset:asset forNode:vidNode];
-                
-                    NSArray *keys = @[@"playable", @"duration", @"tracks"];
+                    
+                    NSArray *keys = @[@"playable", @"duration", @"tracks"];//This is an extra optimization to not load the asset into the video player unless it's completely ready to be played.
                     [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
                         NSError *error;
                         for (NSString *key in keys) {
@@ -233,17 +206,43 @@
                             });
                         }
                     }];
-                });
-            }
+                }
+            }];
+        }else{
+            //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSURL *vidURL;
+                vidURL = [NSURL URLWithString:vidLink];
+                AVAsset *asset = [AVAsset assetWithURL:vidURL];
+                //[self loadPlaceHolderWithAsset:asset forNode:vidNode];
+            
+                NSArray *keys = @[@"playable", @"duration", @"tracks"];
+                [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
+                    NSError *error;
+                    for (NSString *key in keys) {
+                        AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
+                        if (keyStatus == AVKeyValueStatusFailed) {
+                            DLog(@"Failed to load key : %@ with error: %@", key, error);
+                        }
+                    }
+                    
+                    if (!error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            vidNode.videoNode.asset = asset;
+                        });
+                    }
+                }];
+            });
+        }
 
-            //Always start playing the first video on initial screen load (i.e. When user first opens the app)
-            if (self.isInitialLoad && indexPath.row == 0) {
-                [vidNode.videoNode play];
-                self.currentPlayingIndex = indexPath;
-                self.isInitialLoad = NO;
-            }
+        //Always start playing the first video on initial screen load (i.e. When user first opens the app)
+        if (self.isInitialLoad && indexPath.row == 0) {
+            [vidNode.videoNode play];
+            self.currentPlayingIndex = indexPath;
+            self.isInitialLoad = NO;
         }
     }
+    
 }
 
 //- (void)loadPlaceHolderWithAsset:(AVAsset *)asset forNode:(BrowsePlayerNode *)vidNode{
@@ -416,7 +415,7 @@
     return assetDict;
 }
 
-- (void)node:(BrowsePlayerNode *)node wasFavorited:(BrowseVideoRealm *)favorite{
+- (void)browsePlayerNode:(BrowsePlayerNode *)node wasFavorited:(BrowseVideoRealm *)favorite{
     NSIndexPath *indexPath = [self.tableNode indexPathForNode:node];
     [self.favoriteIndexes setObject:indexPath forKey:favorite.videoId];
 }

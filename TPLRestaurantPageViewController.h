@@ -22,8 +22,6 @@
 @interface TPLRestaurantPageViewController : UIViewController
 
 @property (nonatomic, strong) TPLRestaurant *selectedRestaurant;
-@property (nonatomic, strong) RLMResults *favRestaurants;
-@property (nonatomic, strong) NSMutableDictionary *favoritesDict;
 @property (nonatomic, strong) NSIndexPath *indexPath;
 
 @property (nonatomic, weak) id<RestaurantPageDelegate>delegate;

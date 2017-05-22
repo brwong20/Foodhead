@@ -14,8 +14,6 @@
 
 @protocol DiscoverNodeDelegate <NSObject>
 
-- (void)discoverNode:(DiscoverNode *)node didFavoriteRestaurant:(DiscoverRealm *)favorite;
-- (void)discoverNode:(DiscoverNode *)node didUnfavoriteRestaurant:(NSString *)primaryKey;
 - (void)discoverNode:(DiscoverNode *)node didClickVideoWithRestaurant:(TPLRestaurant *)restInfo;
 
 @end

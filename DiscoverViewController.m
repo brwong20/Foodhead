@@ -123,6 +123,7 @@
         [weakSelf.collectionNode beginUpdates];
         //if ([change insertionsInSection:0].count > 0) [weakSelf addFavorites:[change insertionsInSection:0]];
         if ([change deletionsInSection:0].count > 0) [weakSelf deleteFavorites:[change deletionsInSection:0]];
+        if ([change insertionsInSection:0].count > 0) [weakSelf insertFavorites:[change insertionsInSection:0]];
         [weakSelf.collectionNode endUpdatesAnimated:NO];
     }];
 }
@@ -208,8 +209,6 @@
     
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = restInfo;
-    restPageVC.favoritesDict = self.favoritedIndexes;
-    restPageVC.favRestaurants = self.favoritedRestaurants;
     restPageVC.delegate = self;
     restPageVC.indexPath = indexPath;
     [self.navigationController pushViewController:restPageVC animated:YES];
@@ -220,8 +219,6 @@
     
     TPLRestaurantPageViewController *restPage = [[TPLRestaurantPageViewController alloc]init];
     restPage.selectedRestaurant = restInfo;
-    restPage.favoritesDict = self.favoritedIndexes;
-    restPage.favRestaurants = self.favoritedRestaurants;
     restPage.delegate = self;
     restPage.indexPath = indexPath;
     [self.navigationController pushViewController:restPage animated:YES];
@@ -385,6 +382,21 @@
     }
 }
 
+- (void)insertFavorites:(NSArray<NSIndexPath *> *)inserted{
+    NSIndexPath *newIndex = [inserted firstObject];
+    DiscoverRealm *newFavorite = self.favoritedRestaurants[newIndex.row];
+    for (TPLRestaurant *rest in self.collectionData) {
+        if([rest.foursqId isEqualToString:newFavorite.foursqId]){//Compare primary keys to ensure same restaurant
+            NSUInteger nodeIndex = [self.collectionData indexOfObject:rest];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:nodeIndex inSection:0];
+            DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
+            [node favoriteNodeWithInfo:newFavorite];
+            [self.favoritedIndexes setObject:indexPath forKey:newFavorite.foursqId];
+            break;
+        }
+    }
+}
+
 //Restaurant was favorited, store it's position in our dictionary
 - (void)discoverNode:(DiscoverNode *)node didFavoriteRestaurant:(DiscoverRealm *)favorite{
     NSIndexPath *nodeIndex = [self.collectionNode indexPathForNode:node];
@@ -462,17 +474,5 @@
     [self.view addSubview:statusBarBg];
 }
 
-#pragma mark - RestaurantPageDelegate methods
-- (void)restaurantPageDidFavorite:(DiscoverRealm *)fav atIndexPath:(NSIndexPath *)indexPath{
-    DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
-    [node favoriteNodeWithInfo:fav];
-    [self.favoritedIndexes setObject:indexPath forKey:fav.foursqId];
-}
-
-- (void)restaurantPageDidUnfavorite:(NSString *)primaryKey{
-    DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:[self.favoritedIndexes objectForKey:primaryKey]];
-    [node unfavoriteNode];
-    [self.favoritedIndexes removeObjectForKey:primaryKey];
-}
 
 @end

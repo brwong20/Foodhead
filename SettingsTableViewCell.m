@@ -29,7 +29,7 @@
         self.sepLine.alpha = 0.15;
         [self.contentView addSubview:self.sepLine];
         
-        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.sepLine.frame), SETTINGS_CELL_HEIGHT * 0.4 - SETTINGS_CELL_HEIGHT * 0.3, APPLICATION_FRAME.size.width * 0.6, SETTINGS_CELL_HEIGHT * 0.6)];
+        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.sepLine.frame) + APPLICATION_FRAME.size.width * 0.08, SETTINGS_CELL_HEIGHT * 0.4 - SETTINGS_CELL_HEIGHT * 0.3, APPLICATION_FRAME.size.width * 0.6, SETTINGS_CELL_HEIGHT * 0.6)];
         self.titleLabel.backgroundColor = [UIColor clearColor];
         self.titleLabel.font = [UIFont nun_fontWithSize:16.0];
         [self.contentView addSubview:self.titleLabel];

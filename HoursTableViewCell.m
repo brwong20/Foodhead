@@ -38,10 +38,9 @@
     [self.hoursIcon setImage:[UIImage imageNamed:@"hours_icon"]];
     [self.contentView addSubview:self.hoursIcon];
     
-    self.hoursTitle = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(SEP_LINE_RECT), RESTAURANT_HOURS_CELL_HEIGHT * 0.22, APPLICATION_FRAME.size.width * 0.2, RESTAURANT_HOURS_CELL_HEIGHT * 0.24)];
-    [self.hoursTitle setText:@"Hours"];
+    self.hoursTitle = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.hoursIcon.frame) + APPLICATION_FRAME.size.width * 0.04, RESTAURANT_HOURS_CELL_HEIGHT * 0.15, APPLICATION_FRAME.size.width * 0.4, RESTAURANT_HOURS_CELL_HEIGHT * 0.28)];
     [self.hoursTitle setTextColor:[UIColor blackColor]];
-    [self.hoursTitle setFont:[UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE]];
+    [self.hoursTitle setFont:[UIFont nun_mediumFontWithSize:REST_PAGE_HEADER_FONT_SIZE]];
     [self.hoursTitle setBackgroundColor:[UIColor clearColor]];
     [self.contentView addSubview:self.hoursTitle];
 
@@ -49,6 +48,17 @@
 
 //Dynamically space UI based on number of days
 - (void)populateHours:(TPLRestaurant *)restaurant{
+    
+    if (restaurant.hours.count > 0) {
+        if (restaurant.openNow.boolValue) {
+            [self.hoursTitle setText:@"Open now"];
+        }else{
+            [self.hoursTitle setText:@"Closed"];
+        }
+    }else{
+        [self.hoursTitle setText:@"Hours unavailable"];
+    }
+    
     if (restaurant.hours.count > 0) {
         NSArray *weeklyHours = restaurant.hours;
         
@@ -115,13 +125,13 @@
         }
     }else{
         //No hours available
-        UILabel *noHoursLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.hoursTitle.frame), self.dynamicHeight/1.5 - self.dynamicHeight * 0.1, APPLICATION_FRAME.size.width * 0.35, self.dynamicHeight * 0.2)];
-        noHoursLabel.backgroundColor = [UIColor clearColor];
-        [noHoursLabel setFont:[UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE]];
-        [noHoursLabel setText:@"Unavailable"];
-        [noHoursLabel setTextColor:UIColorFromRGB(0x505254)];
-        [self.contentView addSubview:noHoursLabel];
-    }    
+//        UILabel *noHoursLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.hoursTitle.frame), self.dynamicHeight/1.5 - self.dynamicHeight * 0.1, APPLICATION_FRAME.size.width * 0.35, self.dynamicHeight * 0.2)];
+//        noHoursLabel.backgroundColor = [UIColor clearColor];
+//        [noHoursLabel setFont:[UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE]];
+//        //[noHoursLabel setText:@"Unavailable"];
+//        [noHoursLabel setTextColor:UIColorFromRGB(0x505254)];
+//        [self.contentView addSubview:noHoursLabel];
+    }
 }
 
 @end

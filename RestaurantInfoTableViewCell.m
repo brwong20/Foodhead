@@ -51,10 +51,10 @@
     [self.locationIcon setImage:[UIImage imageNamed:@"location_icon"]];
     [self.contentView addSubview:self.locationIcon];
     
-    self.restaurantName = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(sepLine.frame), CGRectGetMidY(self.locationIcon.frame) - RESTAURANT_LOCATION_CELL_HEIGHT * 0.03, APPLICATION_FRAME.size.width * 0.75, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
+    self.restaurantName = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.locationIcon.frame) + APPLICATION_FRAME.size.width * 0.04, CGRectGetMidY(self.locationIcon.frame) - RESTAURANT_LOCATION_CELL_HEIGHT * 0.1, APPLICATION_FRAME.size.width * 0.75, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
     self.restaurantName.backgroundColor = [UIColor clearColor];
     self.restaurantName.textColor = [UIColor blackColor];
-    self.restaurantName.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
+    self.restaurantName.font = [UIFont nun_mediumFontWithSize:REST_PAGE_HEADER_FONT_SIZE];
     [self.contentView addSubview:self.restaurantName];
     
     self.addressLabel = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.6, RESTAURANT_LOCATION_CELL_HEIGHT * 0.3)];
@@ -68,7 +68,7 @@
     self.addressLabel.font = [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE];
     [self.contentView addSubview:self.addressLabel];
     
-    self.restaurantLink = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.addressLabel.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.03, APPLICATION_FRAME.size.width * 0.7, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
+    self.restaurantLink = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.addressLabel.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.7, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
     self.restaurantLink.textColor = UIColorFromRGB(0x505254);
     self.restaurantLink.enabledTextCheckingTypes = NSTextCheckingTypeLink;
     self.restaurantLink.delegate = self;
@@ -86,7 +86,12 @@
 
 - (void)populateInfo:(TPLRestaurant *)restaurant{
     if (restaurant) {
-        if(![NSString isEmpty:restaurant.name]) self.restaurantName.text = restaurant.name;
+        
+        //Meters to miles
+        if (restaurant.distance) {
+            double miles = [restaurant.distance doubleValue] * METERS_TO_MILES;
+            self.restaurantName.text = [NSString stringWithFormat:@"%.2f mi away", miles];
+        }
         
         NSString *addressText = @"";
         if(![NSString isEmpty:restaurant.address]) addressText = [addressText stringByAppendingString:restaurant.address];

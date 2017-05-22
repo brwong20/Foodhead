@@ -47,7 +47,7 @@
     [self addSubview:self.userAvatar];
     
     self.username = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.userAvatar.frame) + APPLICATION_FRAME.size.width * 0.03, CGRectGetMidY(self.userAvatar.frame) - APPLICATION_FRAME.size.height* 0.02, APPLICATION_FRAME.size.width * 0.5, APPLICATION_FRAME.size.height * 0.04)];
-    self.username.font = [UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.height * 0.03];
+    self.username.font = [UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.height * 0.03];
     self.username.backgroundColor = [UIColor clearColor];
     self.username.textColor = [UIColor whiteColor];
     [self addSubview:self.username];

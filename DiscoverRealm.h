@@ -15,6 +15,8 @@
 @property NSString *foursqId;
 @property NSString *name;
 @property NSString *primaryCategory;
+
+@property NSNumber<RLMFloat> *foursq_rating;
 @property NSNumber<RLMFloat> *distance;
 @property NSNumber<RLMFloat> *lat;
 @property NSNumber<RLMFloat> *lng;

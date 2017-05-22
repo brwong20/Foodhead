@@ -95,7 +95,7 @@
         [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
         [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
         [SVProgressHUD setBackgroundColor:APPLICATION_BLUE_COLOR];
-        [SVProgressHUD setFont:[UIFont nun_boldFontWithSize:20.0]];
+        [SVProgressHUD setFont:[UIFont nun_mediumFontWithSize:20.0]];
         [SVProgressHUD setMinimumSize:CGSizeMake(self.view.frame.size.width * 0.6, self.view.frame.size.height * 0.22)];
         [SVProgressHUD showWithStatus:@"Uploading your meal"];
         
@@ -146,7 +146,7 @@
     
     UILabel *successTitle = [[UILabel alloc]initWithFrame:CGRectMake(successView.frame.size.width/2 - successView.frame.size.width * 0.35, successView.frame.size.height * 0.35 - successView.frame.size.height * 0.1, successView.frame.size.width * 0.7, successView.frame.size.height * 0.2)];
     successTitle.backgroundColor = [UIColor clearColor];
-    successTitle.font = [UIFont nun_boldFontWithSize:20.0];
+    successTitle.font = [UIFont nun_mediumFontWithSize:20.0];
     successTitle.textAlignment = NSTextAlignmentCenter;
     successTitle.numberOfLines = 1;
     [successTitle setText:@"😋😋😋😋"];
