@@ -195,8 +195,6 @@ static NSString *cellId = @"userPhoto";
     _restaurantCollectionNode.hidden = NO;
     _restaurantCollectionNode.view.showsVerticalScrollIndicator = NO;
     _restaurantCollectionNode.view.bounces = NO;
-    _restaurantCollectionNode.layer.borderColor = [UIColor redColor].CGColor;
-    _restaurantCollectionNode.layer.borderWidth = 2.0;
     
     _videoTableNode.frame = CGRectMake(0.0, CGRectGetMaxY(self.segmentedControl.frame), self.view.bounds.size.width, (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame)) - CGRectGetHeight(self.tabBarController.tabBar.frame));
     _videoTableNode.view.contentInset = paddingInset;

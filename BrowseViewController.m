@@ -89,7 +89,7 @@
     }];
     
     self.tableNode.frame = self.view.bounds;
-    UIEdgeInsets adjustForBarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
+    UIEdgeInsets adjustForBarInsets = UIEdgeInsetsMake(15.0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame) + 5.0, 0);//Adjust for tab bar height covering views
     self.tableNode.view.contentInset = adjustForBarInsets;
     self.tableNode.view.scrollIndicatorInsets = adjustForBarInsets;
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;

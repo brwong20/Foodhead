@@ -92,10 +92,10 @@
     [self.openIcon setImage:[UIImage imageNamed:@"openNow_search"]];
     [self.infoContainer addSubview:self.openIcon];
     
-    self.openNowLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.openIcon.frame)+ self.infoContainer.bounds.size.width * 0.03, CGRectGetMidY(self.openIcon.frame) - self.infoContainer.bounds.size.height * 0.05, self.infoContainer.bounds.size.width * 0.3, self.infoContainer.bounds.size.height * 0.1)];
+    self.openNowLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.openIcon.frame)+ self.infoContainer.bounds.size.width * 0.03, CGRectGetMidY(self.openIcon.frame) - self.infoContainer.bounds.size.height * 0.06, self.infoContainer.bounds.size.width * 0.3, self.infoContainer.bounds.size.height * 0.12)];
     self.openNowLabel.backgroundColor = [UIColor clearColor];
     self.openNowLabel.textColor = UIColorFromRGB(0x505254);
-    self.openNowLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
+    self.openNowLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE * 0.9];
     [self.infoContainer addSubview:self.openNowLabel];
     
 //    self.overallIcon = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.openIcon.frame), CGRectGetMaxY(self.openIcon.frame) + self.infoContainer.bounds.size.height * 0.07, self.openIcon.frame.size.width, self.openIcon.frame.size.height)];
@@ -116,7 +116,7 @@
     self.priceSign.font = [UIFont nun_mediumFontWithSize:REST_PAGE_DETAIL_FONT_SIZE + 1.0];
     [self.infoContainer addSubview:self.priceSign];
     
-    self.priceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.openNowLabel.frame), CGRectGetMidY(self.priceSign.frame) - self.infoContainer.bounds.size.height * 0.05, self.infoContainer.bounds.size.width * 0.2, self.infoContainer.bounds.size.height * 0.1)];
+    self.priceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.openNowLabel.frame), CGRectGetMidY(self.priceSign.frame) - self.infoContainer.bounds.size.height * 0.06, self.infoContainer.bounds.size.width * 0.3, self.infoContainer.bounds.size.height * 0.12)];
     self.priceLabel.backgroundColor = [UIColor clearColor];
     self.priceLabel.textColor = UIColorFromRGB(0x505254);
     self.priceLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
@@ -136,13 +136,11 @@
     [self.distanceIcon setImage:[UIImage imageNamed:@"distance_search_filter"]];
     [self.infoContainer addSubview:self.distanceIcon];
 
-    self.distanceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.priceLabel.frame), CGRectGetMidY(self.distanceIcon.frame) - self.infoContainer.bounds.size.height * 0.05, self.infoContainer.bounds.size.width * 0.2, self.infoContainer.bounds.size.height * 0.1)];
+    self.distanceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.priceLabel.frame), CGRectGetMidY(self.distanceIcon.frame) - self.infoContainer.bounds.size.height * 0.06, self.infoContainer.bounds.size.width * 0.2, self.infoContainer.bounds.size.height * 0.12)];
     self.distanceLabel.backgroundColor = [UIColor clearColor];
     self.distanceLabel.textColor = UIColorFromRGB(0x505254);
     self.distanceLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
-    [self.infoContainer addSubview:self.distanceLabel];
-    
-    //[LayoutBounds drawBoundsForAllLayers:self];
+    [self.infoContainer addSubview:self.distanceLabel];    
 }
 
 - (void)prepareForReuse{
