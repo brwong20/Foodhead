@@ -35,7 +35,7 @@
         self.errorTitle.backgroundColor = [UIColor clearColor];
         self.errorTitle.textAlignment = NSTextAlignmentCenter;
         self.errorTitle.text = @"Uh-oh!";
-        self.errorTitle.font = [UIFont nun_boldFontWithSize:frame.size.height * 0.035];
+        self.errorTitle.font = [UIFont nun_mediumFontWithSize:frame.size.height * 0.035];
         [self addSubview:self.errorTitle];
         
         self.errorTextView = [[UITextView alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.425, CGRectGetMaxY(self.errorTitle.frame), frame.size.width * 0.85, frame.size.height * 0.3)];

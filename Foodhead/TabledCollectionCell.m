@@ -54,7 +54,7 @@
     
     self.chartTitle = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(self.containerView.bounds.size.width/2 - self.containerView.bounds.size.width * 0.45, self.containerView.bounds.size.height * 0.005, self.containerView.bounds.size.width * 0.9, self.containerView.bounds.size.height * 0.07)];
     self.chartTitle.backgroundColor = [UIColor clearColor];
-    self.chartTitle.font = [UIFont nun_semiboldFontWithSize:APPLICATION_FRAME.size.width * 0.053];
+    self.chartTitle.font = [UIFont nun_boldFontWithSize:APPLICATION_FRAME.size.width * 0.053];
     self.chartTitle.textColor = [UIColor blackColor];
     self.chartTitle.numberOfLines = 1;
     self.chartTitle.kern = 1.5;//Character spacing

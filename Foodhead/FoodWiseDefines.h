@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
 #define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
 #define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
-#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places"]
+#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places_new"]
 
 //Browse
 #define API_PLACES_BROWSE_POSTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/posts"]
@@ -159,11 +159,15 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 #define DISCOVER_NODE_SPACING 28.0
 
+#define ASSET_KEY @"asset"
+#define ASSET_LINK_KEY @"assetLink"
+
 //Restaurant Pages
-#define RESTAURANT_PAGE_CELL_COUNT 7
+#define RESTAURANT_PAGE_CELL_COUNT 6
 #define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.17
-#define METRIC_CELL_HEIGHT 60.0
-#define RESTAURANT_LOCATION_CELL_HEIGHT 148.0
+#define METRIC_CELL_HEIGHT 65.0
+#define RESTAURANT_LOCATION_CELL_HEIGHT 110.0
+#define RESTAURANT_SCORE_CELL_HEIGHT 70.0
 #define RESTAURANT_HOURS_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define ATTRIBUTION_CELL_HEIGHT 55.0
 #define HOUR_CELL_SPACING 0.55
@@ -180,7 +184,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define SEARCH_CONTROLLER_CELL_HEIGHT 55.0
 #define SEARCH_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define MAX_RESULT_COUNT 3
-#define RESULT_CELL_HEIGHT 170.0
+#define RESULT_CELL_HEIGHT 163.0
 
 //Settings
 #define SETTINGS_CELL_HEIGHT 80.0
@@ -216,6 +220,6 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define METERS_TO_MILES 0.000621371
 
 //Simple separator line for cells
-#define SEP_LINE_RECT CGRectMake(APPLICATION_FRAME.size.width * 0.12, 0, APPLICATION_FRAME.size.width * 0.84, 1.0)
+#define SEP_LINE_RECT CGRectMake(0.0, 0, APPLICATION_FRAME.size.width, 1.0)
 
 #endif /* FoodWiseDefines_h */

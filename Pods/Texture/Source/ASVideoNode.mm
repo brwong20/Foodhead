@@ -234,6 +234,7 @@ static NSString * const kRate = @"rate";
   [super layout];
   // The _playerNode wraps AVPlayerLayer, and therefore should extend across the entire bounds.
   _playerNode.frame = self.bounds;
+
 }
 
 - (CGSize)calculateSizeThatFits:(CGSize)constrainedSize

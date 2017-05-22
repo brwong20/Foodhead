@@ -14,7 +14,7 @@
 +(UIFont*)nun_lightFontWithSize:(CGFloat)fontSize;
 +(UIFont*)nun_fontWithSize:(CGFloat)fontSize;
 +(UIFont*)nun_mediumFontWithSize:(CGFloat)fontSize;
-+(UIFont*)nun_semiboldFontWithSize:(CGFloat)fontSize;
+//+(UIFont*)nun_semiboldFontWithSize:(CGFloat)fontSize;
 +(UIFont*)nun_boldFontWithSize:(CGFloat)fontSize;
 
 @end

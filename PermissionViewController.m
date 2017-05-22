@@ -31,7 +31,7 @@
     
     self.locationPrompt = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - self.view.frame.size.width * 0.3, self.view.frame.size.height * 0.12, self.view.frame.size.width * 0.6, self.view.frame.size.height * 0.07)];
     self.locationPrompt.text = @"Enable location";
-    self.locationPrompt.font = [UIFont nun_boldFontWithSize:self.locationPrompt.frame.size.height * 0.5];
+    self.locationPrompt.font = [UIFont nun_mediumFontWithSize:self.locationPrompt.frame.size.height * 0.5];
     self.locationPrompt.backgroundColor = [UIColor clearColor];
     self.locationPrompt.textColor = [UIColor blackColor];
     self.locationPrompt.textAlignment = NSTextAlignmentCenter;
@@ -56,7 +56,7 @@
     self.permissionButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - self.view.frame.size.width * 0.4, CGRectGetMaxY(self.pinImg.frame) + self.view.frame.size.height * 0.04, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.1)];
     self.permissionButton.layer.cornerRadius = self.permissionButton.frame.size.height/2;
     self.permissionButton.backgroundColor = APPLICATION_BLUE_COLOR;
-    self.permissionButton.titleLabel.font = [UIFont nun_boldFontWithSize:self.permissionButton.frame.size.height * 0.3];
+    self.permissionButton.titleLabel.font = [UIFont nun_mediumFontWithSize:self.permissionButton.frame.size.height * 0.3];
     [self.permissionButton setTitle:@"Allow" forState:UIControlStateNormal];
     [self.permissionButton addTarget:self action:@selector(requestLocationAuth) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.permissionButton];

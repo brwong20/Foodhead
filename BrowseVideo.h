@@ -8,8 +8,9 @@
 
 #import <Mantle/Mantle.h>
 
-@interface BrowseVideo : MTLModel
+@interface BrowseVideo : MTLModel <MTLJSONSerializing>
 
+@property (nonatomic, copy) NSNumber *videoId;
 @property (nonatomic, copy) NSString *profileURLStr;
 @property (nonatomic, copy) NSString *uploaderName;
 @property (nonatomic, copy) NSString *caption;

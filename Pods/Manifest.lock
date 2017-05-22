@@ -43,6 +43,9 @@ PODS:
     - PINRemoteImage/Core
   - pop (1.0.9)
   - ReactiveObjC (2.1.2)
+  - Realm (2.6.2):
+    - Realm/Headers (= 2.6.2)
+  - Realm/Headers (2.6.2)
   - SAMKeychain (1.5.2)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
@@ -65,6 +68,7 @@ DEPENDENCIES:
   - IDMPhotoBrowser
   - Mantle
   - ReactiveObjC
+  - Realm
   - SAMKeychain
   - SDWebImage (~> 3.8)
   - SVProgressHUD
@@ -84,6 +88,7 @@ SPEC CHECKSUMS:
   PINRemoteImage: e4e02e15a6f96cedbcef2abf1c9c1228dc9897d7
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
   ReactiveObjC: 7b6782ae39f9ac0f57205c3b0c0b69b9dd7048c0
+  Realm: 29222766425b9f831228f81b63f0e38a97a4d700
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
@@ -91,6 +96,6 @@ SPEC CHECKSUMS:
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   XCDYouTubeKit: 86f4e7a9c2baa7b7adf6abfc28ac3ab34927be2d
 
-PODFILE CHECKSUM: 6261834b56be933b61f4a628218114cac55e111a
+PODFILE CHECKSUM: 3f32c4e183f02b8362342584492c918e416e1eb6
 
 COCOAPODS: 1.2.0

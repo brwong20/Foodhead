@@ -68,18 +68,18 @@
     self.owlImage.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.owlImage];
     
-    self.loginCaption = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.4, CGRectGetMaxY(self.owlImage.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.1)];
+    self.loginCaption = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.45, CGRectGetMaxY(self.owlImage.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.9, self.view.frame.size.height * 0.1)];
     self.loginCaption.backgroundColor = [UIColor clearColor];
     self.loginCaption.textAlignment = NSTextAlignmentCenter;
     self.loginCaption.numberOfLines = 0;
-    self.loginCaption.font = [UIFont nun_boldFontWithSize:self.loginCaption.frame.size.height * 0.35];
+    self.loginCaption.font = [UIFont nun_mediumFontWithSize:self.loginCaption.frame.size.height * 0.3];
     self.loginCaption.textColor = [UIColor whiteColor];
     [self.view addSubview:self.loginCaption];
     
     self.fbLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.75, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.08)];
     self.fbLoginButton.layer.cornerRadius = self.fbLoginButton.frame.size.height/2;
     self.fbLoginButton.backgroundColor = UIColorFromRGB(0x718BEC);
-    self.fbLoginButton.titleLabel.font = [UIFont nun_boldFontWithSize:self.fbLoginButton.frame.size.height * 0.35];
+    self.fbLoginButton.titleLabel.font = [UIFont nun_mediumFontWithSize:self.fbLoginButton.frame.size.height * 0.35];
     [self.fbLoginButton setTitle:@"Sign up with Facebook" forState:UIControlStateNormal];
     [self.fbLoginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.fbLoginButton addTarget:self action:@selector(didPressLogin) forControlEvents:UIControlEventTouchUpInside];
@@ -87,18 +87,18 @@
     
     self.skipLoginButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.2, CGRectGetMaxY(self.fbLoginButton.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.05)];
     self.skipLoginButton.backgroundColor = [UIColor clearColor];
-    self.skipLoginButton.titleLabel.font  = [UIFont nun_boldFontWithSize:self.skipLoginButton.frame.size.height * 0.5];
+    self.skipLoginButton.titleLabel.font  = [UIFont nun_mediumFontWithSize:self.skipLoginButton.frame.size.height * 0.5];
     [self.skipLoginButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.skipLoginButton addTarget:self action:@selector(didPressSkip) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.skipLoginButton];
     
     if (self.isOnboarding) {
-        self.loginCaption.text = @"Discover | Eat | Snap";
+        self.loginCaption.text = @"Curated restaurants & food topics";
         [self.owlImage setImage:[UIImage imageNamed:@"owl_full"]];
         [self.skipLoginButton setTitle:@"Skip" forState:UIControlStateNormal];
 
     }else{
-        self.loginCaption.font = [UIFont nun_boldFontWithSize:self.loginCaption.frame.size.height * 0.3];
+        self.loginCaption.font = [UIFont nun_mediumFontWithSize:self.loginCaption.frame.size.height * 0.3];
         self.loginCaption.text = @"Almost there! Sign up now\nto post your food memories!";
         [self.owlImage setImage:[UIImage imageNamed:@"owl_openarms"]];
         [self.skipLoginButton setTitle:@"Go back" forState:UIControlStateNormal];

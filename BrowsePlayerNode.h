@@ -9,6 +9,7 @@
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 
 #import "BrowseVideo.h"
+#import "BrowseVideoRealm.h"
 
 @class BrowsePlayerNode;
 
@@ -16,16 +17,25 @@
 
 - (void)fullScreenWasEnabled;
 - (void)fullScreenWasDisabled;
-- (void)playBackButtonTappedForNode:(BrowsePlayerNode *)node withState:(ASVideoNodePlayerState)state;
+
+- (void)browsePlayerNode:(BrowsePlayerNode *)node wasUnfavorited:(NSNumber *)primaryKey;
+- (void)browsePlayerNode:(BrowsePlayerNode *)node wasFavorited:(BrowseVideoRealm *)favorite;
+- (void)browsePlayerNode:(BrowsePlayerNode *)node didChangePlayerState:(ASVideoNodePlayerState)state;
 
 @end
 
 @interface BrowsePlayerNode : ASCellNode
 
-//@property (nonatomic, strong) ASVideoNode *videoNode;
 @property (nonatomic, strong) ASVideoPlayerNode *videoNode;
+@property (nonatomic, strong) BrowseVideoRealm *savedVideoInfo;
 @property (nonatomic, weak) id<BrowsePlayerNodeDelegate> delegate;
+@property (nonatomic, strong) NSNumber *primaryKey;
 
-- (instancetype)initWithVideo:(BrowseVideo *)videoInfo;
+- (instancetype)initWithVideo:(BrowseVideo *)videoInfo andPrimaryKey:(NSNumber *)primaryKey;
+- (instancetype)initWithSavedVideo:(BrowseVideoRealm *)videoInfo;
+
+- (void)setPlaceholderImage:(UIImage *)image;
+
+- (void)toggleUnfavorite;
 
 @end

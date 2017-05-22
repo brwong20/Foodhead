@@ -22,7 +22,7 @@
         
         _imageNode = [[ASNetworkImageNode alloc]init];
         _imageNode.backgroundColor = [UIColor whiteColor];
-        _imageNode.placeholderFadeDuration = 0.15;
+        //_imageNode.placeholderFadeDuration = 0.15;
         _imageNode.contentMode = UIViewContentModeScaleAspectFill;
         _imageNode.delegate = self;
         _imageNode.URL = url;

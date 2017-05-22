@@ -62,7 +62,7 @@
     self.promptLabel = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width/2 - viewRect.size.width * 0.2, viewRect.size.height - viewRect.size.height * 0.25, viewRect.size.width * 0.4, viewRect.size.height * 0.05)];
     self.promptLabel.backgroundColor = [UIColor clearColor];
     self.promptLabel.textAlignment = NSTextAlignmentCenter;
-    self.promptLabel.font = [UIFont nun_semiboldFontWithSize:frame.size.height * 0.04];
+    self.promptLabel.font = [UIFont nun_boldFontWithSize:frame.size.height * 0.04];
     self.promptLabel.text = @"Price";
     self.promptLabel.textColor = [UIColor whiteColor];
     self.promptLabel.layer.shadowColor = [UIColor colorWithWhite:0.0 alpha:1.0].CGColor;
@@ -85,7 +85,7 @@
     self.detailLabel.backgroundColor = [UIColor clearColor];
     self.detailLabel.textColor = [UIColor whiteColor];
     self.detailLabel.textAlignment = NSTextAlignmentCenter;
-    self.detailLabel.font = [UIFont nun_semiboldFontWithSize:self.frame.size.height * 0.03];
+    self.detailLabel.font = [UIFont nun_boldFontWithSize:self.frame.size.height * 0.03];
     self.detailLabel.layer.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.8].CGColor;
     self.detailLabel.layer.shadowOffset = CGSizeMake(0, -1.0);
     self.detailLabel.layer.shadowOpacity = 1.0;
@@ -95,7 +95,7 @@
     self.dollarSign = [[UILabel alloc]initWithFrame:CGRectMake(viewRect.size.width * 0.03, CGRectGetMidY(self.digitContainer.frame) - viewRect.size.height * 0.035, viewRect.size.width * 0.1, viewRect.size.height * 0.07)];
     self.dollarSign.text = @"$";
     self.dollarSign.textAlignment = NSTextAlignmentCenter;
-    self.dollarSign.font = [UIFont nun_semiboldFontWithSize:self.frame.size.height * 0.05];
+    self.dollarSign.font = [UIFont nun_boldFontWithSize:self.frame.size.height * 0.05];
     self.dollarSign.textColor = UIColorFromRGB(0xF4F4F4);
     self.dollarSign.backgroundColor = [UIColor clearColor];
     [self addSubview:self.dollarSign];
