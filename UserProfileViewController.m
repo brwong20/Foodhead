@@ -843,9 +843,9 @@
     if ([scrollView isKindOfClass:[ASTableView class]]){
         self.scrollingDown = ([scrollView.panGestureRecognizer translationInView:scrollView.superview].y >0) ? NO : YES;
         //If user scrolls very fast, nothing should play/pause in order to optimize scroll performance
-        if (![self checkUserIsScrollingFast:scrollView]) {
+        //if (![self checkUserIsScrollingFast:scrollView]) {
             [self checkVideoToPlay];
-        }
+        //}
     }
     //ensure that the end of scroll is fired.
     [self performSelector:@selector(scrollViewDidEndScrollingAnimation:) withObject:nil afterDelay:0.3];
@@ -924,7 +924,7 @@
         CGFloat scrollSpeedNotAbs = (distance * 10) / 1000; //in pixels per millisecond
         
         CGFloat scrollSpeed = fabs(scrollSpeedNotAbs);
-        if (scrollSpeed > 0.5) {
+        if (scrollSpeed > 0.8) {
             _isScrollingFast = YES;
         } else {
             _isScrollingFast = NO;
