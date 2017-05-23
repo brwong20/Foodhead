@@ -20,13 +20,14 @@
 #import "PreviewAnimation.h"
 #import "DiscoverRealm.h"
 #import "BrowseViewController.h"
+#import "UserAuthManager.h"
 
 #import "Chart.h"
 #import "Places.h"
 
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, CHTCollectionViewDelegateWaterfallLayout, DiscoverNodeDelegate, RestaurantPageDelegate>
+@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, DiscoverNodeDelegate>
 
 //UI
 @property (nonatomic, assign) BOOL canScrollToTop;
@@ -58,6 +59,9 @@
 
 //Refresh Control
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+
+//User
+@property (nonatomic, strong) UserAuthManager *authManager;
 
 @end
 
@@ -92,6 +96,8 @@
     
     self.tabBarController.delegate = self;
     self.isInitialLoad = YES;
+    
+    [self verifyCurrentUser];
     
     self.viewModel = [[TPLChartsViewModel alloc]init];
     self.collectionData = [NSMutableArray array];
@@ -139,17 +145,13 @@
     [super viewDidAppear:animated];
     self.canScrollToTop = YES;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
-    
-    //Track duration user spends in home page
-    [FoodheadAnalytics beginTimedEvent:USER_DISCOVER_SESSION];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     self.canScrollToTop = NO;
-    self.navigationController.navigationBar.hidden = NO;
+    self.locationManager.locationDelegate = nil;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
-    [FoodheadAnalytics endTimedEvent:USER_DISCOVER_SESSION withParameters:nil];
 }
 
 - (void)dealloc{
@@ -203,6 +205,28 @@
         } completed:^{
             //DLog(@"Successfully retrieved all charts!");
         }];
+    }];
+}
+
+#pragma mark - User Session
+
+//Redirect and logout if credential aren't the same as last logged in user or expired auth
+- (void)verifyCurrentUser{
+    self.authManager = [UserAuthManager sharedInstance];
+    [self.authManager retrieveCurrentUser:^(id user) {
+        
+        //TODO:: Refactor this check into AuthManager and just return an error (or nil) if user ids dont match
+        NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:LAST_USER_DEFAULT];
+        User *lastUser;
+        if (data) {
+            lastUser = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        }
+        User *currentUser = (User *)user;
+        if ([currentUser.userId isEqual: lastUser.userId]) {
+            DLog(@"Same user, do nothing.");
+        }
+    }failureHandler:^(id error) {
+        //Anon login handle
     }];
 }
 

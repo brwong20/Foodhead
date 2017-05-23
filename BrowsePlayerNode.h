@@ -15,8 +15,8 @@
 
 @protocol BrowsePlayerNodeDelegate <NSObject>
 
-- (void)fullScreenWasEnabled;
-- (void)fullScreenWasDisabled;
+//- (void)fullScreenWasEnabled;
+//- (void)fullScreenWasDisabled;
 
 - (void)browsePlayerNode:(BrowsePlayerNode *)node wasUnfavorited:(NSNumber *)primaryKey;
 - (void)browsePlayerNode:(BrowsePlayerNode *)node wasFavorited:(BrowseVideoRealm *)favorite;

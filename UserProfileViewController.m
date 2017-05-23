@@ -36,7 +36,7 @@
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 
-@interface UserProfileViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, IDMPhotoBrowserDelegate, CHTCollectionViewDelegateWaterfallLayout, ASCollectionDelegate, ASCollectionDataSource, ASTableDelegate, ASTableDataSource, BrowsePlayerNodeDelegate, BookmarkSegmentControlDelegate, DiscoverNodeDelegate>
+@interface UserProfileViewController ()<IDMPhotoBrowserDelegate, CHTCollectionViewDelegateWaterfallLayout, ASCollectionDelegate, ASCollectionDataSource, ASTableDelegate, ASTableDataSource, BrowsePlayerNodeDelegate, BookmarkSegmentControlDelegate, DiscoverNodeDelegate>
 
 @property (nonatomic, strong) UserAuthManager *userManager;
 @property (nonatomic, strong) User *currentUser;
@@ -44,13 +44,11 @@
 //@property (nonatomic, strong) UIButton *logoutButton;
 
 //UI
+@property (nonatomic, strong) UIView *profileView;
 @property (nonatomic, strong) UIImageView *profileImageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UILabel *locationLabel;
-@property (nonatomic, assign) BOOL scrollViewFullscreen;
-@property (nonatomic, assign) CGFloat lastTableOffset;
-@property (nonatomic, assign) CGFloat lastCollectionOffset;
-@property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
+
 
 //Overlaid on the photo collection if user has no meals
 @property (nonatomic, strong) UIView *noPhotoView;
@@ -77,8 +75,8 @@
 @property (nonatomic, strong) RLMNotificationToken *restaurantsNotif;
 @property (nonatomic, strong) RLMNotificationToken *videosNotif;
 
-@property (nonatomic, strong) NSMutableDictionary *videoAssets;
-@property (nonatomic, strong) NSMutableArray *assetArr;
+@property (nonatomic, strong) NSMutableArray *videoAssets;
+@property (nonatomic, strong) NSMutableArray *thumbAssets;
 @property (nonatomic, strong) NSIndexPath *currentPlayingIndex;
 
 //Auto play properties
@@ -94,7 +92,6 @@
 
 @end
 
-static NSString *cellId = @"userPhoto";
 
 #define NUM_COLUMNS 2
 
@@ -133,9 +130,6 @@ static NSString *cellId = @"userPhoto";
     [self addObservers];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-}
 
 - (void)dealloc{
     [self removeObservers];
@@ -144,78 +138,78 @@ static NSString *cellId = @"userPhoto";
 - (void)setupNavBar{
     [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    
 }
 
 - (void)setupUI{
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
+    self.waterfallLayout.sectionInset = UIEdgeInsetsMake(0.0, self.view.frame.size.width * 0.03, 0.0, self.view.frame.size.width * 0.03);
+
+    self.profileView = [[UIView alloc]initWithFrame:CGRectMake(0.0, -(self.view.frame.size.height * 0.22 + self.view.bounds.size.height * 0.065 + self.view.frame.size.height * 0.01), self.view.frame.size.width, self.view.frame.size.height * 0.22)];
+    self.profileView.backgroundColor = [UIColor whiteColor];
     
-    self.profileImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.78 - self.view.frame.size.width * 0.125, self.view.frame.size.height * 0.11, self.view.frame.size.width * 0.25, self.view.frame.size.width * 0.25)];
-    //self.profileImageView.contentMode ;
+    self.profileImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.profileView.frame.size.width * 0.78 - self.profileView.frame.size.width * 0.125, self.profileView.frame.size.height * 0.11, self.profileView.frame.size.height * 0.7, self.profileView.frame.size.height * 0.7)];
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.backgroundColor = [UIColor clearColor];
     self.profileImageView.clipsToBounds = YES;
     self.profileImageView.userInteractionEnabled = YES;
     self.profileImageView.layer.borderColor = [UIColor grayColor].CGColor;
     self.profileImageView.layer.borderWidth = 1.0;
-    [self.view addSubview:self.profileImageView];
+    [self.profileView addSubview:self.profileImageView];
     
     UITapGestureRecognizer *avatarGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewAvatar)];
     avatarGesture.numberOfTapsRequired = 1;
     [self.profileImageView addGestureRecognizer:avatarGesture];
     
-    self.usernameLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMidY(self.profileImageView.frame) - self.view.frame.size.height * 0.01, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.06)];
+    self.usernameLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.03, CGRectGetMaxY(self.profileImageView.frame) - self.view.frame.size.height * 0.05, self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.06)];
     self.usernameLabel.textAlignment = NSTextAlignmentLeft;
     self.usernameLabel.backgroundColor = [UIColor clearColor];
     self.usernameLabel.textColor = [UIColor blackColor];
-    [self.usernameLabel setFont:[UIFont nun_fontWithSize:self.view.frame.size.height * 0.05]];
-    [self.view addSubview:self.usernameLabel];
+    [self.usernameLabel setFont:[UIFont nun_mediumFontWithSize:self.view.frame.size.width * 0.055]];
+    [self.profileView addSubview:self.usernameLabel];
      
     self.locationLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMaxY(self.usernameLabel.frame) + 2.0, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.03)];
     self.locationLabel.backgroundColor = [UIColor clearColor];
     self.locationLabel.textColor = [UIColor grayColor];
     self.locationLabel.textAlignment = NSTextAlignmentLeft;
-    //self.locationLabel.text = @"Some random shit";
     self.locationLabel.font = [UIFont nun_fontWithSize:self.view.frame.size.height * 0.02];
-    [self.view addSubview:self.locationLabel];
+    [self.profileView addSubview:self.locationLabel];
     
-    self.segmentedControl = [[BookmarkSegmentControl alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.46, CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.05, self.view.bounds.size.width * 0.92, self.view.bounds.size.height * 0.065)];
+    self.segmentedControl = [[BookmarkSegmentControl alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.47, CGRectGetMaxY(self.profileView.frame), self.view.bounds.size.width * 0.94, self.view.bounds.size.height * 0.065)];
     self.segmentedControl.delegate = self;
     [self didSelectSegment:0];
-    [self.view addSubview:self.segmentedControl];
     
-    UIEdgeInsets paddingInset = UIEdgeInsetsMake(10.0, 0.0, 0.0, 0.0);//Adjust for tab bar height covering views
-
-    _restaurantCollectionNode.frame = CGRectMake(self.segmentedControl.frame.origin.x, CGRectGetMaxY(self.segmentedControl.frame), self.segmentedControl.bounds.size.width, (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame)) - CGRectGetHeight(self.tabBarController.tabBar.frame));
-    _restaurantCollectionNode.view.contentInset = paddingInset;
-    _restaurantCollectionNode.view.scrollIndicatorInsets = paddingInset;
+    _restaurantCollectionNode.frame = CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height);
     _restaurantCollectionNode.hidden = NO;
     _restaurantCollectionNode.view.showsVerticalScrollIndicator = NO;
     _restaurantCollectionNode.view.bounces = NO;
-    
-    _videoTableNode.frame = CGRectMake(0.0, CGRectGetMaxY(self.segmentedControl.frame), self.view.bounds.size.width, (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame)) - CGRectGetHeight(self.tabBarController.tabBar.frame));
-    _videoTableNode.view.contentInset = paddingInset;
-    _videoTableNode.view.scrollIndicatorInsets = paddingInset;
+    [self.view addSubnode:_restaurantCollectionNode];
+
+    _videoTableNode.frame = CGRectMake(0.0, self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
     _videoTableNode.hidden = YES;
     _videoTableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     _videoTableNode.view.showsVerticalScrollIndicator = NO;
     _videoTableNode.view.bounces = NO;
-
-    self.scrollViewFullscreen = NO;
-    self.panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(didFakeScrollWithGesture:)];
-    
-    [self.view addSubnode:_restaurantCollectionNode];
     [self.view addSubnode:_videoTableNode];
+
+    [self.restaurantCollectionNode.view addSubview:self.profileView];
+    [self.restaurantCollectionNode.view addSubview:self.segmentedControl];
     
+    UIEdgeInsets profileSegmentPadding = UIEdgeInsetsMake(self.profileView.frame.size.height + self.segmentedControl.frame.size.height + self.view.frame.size.height * 0.01, 0.0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0.0);
+    _restaurantCollectionNode.view.contentInset = profileSegmentPadding;
+    
+    _videoTableNode.view.contentInset = UIEdgeInsetsMake(self.profileView.frame.size.height + self.segmentedControl.frame.size.height + self.view.frame.size.height * 0.01, 0.0, CGRectGetHeight(self.tabBarController.tabBar.frame) + self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height, 0.0);
 }
 
 - (void)retrieveFavorites{
-    self.assetArr = [NSMutableArray array];
-    self.videoAssets = [NSMutableDictionary dictionary];
+    self.videoAssets = [NSMutableArray array];
+    self.videoAssets = [NSMutableArray array];
     self.initialCollectionLoad = YES;
+    self.initialTableLoad = YES;
     
     //Sort favorites by most recent
     self.savedRestaurants = [DiscoverRealm allObjects];
@@ -242,8 +236,13 @@ static NSString *cellId = @"userPhoto";
         [weakSelf.restaurantCollectionNode beginUpdates];
         [weakSelf.restaurantCollectionNode insertItemsAtIndexPaths:[change insertionsInSection:0]];
         [weakSelf.restaurantCollectionNode deleteItemsAtIndexPaths:[change deletionsInSection:0]];
-        [weakSelf.restaurantCollectionNode reloadItemsAtIndexPaths:[change modificationsInSection:0]];
         [weakSelf.restaurantCollectionNode endUpdatesAnimated:YES];
+        
+        //Delete the cached asset if deleted from bookmarks
+        for (NSIndexPath *index in [change deletionsInSection:0]) {
+            //Remove cached asset for deleted video
+            //[weakSelf.thumbAssets removeObjectAtIndex:index.row];
+        }
     }];
     
     
@@ -265,12 +264,13 @@ static NSString *cellId = @"userPhoto";
         
         //Delete the cached asset if deleted from bookmarks
         for (NSIndexPath *index in [change deletionsInSection:0]) {
-            [weakSelf.assetArr removeObjectAtIndex:index.row];
+            //Remove
+            [weakSelf.videoAssets removeObjectAtIndex:index.row];
         }
         
         //For any new video saved, add a placeholder to asset cache
         for (NSIndexPath *index in [change insertionsInSection:0]){
-            [weakSelf.assetArr insertObject:[NSNull null] atIndex:index.row];
+            [weakSelf.videoAssets insertObject:[NSNull null] atIndex:index.row];
         }
     }];
 }
@@ -414,15 +414,40 @@ static NSString *cellId = @"userPhoto";
 - (void)didSelectSegment:(NSUInteger)segment{
     switch (segment) {
         case 0:{
-            [_videoTableNode.view setContentOffset:CGPointMake(0.0, -10.0) animated:NO];
             _videoTableNode.hidden = YES;
             _restaurantCollectionNode.hidden = NO;
+            
+            [self.profileView removeFromSuperview];
+            [self.segmentedControl removeFromSuperview];
+            
+            [self.restaurantCollectionNode.view addSubview:self.profileView];
+            [self.restaurantCollectionNode.view addSubview:self.segmentedControl];
+            
+            //Pause any node that's still playing
+            for (BrowsePlayerNode *node in self.videoTableNode.visibleNodes) {
+                [node.videoNode pause];
+            }
+            
             break;
         }
         case 1:{
-            [_restaurantCollectionNode.view setContentOffset:CGPointMake(0.0, -10.0) animated:NO];
             _restaurantCollectionNode.hidden = YES;
             _videoTableNode.hidden = NO;
+            
+            [self.profileView removeFromSuperview];
+            [self.segmentedControl removeFromSuperview];
+            
+            [self.videoTableNode.view addSubview:self.profileView];
+            [self.videoTableNode.view addSubview:self.segmentedControl];
+            
+            //Always start playing the first video on initial screen load
+            if (self.initialTableLoad && self.savedVideos.count > 0) {
+                NSIndexPath *firstIndex = [NSIndexPath indexPathForRow:0 inSection:0];
+                BrowsePlayerNode *firstNode = [self.videoTableNode nodeForRowAtIndexPath:firstIndex];
+                [firstNode.videoNode play];
+                self.currentPlayingIndex = firstIndex;
+                self.initialTableLoad = NO;
+            }
             break;
         }
         default:
@@ -457,31 +482,31 @@ static NSString *cellId = @"userPhoto";
     DiscoverRealm *restaurant = self.savedRestaurants[indexPath.row];
     if (restaurant.hasVideo.boolValue) {
         DiscoverNode *vidNode = (DiscoverNode *)node;
+        
         //Foursquare id is used to retrieve asset link for faster lookup
-        NSDictionary *assetDict = [self.videoAssets objectForKey:restaurant.foursqId];
-        if (assetDict) {
-            AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
-            //If we have already loaded an asset, use it.
-            NSArray *keys = @[@"playable", @"tracks", @"duration"];
-            [cachedAsset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
-                NSError *error;
-                for (NSString *key in keys) {
-                    AVKeyValueStatus keyStatus = [cachedAsset statusOfValueForKey:key error:&error];
-                    if (keyStatus == AVKeyValueStatusFailed) {
-                        DLog(@"Failed to load key : %@ with error: %@", key, error);
-                    }
-                }
-                
-                if (!error) {
-                    //Only play when absolutely possible and necessary
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        vidNode.playerNode.asset = cachedAsset;
-                    });
-                }
-            }];
-        }else{
+//        NSDictionary *assetDict = [self.thumbAssets objectAtIndex:indexPath.row];
+//        if (assetDict) {
+//            AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
+//            //If we have already loaded an asset, use it.
+//            NSArray *keys = @[@"playable", @"tracks", @"duration"];
+//            [cachedAsset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
+//                NSError *error;
+//                for (NSString *key in keys) {
+//                    AVKeyValueStatus keyStatus = [cachedAsset statusOfValueForKey:key error:&error];
+//                    if (keyStatus == AVKeyValueStatusFailed) {
+//                        DLog(@"Failed to load key : %@ with error: %@", key, error);
+//                    }
+//                }
+//                
+//                if (!error) {
+//                    //Only play when absolutely possible and necessary
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                        vidNode.playerNode.asset = cachedAsset;
+//                    });
+//                }
+//            }];
+//        }else{
             //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
-            
             RLMThreadSafeReference *ref = [RLMThreadSafeReference referenceWithThreadConfined:restaurant];
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 RLMRealm *realm = [RLMRealm defaultRealm];
@@ -502,16 +527,18 @@ static NSString *cellId = @"userPhoto";
                         //Only play when absolutely possible and necessary
                         dispatch_async(dispatch_get_main_queue(), ^{
                             vidNode.playerNode.asset = asset;
-                            if (self.initialTableLoad) {
+                            //NSDictionary *assetDict = @{ASSET_KEY : asset, ASSET_LINK_KEY : restRef.thumbnailVideoLink};
+                            //[self.thumbAssets insertObject:assetDict atIndex:index];//Cache
+                            if (self.initialCollectionLoad) {
                                 [self scrollViewDidEndScrollingAnimation:self.restaurantCollectionNode.view];
-                                self.initialTableLoad = NO;
+                                self.initialCollectionLoad = NO;
                             }
                         });
                     }
                 }];
             });
         }
-    }
+//    }
 }
 
 
@@ -539,6 +566,7 @@ static NSString *cellId = @"userPhoto";
     //We calculated the size of the image, but let Texture calculate the rest of the cell (size for cell captions)
     return ASSizeRangeMake(size, CGSizeMake(size.width, INFINITY));
 }
+
 
 #pragma mark - ASCollectionDelegate methods
 - (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -573,6 +601,14 @@ static NSString *cellId = @"userPhoto";
     restInfo.longitude = savedInfo.lng;
     restInfo.name = savedInfo.name;
     restInfo.distance = savedInfo.distance;
+    restInfo.website = savedInfo.website;
+    
+    if (savedInfo.address) {
+        restInfo.address = savedInfo.address;
+        restInfo.zipCode = savedInfo.zipCode;
+        restInfo.city = savedInfo.city;
+        restInfo.state = savedInfo.state;
+    }
     
     if (savedInfo.primaryCategory) {
         restInfo.categories = [NSArray arrayWithObject:savedInfo.primaryCategory];
@@ -598,10 +634,6 @@ static NSString *cellId = @"userPhoto";
         }
     }
     return restInfo;
-}
-
-- (void)collectionNode:(ASCollectionNode *)collectionNode didEndDisplayingItemWithNode:(ASCellNode *)node{
-    [self adjustScrollView:collectionNode.view withUpdatedContentHeight:collectionNode.view.contentSize.height - node.frame.size.height];
 }
 
 #pragma mark - ASTableNodeDataSource methods
@@ -632,68 +664,52 @@ static NSString *cellId = @"userPhoto";
     BrowseVideoRealm *video = self.savedVideos[indexPath.row];
     NSString *vidLink = video.videoLink;
     
-    if (vidNode.videoNode.asset == nil) {
-        NSDictionary *cachedAsset = self.assetArr[indexPath.row];
-        if (![cachedAsset isEqual:[NSNull null]]) {
-            //If we have already loaded an asset, use it.
-            AVAsset *asset = cachedAsset[@"asset"];
-            NSNumber *lastPlayTime = cachedAsset[@"lastPlayTime"];
-            vidNode.videoNode.asset = asset;
+    NSDictionary *cachedAsset = self.videoAssets[indexPath.row];
+    if (![cachedAsset isEqual:[NSNull null]]) {
+        //If we have already loaded an asset, use it.
+        AVAsset *asset = cachedAsset[@"asset"];
+        NSNumber *lastPlayTime = cachedAsset[@"lastPlayTime"];
+        
+        UIImage *lastFrame = cachedAsset[@"lastFrame"];
+        [vidNode setPlaceholderImage:lastFrame];
+        
+        //If video has been played, resume the last time the user stopped at.
+        NSArray *keys = @[@"playable", @"duration", @"tracks"];
+        [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
+            NSError *error;
+            for (NSString *key in keys) {
+                AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
+                if (keyStatus == AVKeyValueStatusFailed) {
+                    DLog(@"Failed to load key : %@ with error: %@", key, error);
+                }
+            }
             
-            //If video has been played, resume the last time the user stopped at.
-            NSArray *keys = @[@"playable", @"duration", @"tracks"];
-            [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
-                NSError *error;
-                for (NSString *key in keys) {
-                    AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
-                    if (keyStatus == AVKeyValueStatusFailed) {
-                        DLog(@"Failed to load key : %@ with error: %@", key, error);
-                    }
-                }
-                
-                if (!error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        vidNode.videoNode.asset = asset;
-                        int32_t timeScale = asset.duration.timescale;
-                        CMTime time = CMTimeMakeWithSeconds(lastPlayTime.floatValue, timeScale);
-                        [vidNode.videoNode.videoNode.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-                    });
-                }
+            if (!error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    vidNode.videoNode.asset = asset;
+                    int32_t timeScale = asset.duration.timescale;
+                    CMTime time = CMTimeMakeWithSeconds(lastPlayTime.floatValue, timeScale);
+                    [vidNode.videoNode.videoNode.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+                });
+            }
+        }];
+    }else{
+        if ([video.isYoutubeVideo boolValue]) {
+            NSString *thumbURL = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vidLink];
+            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+            [manager downloadImageWithURL:[NSURL URLWithString:thumbURL] options:SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                [vidNode setPlaceholderImage:image];
             }];
-        }else{
-            if ([video.isYoutubeVideo boolValue]) {
-                [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:video.videoLink completionHandler:^(XCDYouTubeVideo * _Nullable video, NSError * _Nullable error) {
-                    if (error) {
-                        NSLog(@"%@", error);
-                    }else{
-                        NSURL *vidURL = [video.streamURLs objectForKey:@(XCDYouTubeVideoQualityMedium360)];
-                        AVAsset *asset = [AVAsset assetWithURL:vidURL];
-                        
-                        NSArray *keys = @[@"playable", @"duration", @"tracks"];//This is an extra optimization to not load the asset into the video player unless it's completely ready to be played.
-                        [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
-                            NSError *error;
-                            for (NSString *key in keys) {
-                                AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
-                                if (keyStatus == AVKeyValueStatusFailed) {
-                                    DLog(@"Failed to load key : %@ with error: %@", key, error);
-                                }
-                            }
-                            
-                            if (!error) {
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    vidNode.videoNode.asset = asset;
-                                });
-                            }
-                        }];
-                    }
-                }];
-            }else{
-                //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                    NSURL *vidURL;
-                    vidURL = [NSURL URLWithString:vidLink];
+            
+            [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:video.videoLink completionHandler:^(XCDYouTubeVideo * _Nullable video, NSError * _Nullable error) {
+                if (error) {
+                    NSLog(@"%@", error);
+                }else{
+                    //TODO: Eventually load 720p only if fullscreen?
+                    NSURL *vidURL = [video.streamURLs objectForKey:@(XCDYouTubeVideoQualityMedium360)];
                     AVAsset *asset = [AVAsset assetWithURL:vidURL];
-                    NSArray *keys = @[@"playable"];
+                    
+                    NSArray *keys = @[@"playable", @"duration", @"tracks"];//This is an extra optimization to not load the asset into the video player unless it's completely ready to be played.
                     [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
                         NSError *error;
                         for (NSString *key in keys) {
@@ -709,26 +725,43 @@ static NSString *cellId = @"userPhoto";
                             });
                         }
                     }];
-                });
-            }
-            
-            //Always start playing the first video on initial screen load (i.e. When user first opens the app)
-            if (self.initialTableLoad && indexPath.row == 0) {
-                [vidNode.videoNode play];
-                self.currentPlayingIndex = indexPath;
-                self.initialTableLoad = NO;
-            }
+                }
+            }];
+        }else{
+            //Only set the asset for the video node until absolutley necessary, otherwise Texture will perform uneccssary AVPlayer work and slow down the UI.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSURL *vidURL;
+                vidURL = [NSURL URLWithString:vidLink];
+                AVAsset *asset = [AVAsset assetWithURL:vidURL];
+                //[self loadPlaceHolderWithAsset:asset forNode:vidNode];
+                
+                NSArray *keys = @[@"playable", @"duration", @"tracks"];
+                [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^{
+                    NSError *error;
+                    for (NSString *key in keys) {
+                        AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
+                        if (keyStatus == AVKeyValueStatusFailed) {
+                            DLog(@"Failed to load key : %@ with error: %@", key, error);
+                        }
+                    }
+                    
+                    if (!error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            vidNode.videoNode.asset = asset;
+                        });
+                    }
+                }];
+            });
         }
     }
 }
 
 - (void)tableNode:(ASTableNode *)tableNode didEndDisplayingRowWithNode:(ASCellNode *)node {
-    [self adjustScrollView:tableNode.view withUpdatedContentHeight:_videoTableNode.view.contentSize.height - node.frame.size.height];
     BrowsePlayerNode *vidNode = (BrowsePlayerNode *)node;
     NSIndexPath *index = [self.videoTableNode indexPathForNode:node];
     //Asset might not have loaded yet so don't try saving
     if (vidNode.videoNode.asset) {
-        self.assetArr[index.row] = [self saveAssetWithTime:vidNode];
+        self.videoAssets[index.row] = [self saveAssetWithTime:vidNode];
     }
 }
 
@@ -755,7 +788,7 @@ static NSString *cellId = @"userPhoto";
     for (NSUInteger row = 0; row < newTotalNumberOfPhotos; row++) {
         NSIndexPath *path = [NSIndexPath indexPathForRow:row inSection:section];
         [indexPaths addObject:path];
-        [self.assetArr addObject:[NSNull null]];
+        [self.videoAssets addObject:[NSNull null]];
     }
     
     [self.videoTableNode insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
@@ -766,62 +799,29 @@ static NSString *cellId = @"userPhoto";
     [assetDict setObject:playerNode.videoNode.asset forKey:@"asset"];
     CGFloat seconds = CMTimeGetSeconds(playerNode.videoNode.videoNode.player.currentTime);
     [assetDict setObject:@(seconds) forKey:@"lastPlayTime"];
+    
+    //Cache last frame as well so it looks like we never stopped playing
+    AVAssetImageGenerator *previewImageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:playerNode.videoNode.asset];
+    previewImageGenerator.appliesPreferredTrackTransform = YES;
+    [previewImageGenerator generateCGImagesAsynchronouslyForTimes:@[[NSValue valueWithCMTime:playerNode.videoNode.videoNode.player.currentTime]]
+                                                completionHandler:^(CMTime requestedTime, CGImageRef image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError *error) {
+                                                    if (error != nil && result != AVAssetImageGeneratorCancelled) {
+                                                        NSLog(@"Asset preview image generation failed with error: %@", error);
+                                                    }
+                                                    
+                                                    UIImage *lastFrame = [UIImage imageWithCGImage:image];
+                                                    if (lastFrame) {
+                                                        [assetDict setObject:lastFrame forKey:@"lastFrame"];
+                                                    }
+                                                }];
+    
     return assetDict;
-}
-
-//Takes care of the edge case when a user deletes a video/restaurant and the scroll view gets locked because it's in fullscreen
-- (void)adjustScrollView:(UIScrollView *)scrollView withUpdatedContentHeight:(CGFloat)contentHeight{
-    if (self.scrollViewFullscreen && contentHeight < scrollView.frame.size.height) {
-        [self exitFullScreenScroll];
-        
-        //Just in case
-        if (self.panGesture.view) {
-            [self.panGesture.view removeGestureRecognizer:self.panGesture];
-        }
-    }
-}
-
-- (void)didFakeScrollWithGesture:(UIGestureRecognizer *)gesture{
-    if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]) {
-        [self exitFullScreenScroll];
-        [gesture.view removeGestureRecognizer:self.panGesture];
-    }
-}
-
-- (void)exitFullScreenScroll{
-    [UIView animateWithDuration:0.2 animations:^{
-        CGRect segmentFrame = self.segmentedControl.frame;
-        CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-        CGRect tableFrame = self.videoTableNode.view.frame;
-        
-        segmentFrame.origin.y = CGRectGetMaxY(self.locationLabel.frame) + self.view.bounds.size.height * 0.05;
-        collectionFrame.origin.y = CGRectGetMaxY(segmentFrame);
-        tableFrame.origin.y = CGRectGetMaxY(segmentFrame);
-        
-        self.segmentedControl.frame = segmentFrame;
-        self.restaurantCollectionNode.frame = collectionFrame;
-        self.videoTableNode.frame = tableFrame;
-    }completion:^(BOOL finished) {
-        self.scrollViewFullscreen = NO;
-        if (finished) {
-            [UIView animateWithDuration:0.3 animations:^{
-                CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-                CGRect tableFrame = self.videoTableNode.view.frame;
-                
-                collectionFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
-                tableFrame.size.height = self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame);
-                
-                self.restaurantCollectionNode.frame = collectionFrame;
-                self.videoTableNode.frame = tableFrame;
-            }];
-        }
-    }];
 }
 
 #pragma mark - ScrollViewDelegate methods
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[ASCollectionNode class]]) {
+    if ([scrollView isKindOfClass:[ASCollectionView class]]) {
         self.initialCollectionLoad = NO;//Shouldn't autoplay if user scrolled because methods below will handle this.
         NSArray *visibleNodes = [self.restaurantCollectionNode indexPathsForVisibleItems];
         for (NSIndexPath *index in visibleNodes) {
@@ -830,6 +830,8 @@ static NSString *cellId = @"userPhoto";
                 [node.playerNode pause];
             }
         }
+    }else if([scrollView isKindOfClass:[ASTableView class]]){
+        self.initialTableLoad = NO;
     }
 }
 
@@ -837,48 +839,14 @@ static NSString *cellId = @"userPhoto";
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
-
-    CGFloat maxCollectionOffset = scrollView.contentSize.height - CGRectGetHeight(scrollView.frame);
-    CGFloat currentCollectionOffset = scrollView.contentOffset.y;
-    CGFloat percentageCollectionOffset = currentCollectionOffset / maxCollectionOffset;
-
-    //Set maximum + minimum pointsand thresholds to animate so we don't perform uneccssary animations even though user has scroll past a certain point
-    if(percentageCollectionOffset > 0.25 && !self.scrollViewFullscreen){
-        CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-        CGRect tableFrame = self.videoTableNode.view.frame;
-        
-        collectionFrame.size.height = (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
-        tableFrame.size.height = (self.view.bounds.size.height - CGRectGetMaxY(self.segmentedControl.frame));
-        
-        self.restaurantCollectionNode.frame = collectionFrame;
-        self.videoTableNode.frame = tableFrame;
-        
-        //Start pushing segmented control up
-        [UIView animateWithDuration:0.2 animations:^{
-            CGRect segmentFrame = self.segmentedControl.frame;
-            CGRect collectionFrame = self.restaurantCollectionNode.view.frame;
-            CGRect tableFrame = self.videoTableNode.view.frame;
-            
-            segmentFrame.origin.y = self.view.bounds.origin.y + CGRectGetHeight(self.navigationController.navigationBar.frame) + CGRectGetHeight([[UIApplication sharedApplication]statusBarFrame]);
-            collectionFrame.origin.y = CGRectGetMaxY(segmentFrame);
-            tableFrame.origin.y = CGRectGetMaxY(segmentFrame);
-            
-            self.segmentedControl.frame = segmentFrame;
-            self.restaurantCollectionNode.frame = collectionFrame;
-            self.videoTableNode.frame = tableFrame;
-        }completion:^(BOOL finished) {
-            self.scrollViewFullscreen = YES;
-            
-            //Can't scroll if content size is smaller than fullscreen frame so force it to pick up scroll gesture
-            if (!self.panGesture.view && scrollView.contentSize.height < scrollView.frame.size.height) {
-                [scrollView addGestureRecognizer:self.panGesture];
-            }
-        }];
-    }else if(percentageCollectionOffset < 0.25 && self.scrollViewFullscreen){
-        //Start pulling view back down
-        [self exitFullScreenScroll];
-    }
     
+    if ([scrollView isKindOfClass:[ASTableView class]]){
+        self.scrollingDown = ([scrollView.panGestureRecognizer translationInView:scrollView.superview].y >0) ? NO : YES;
+        //If user scrolls very fast, nothing should play/pause in order to optimize scroll performance
+        if (![self checkUserIsScrollingFast:scrollView]) {
+            [self checkVideoToPlay];
+        }
+    }
     //ensure that the end of scroll is fired.
     [self performSelector:@selector(scrollViewDidEndScrollingAnimation:) withObject:nil afterDelay:0.3];
 }
@@ -886,16 +854,100 @@ static NSString *cellId = @"userPhoto";
 -(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    NSArray *visibleNodes = [self.restaurantCollectionNode indexPathsForVisibleItems];
-
-    for (NSIndexPath *index in visibleNodes) {
-        DiscoverNode *node = [self.restaurantCollectionNode nodeForItemAtIndexPath:index];
-        UICollectionViewLayoutAttributes *vidCellAttribute = [self.restaurantCollectionNode.view layoutAttributesForItemAtIndexPath:index];
-        BOOL completelyVisible = CGRectContainsRect(self.restaurantCollectionNode.view.bounds, vidCellAttribute.frame);
-        if (completelyVisible) {
-            [node.playerNode play];
+    
+    if ([scrollView isKindOfClass:[ASCollectionView class]]) {
+        NSArray *visibleNodes = [self.restaurantCollectionNode indexPathsForVisibleItems];
+        for (NSIndexPath *index in visibleNodes) {
+            DiscoverNode *node = [self.restaurantCollectionNode nodeForItemAtIndexPath:index];
+            UICollectionViewLayoutAttributes *vidCellAttribute = [self.restaurantCollectionNode.view layoutAttributesForItemAtIndexPath:index];
+            BOOL completelyVisible = CGRectContainsRect(self.restaurantCollectionNode.view.bounds, vidCellAttribute.frame);
+            if (completelyVisible) {
+                [node.playerNode play];
+            }
         }
     }
 }
+
+#pragma mark - Autoplay helper methods
+
+- (void)checkVideoToPlay{
+    for(BrowsePlayerNode *node in [self.videoTableNode visibleNodes]){
+        NSIndexPath *indexPath = [self.videoTableNode indexPathForNode:node];
+        CGRect cellRect = [self.videoTableNode rectForRowAtIndexPath:indexPath];
+        
+        //If we want to check based on actual video player frame
+        //        CGRect videoRect = [node.videoNode.view convertRect:node.videoNode.bounds toView:self.view];
+        //        CGRect intersect = CGRectIntersection(self.videoTableNode.view.frame, videoRect);
+        
+        UIView *superview = self.videoTableNode.view.superview;
+        CGRect convertedRect=[self.videoTableNode.view convertRect:cellRect toView:superview];
+        CGRect intersect = CGRectIntersection(self.videoTableNode.view.frame, convertedRect);
+        float visibleHeight = CGRectGetHeight(intersect);
+        
+        //Only if more than 85% of the cell is visible is it considered to be playable
+        if(visibleHeight > node.view.frame.size.height * 0.85){
+            //In the case that there are two video cells on the screen (i.e both are visible). We will play the second of the two cells if the user is scrolling down, and the first if user is scrolling up. We will also cache any paused nodes and save their play time.
+            if (self.currentPlayingIndex > indexPath && !self.scrollingDown) {
+                BrowsePlayerNode *nextNode = [self.videoTableNode nodeForRowAtIndexPath:self.currentPlayingIndex];
+                [nextNode.videoNode pause];
+                
+                //Current node to play (the one "on top")
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
+                self.currentPlayingIndex = indexPath;
+            }else if (self.currentPlayingIndex < indexPath && self.scrollingDown){
+                BrowsePlayerNode *prevNode = [self.videoTableNode nodeForRowAtIndexPath:self.currentPlayingIndex];
+                [prevNode.videoNode pause];
+                
+                //Current node to play (the one on the "bottom")
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
+                self.currentPlayingIndex = indexPath;
+            }
+        }else{
+            [node.videoNode pause];
+        }
+    }
+}
+
+//Taken from stackoverflow to check how fast user is scrolling
+- (BOOL)checkUserIsScrollingFast:(UIScrollView *)scrollView{
+    CGPoint currentOffset = scrollView.contentOffset;
+    NSTimeInterval currentTime = [NSDate timeIntervalSinceReferenceDate];
+    
+    NSTimeInterval timeDiff = currentTime - _lastOffsetCapture;
+    if(timeDiff > 0.1) {
+        CGFloat distance = currentOffset.y - _lastOffset.y;
+        //The multiply by 10, / 1000 isn't really necessary.......
+        CGFloat scrollSpeedNotAbs = (distance * 10) / 1000; //in pixels per millisecond
+        
+        CGFloat scrollSpeed = fabs(scrollSpeedNotAbs);
+        if (scrollSpeed > 0.5) {
+            _isScrollingFast = YES;
+        } else {
+            _isScrollingFast = NO;
+        }
+        
+        _lastOffset = currentOffset;
+        _lastOffsetCapture = currentTime;
+    }
+    return _isScrollingFast;
+}
+
+#pragma mark - BrowsePlayerNode Delegate methods
+
+- (void)browsePlayerNode:(BrowsePlayerNode *)node didChangePlayerState:(ASVideoNodePlayerState)state{
+    //All other videos should stop playing if user chooses to play a specific video
+    if (state == ASVideoNodePlayerStatePlaying) {
+        for (BrowsePlayerNode *playerNode in [self.videoTableNode visibleNodes]) {
+            if (playerNode != node) {
+                [playerNode.videoNode pause];
+            }
+        }
+    }
+}
+
 
 @end

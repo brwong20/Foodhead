@@ -332,6 +332,14 @@
         }
         discoverRlm.lat = self.restaurantInfo.latitude;
         discoverRlm.lng = self.restaurantInfo.longitude;
+        discoverRlm.website = self.restaurantInfo.website;
+        
+        if (self.restaurantInfo.address) {
+            discoverRlm.address = self.restaurantInfo.address;
+            discoverRlm.zipCode = self.restaurantInfo.zipCode;
+            discoverRlm.city = self.restaurantInfo.city;
+            discoverRlm.state = self.restaurantInfo.state;
+        }
         
         if (self.restaurantInfo.hasVideo.boolValue) {
             discoverRlm.thumbnailVideoLink = self.restaurantInfo.blogVideoLink;

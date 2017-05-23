@@ -108,15 +108,10 @@
     
     //Necessary to play background media along with videos
     //[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
-    
-    //Track time user spends in browse
-    [FoodheadAnalytics beginTimedEvent:USER_BROWSE_SESSION];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
-    [FoodheadAnalytics endTimedEvent:USER_BROWSE_SESSION withParameters:nil];
     
     //Pause any node that's still playing just in case?
 //    for (BrowsePlayerNode *node in self.tableNode.visibleNodes) {
@@ -433,7 +428,9 @@
                                                     }
                                                     
                                                     UIImage *lastFrame = [UIImage imageWithCGImage:image];
-                                                    [assetDict setObject:lastFrame forKey:@"lastFrame"];
+                                                    if (lastFrame) {
+                                                        [assetDict setObject:lastFrame forKey:@"lastFrame"];
+                                                    }
                                                 }];
     
     return assetDict;

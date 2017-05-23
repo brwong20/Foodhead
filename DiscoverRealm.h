@@ -16,6 +16,12 @@
 @property NSString *name;
 @property NSString *primaryCategory;
 
+@property NSString *address;
+@property NSString *city;
+@property NSString *zipCode;
+@property NSString *state;
+@property NSString *website;
+
 @property NSNumber<RLMFloat> *foursq_rating;
 @property NSNumber<RLMFloat> *distance;
 @property NSNumber<RLMFloat> *lat;

@@ -63,7 +63,6 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define END_OF_CHART_PAGE @"chartFeedEnd"
 #define END_OF_CHART @"endOfChart"//Checks if a user scrolls to end of aa specific chart.
 
-#define USER_DISCOVER_SESSION @"userDiscoverSessionTime"
 #define END_OF_DISCOVER @"discoverFeedEnd"
 #define DISCOVER_TAB_CLICK @"homeTabClick"
 
@@ -96,7 +95,6 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define USER_FAVORITED_VIDEO @"userFavoritedVideo"
 #define USER_UNFAVORITED_VIDEO @"userUnfavoritedVideo"
 #define USER_WATCHED_VIDEO @"userWatchedFullVideo"
-#define USER_BROWSE_SESSION @"userBrowseSessionTime"
 #define END_OF_BROWSE @"browseFeedEnd"
 
 //Favorite
@@ -180,9 +178,9 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 6
-#define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.17
+#define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.18
 #define METRIC_CELL_HEIGHT 65.0
-#define RESTAURANT_LOCATION_CELL_HEIGHT 110.0
+#define RESTAURANT_LOCATION_CELL_HEIGHT 120.0
 #define RESTAURANT_SCORE_CELL_HEIGHT 70.0
 #define RESTAURANT_HOURS_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define ATTRIBUTION_CELL_HEIGHT 55.0
