@@ -237,7 +237,6 @@
     
     TPLRestaurantPageViewController *restPageVC = [[TPLRestaurantPageViewController alloc]init];
     restPageVC.selectedRestaurant = restInfo;
-    restPageVC.delegate = self;
     restPageVC.indexPath = indexPath;
     [self.navigationController pushViewController:restPageVC animated:YES];
 }
@@ -247,7 +246,6 @@
     
     TPLRestaurantPageViewController *restPage = [[TPLRestaurantPageViewController alloc]init];
     restPage.selectedRestaurant = restInfo;
-    restPage.delegate = self;
     restPage.indexPath = indexPath;
     [self.navigationController pushViewController:restPage animated:YES];
 }
