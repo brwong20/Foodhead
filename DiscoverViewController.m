@@ -19,6 +19,7 @@
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
 #import "DiscoverRealm.h"
+#import "BrowseViewController.h"
 
 #import "Chart.h"
 #import "Places.h"
@@ -138,6 +139,9 @@
     [super viewDidAppear:animated];
     self.canScrollToTop = YES;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
+    
+    //Track duration user spends in home page
+    [FoodheadAnalytics beginTimedEvent:USER_DISCOVER_SESSION];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -145,7 +149,7 @@
     self.canScrollToTop = NO;
     self.navigationController.navigationBar.hidden = NO;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
-
+    [FoodheadAnalytics endTimedEvent:USER_DISCOVER_SESSION withParameters:nil];
 }
 
 - (void)dealloc{
@@ -251,9 +255,15 @@
 - (void)collectionNode:(ASCollectionNode *)collectionNode willDisplayItemWithNode:(ASCellNode *)node{
     NSIndexPath *indexPath = [self.collectionNode indexPathForNode:node];
     TPLRestaurant *restaurant = self.collectionData[indexPath.row];
+    
+    if (indexPath.row == self.collectionData.count - 1) {
+        [FoodheadAnalytics logEvent:END_OF_DISCOVER];
+    }
+    
     if (restaurant.hasVideo.boolValue) {
         DiscoverNode *vidNode = (DiscoverNode *)node;
-        //Foursquare id is used to retrieve asset link for faster lookup
+        
+        //Foursquare id is used to retrieve asset for faster lookup
         NSDictionary *assetDict = [self.videoAssets objectForKey:restaurant.foursqId];
         if (assetDict) {
             AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
@@ -298,6 +308,9 @@
                         //Only play when absolutely possible and necessary
                         dispatch_async(dispatch_get_main_queue(), ^{
                             vidNode.playerNode.asset = asset;
+                            //Cache asset with its link here
+                            NSDictionary *assetDict = @{ASSET_KEY : asset, ASSET_LINK_KEY : restaurant.blogVideoLink};
+                            [self.videoAssets setObject:assetDict forKey:restaurant.foursqId];
                             if (self.isInitialLoad) {
                                 [self scrollViewDidEndScrollingAnimation:self.collectionNode.view];
                                 self.isInitialLoad = NO;
@@ -454,6 +467,10 @@
         [FoodheadAnalytics logEvent:PROFILE_TAB_CLICK];
     }else if ([root isKindOfClass:[SearchViewController class]]){
         [FoodheadAnalytics logEvent:SEARCH_TAB_CLICK];
+    }else if ([root isKindOfClass:[BrowseViewController class]]){
+        [FoodheadAnalytics logEvent:BROWSE_TAB_CLICK];
+    }else if (([root isKindOfClass:[DiscoverViewController class]])){
+        [FoodheadAnalytics logEvent:DISCOVER_TAB_CLICK];
     }
 }
 

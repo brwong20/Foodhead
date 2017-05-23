@@ -11,6 +11,7 @@
 #import "UIFont+Extension.h"
 #import "NSString+IsEmpty.h"
 #import "UIImage+Utilities.h"
+#import "FoodheadAnalytics.h"
 
 @interface DiscoverNode () <ASNetworkImageNodeDelegate, ASVideoNodeDelegate>
 
@@ -317,6 +318,7 @@
             DLog(@"Failed to delete bookmark to Realm DB: %@", error);
         }else{
             [self unfavoriteNode];
+            [FoodheadAnalytics logEvent:USER_UNFAVORITED_RESTAURANT];
         }
     }else{
         DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
@@ -360,6 +362,7 @@
             DLog(@"Failed to save bookmark to Realm DB: %@", error);
         }else{
             [self favoriteNodeWithInfo:discoverRlm];
+            [FoodheadAnalytics logEvent:USER_FAVORITED_RESTAURANT];
         }
     }
 }

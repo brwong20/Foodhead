@@ -10,6 +10,7 @@
 #import "FoodWiseDefines.h"
 #import "UIFont+Extension.h"
 #import "UIImage+Utilities.h"
+#import "FoodheadAnalytics.h"
 
 @interface BrowsePlayerNode () <ASVideoPlayerNodeDelegate>
 
@@ -53,7 +54,7 @@
         
         _videoNode = [[ASVideoPlayerNode alloc]init];
         _videoNode.delegate = self;
-        _videoNode.backgroundColor = [UIColor blackColor];
+        _videoNode.backgroundColor = ASDisplayNodeDefaultPlaceholderColor();
         _videoNode.muted = NO;
         _videoNode.gravity = AVLayerVideoGravityResizeAspect;
         _videoNode.controlsDisabled = YES;
@@ -108,14 +109,6 @@
         _viewCountNode.backgroundColor = [UIColor clearColor];
         _viewCountNode.maximumNumberOfLines = 1;
         _viewCountNode.layerBacked = YES;
-        
-//        _bookmarkCountNode.backgroundColor = [UIColor grayColor];
-//        _viewCountNode.backgroundColor = [UIColor grayColor];
-//        _videoNode.backgroundColor = [UIColor greenColor];
-//        _titleNode.backgroundColor = [UIColor redColor];
-//        _categoryNode.backgroundColor = [UIColor magentaColor];
-//        _sourceNameNode.backgroundColor = [UIColor cyanColor];
-//        _sourceImgNode.backgroundColor = [UIColor redColor];
     }
     return self;
 }
@@ -128,6 +121,14 @@
 
     _placeholderImageNode.cornerRadius = 10.0;
     _placeholderImageNode.clipsToBounds = YES;
+    
+    //        _bookmarkCountNode.backgroundColor = [UIColor grayColor];
+    //        _viewCountNode.backgroundColor = [UIColor grayColor];
+    //        _videoNode.backgroundColor = [UIColor greenColor];
+    //        _titleNode.backgroundColor = [UIColor redColor];
+    //        _categoryNode.backgroundColor = [UIColor magentaColor];
+    //        _sourceNameNode.backgroundColor = [UIColor cyanColor];
+    //        _sourceImgNode.backgroundColor = [UIColor redColor];
 }
 
 - (instancetype)initWithSavedVideo:(BrowseVideoRealm *)videoInfo{
@@ -142,21 +143,17 @@
         
         _videoNode = [[ASVideoPlayerNode alloc]init];
         _videoNode.delegate = self;
-        _videoNode.backgroundColor = [UIColor blackColor];
+        _videoNode.backgroundColor = ASDisplayNodeDefaultPlaceholderColor();
         _videoNode.muted = NO;
         _videoNode.gravity = AVLayerVideoGravityResizeAspect;
         _videoNode.controlsDisabled = YES;
         _videoWidth = _savedVideoInfo.width.floatValue;
         _videoHeight = _savedVideoInfo.height.floatValue;
-        _videoNode.clipsToBounds = YES;
         
         _placeholderImageNode = [[ASImageNode alloc]init];
         _placeholderImageNode.backgroundColor = [UIColor clearColor];
         _placeholderImageNode.contentMode = UIViewContentModeScaleAspectFill;
-        _placeholderImageNode.cornerRadius = 10.0;
-        //        _placeholderImageNode.layer.masksToBounds = YES;
-        _placeholderImageNode.clipsToBounds = YES;
-        
+
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
         _sourceImgNode.URL = [NSURL URLWithString:_savedVideoInfo.profileURLStr];
         [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
@@ -230,8 +227,6 @@
                                          ratioLayoutSpecWithRatio:ratio
                                          child:self.videoNode];
     videoRatioSpec.alignSelf = ASStackLayoutAlignSelfCenter;
-    //videoRatioSpec.spacingBefore = 1.5;
-    //videoRatioSpec.spacingAfter = 6.0;
     
     ASRatioLayoutSpec *placeHolderRatioSpec = [ASRatioLayoutSpec ratioLayoutSpecWithRatio:ratio child:self.placeholderImageNode];
     ASOverlayLayoutSpec *placeholderOverlaySpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:videoRatioSpec overlay:placeHolderRatioSpec];
@@ -299,7 +294,7 @@
 #pragma mark ASVideoPlayerNodeDelegate methods
 
 - (UIActivityIndicatorViewStyle)videoPlayerNodeSpinnerStyle:(ASVideoPlayerNode *)videoPlayer{
-    return UIActivityIndicatorViewStyleWhite;
+    return UIActivityIndicatorViewStyleWhiteLarge;
 }
 
 
@@ -329,6 +324,7 @@
             NSLog(@"Failed to remove video from Realm: %@", err);
         }else{
             [self toggleUnfavorite];
+            [FoodheadAnalytics logEvent:USER_UNFAVORITED_VIDEO];
         }
     }else{
         BrowseVideoRealm *videoRealm = [[BrowseVideoRealm alloc]init];
@@ -359,6 +355,7 @@
             }
             self.primaryKey = _videoInfo.videoId;
             self.savedVideoInfo = videoRealm;
+            [FoodheadAnalytics logEvent:USER_FAVORITED_VIDEO];
         }
     }
 }
@@ -410,6 +407,14 @@
     [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
     self.primaryKey = nil;
     self.savedVideoInfo = nil;
+}
+
+- (void)videoPlayerNodeDidPlayToEnd:(ASVideoPlayerNode *)videoPlayer{
+    NSUInteger totalSeconds = CMTimeGetSeconds(videoPlayer.duration);
+    NSUInteger minutes = floor(totalSeconds % 3600 / 60);
+    NSUInteger seconds = floor(totalSeconds % 3600 % 60);
+    NSString *str = [NSString stringWithFormat:@"%02lu:%02lu", (unsigned long)minutes, (unsigned long)seconds];
+    [FoodheadAnalytics logEvent:USER_WATCHED_VIDEO withParameters:@{@"videoDuration" : str}];
 }
 
 @end

@@ -316,7 +316,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
             else // swipe up
                 finalY = -viewHalfHeight;
 
-            CGFloat animationDuration = 0.35;
+            CGFloat animationDuration = 0.2;
 
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:animationDuration];

@@ -755,7 +755,7 @@ static NSString *photoCellId = @"photoCell";
     browser.autoHideInterface = NO;
     browser.forceHideStatusBar = YES;
     browser.usePopAnimation = YES;
-    browser.disableVerticalSwipe = YES;
+    //browser.disableVerticalSwipe = YES;
     browser.progressTintColor = APPLICATION_BLUE_COLOR;
     [browser setInitialPageIndex:indexPath.row];
     [browser trackPageCount];

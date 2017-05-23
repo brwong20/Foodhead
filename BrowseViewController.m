@@ -11,6 +11,7 @@
 #import "FoodWiseDefines.h"
 #import "BrowseContentManager.h"
 #import "BrowseVideoRealm.h"
+#import "FoodheadAnalytics.h"
 
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
@@ -107,6 +108,20 @@
     
     //Necessary to play background media along with videos
     //[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
+    
+    //Track time user spends in browse
+    [FoodheadAnalytics beginTimedEvent:USER_BROWSE_SESSION];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    [FoodheadAnalytics endTimedEvent:USER_BROWSE_SESSION withParameters:nil];
+    
+    //Pause any node that's still playing just in case?
+//    for (BrowsePlayerNode *node in self.tableNode.visibleNodes) {
+//        [node.videoNode pause];
+//    }
 }
 
 #pragma mark - ASTableDataSource methods
@@ -142,6 +157,11 @@
 - (void)tableNode:(ASTableNode *)tableNode willDisplayRowWithNode:(ASCellNode *)node{
     NSIndexPath *indexPath = [self.tableNode indexPathForNode:node];
     BrowsePlayerNode *vidNode = (BrowsePlayerNode *)node;
+    
+    //User reached end of table
+    if (indexPath.row == self.videoArr.count - 1) {
+        [FoodheadAnalytics logEvent:END_OF_BROWSE];
+    }
     
     NSDictionary *cachedAsset = self.assetArr[indexPath.row];
     if (![cachedAsset isEqual:[NSNull null]]) {
@@ -297,9 +317,9 @@
 -(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    //[self checkVideoToPlay];
+    
+    //TODO: Sometimes a video doesn't autoplay even when most of it's showing - make sure to play something here
 }
-
 
 - (void)checkVideoToPlay{
     for(BrowsePlayerNode *node in [self.tableNode visibleNodes]){
@@ -323,14 +343,18 @@
                 [nextNode.videoNode pause];
                 
                 //Current node to play (the one "on top")
-                [node.videoNode play];
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
                 self.currentPlayingIndex = indexPath;
             }else if (self.currentPlayingIndex < indexPath && self.scrollingDown){
                 BrowsePlayerNode *prevNode = [self.tableNode nodeForRowAtIndexPath:self.currentPlayingIndex];
                 [prevNode.videoNode pause];
                 
                 //Current node to play (the one on the "bottom")
-                [node.videoNode play];
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
                 self.currentPlayingIndex = indexPath;
             }
         }else{
