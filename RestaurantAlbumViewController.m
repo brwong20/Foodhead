@@ -111,7 +111,7 @@ static NSString *loadingCellId = @"loadingCell";
 
 - (void)setupNavBar{
     self.navigationItem.title = self.restaurant.name;
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_mediumFontWithSize:APPLICATION_FRAME.size.width * 0.06]};
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.06]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantAlbum)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
@@ -330,7 +330,7 @@ static NSString *loadingCellId = @"loadingCell";
     browser.autoHideInterface = NO;
     browser.forceHideStatusBar = YES;
     browser.usePopAnimation = YES;
-    browser.disableVerticalSwipe = YES;
+    //browser.disableVerticalSwipe = YES;
     browser.progressTintColor = APPLICATION_BLUE_COLOR;
     [browser trackPageCount];
     

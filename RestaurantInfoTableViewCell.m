@@ -18,7 +18,6 @@
 @interface RestaurantInfoTableViewCell() <TTTAttributedLabelDelegate>
 
 @property (nonatomic, strong) UIImageView *locationIcon;
-@property (nonatomic, strong) UIButton *shareButton;
 @property (nonatomic, strong) UILabel *restaurantName;
 @property (nonatomic, strong) TTTAttributedLabel *addressLabel;
 @property (nonatomic, strong) TTTAttributedLabel *restaurantLink;
@@ -57,7 +56,7 @@
     self.restaurantName.font = [UIFont nun_mediumFontWithSize:REST_PAGE_HEADER_FONT_SIZE];
     [self.contentView addSubview:self.restaurantName];
     
-    self.addressLabel = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.6, RESTAURANT_LOCATION_CELL_HEIGHT * 0.3)];
+    self.addressLabel = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.6, RESTAURANT_LOCATION_CELL_HEIGHT * 0.35)];
     self.addressLabel.textColor = UIColorFromRGB(0x505254);
     self.addressLabel.backgroundColor = [UIColor clearColor];
     self.addressLabel.numberOfLines = 0;
@@ -68,7 +67,7 @@
     self.addressLabel.font = [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE];
     [self.contentView addSubview:self.addressLabel];
     
-    self.restaurantLink = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.addressLabel.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.7, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
+    self.restaurantLink = [[TTTAttributedLabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.addressLabel.frame) + RESTAURANT_LOCATION_CELL_HEIGHT * 0.05, APPLICATION_FRAME.size.width * 0.8, RESTAURANT_LOCATION_CELL_HEIGHT * 0.2)];
     self.restaurantLink.textColor = UIColorFromRGB(0x505254);
     self.restaurantLink.enabledTextCheckingTypes = NSTextCheckingTypeLink;
     self.restaurantLink.delegate = self;
@@ -78,10 +77,7 @@
     self.restaurantLink.font = [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE];
     [self.contentView addSubview:self.restaurantLink];
 
-//    self.shareButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.restaurantName.frame) + APPLICATION_FRAME.size.width * 0.03, CGRectGetMinY(self.restaurantName.frame), RESTAURANT_LOCATION_CELL_HEIGHT * 0.4, RESTAURANT_LOCATION_CELL_HEIGHT * 0.4)];
-//    self.shareButton.backgroundColor = [UIColor clearColor];
-//    [self.shareButton setImage:[UIImage imageNamed:@"share_btn"] forState:UIControlStateNormal];
-//    [self.contentView addSubview:self.shareButton];
+    //[LayoutBounds drawBoundsForAllLayers:self];
 }
 
 - (void)populateInfo:(TPLRestaurant *)restaurant{
@@ -94,7 +90,9 @@
         }
         
         NSString *addressText = @"";
-        if(![NSString isEmpty:restaurant.address]) addressText = [addressText stringByAppendingString:restaurant.address];
+        if(![NSString isEmpty:restaurant.address]){
+            addressText = [addressText stringByAppendingString:restaurant.address];
+        }
         
         if (![NSString isEmpty:restaurant.city] && ![NSString isEmpty:restaurant.state]) {
             addressText = [addressText stringByAppendingString:[NSString stringWithFormat:@"\n%@, %@", restaurant.city, restaurant.state]];
@@ -104,9 +102,9 @@
             addressText = [addressText stringByAppendingString:[NSString stringWithFormat:@" %@", restaurant.zipCode]];
         }
         
-//        if ([NSString isEmpty:addressText]) {
-//            addressText = @"Address unavailable";
-//        }
+        if ([NSString isEmpty:addressText] || !restaurant.address) {
+            addressText = @"Address unavailable";
+        }
         self.addressLabel.text = addressText;
         
         if (![NSString isEmpty:restaurant.website]) {

@@ -26,7 +26,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>052217</string>
+	<string>052317</string>
 	<key>Config</key>
 	<string>$(CONFIGURATION)</string>
 	<key>FacebookAppID</key>
@@ -37,6 +37,7 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>comgooglemaps</string>
 		<string>fbauth2</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>

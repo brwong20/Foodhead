@@ -135,7 +135,7 @@
 - (void)getRecentMediaAtCoordinate:(CLLocationCoordinate2D)coordinate
                               page:(NSString *)pageNum
                      withTimeframe:(NSString *)timeframe
-                         limitPerPage:(NSString *)limitPerPage
+                      limitPerPage:(NSString *)limitPerPage
                    limitMostRecent:(NSString *)limitMostRecent
                  completionHandler:(void (^)(id))completionHandler
                     failureHandler:(void (^)(id))failureHandler{
@@ -162,6 +162,9 @@
     if (timeframe) {
         [dict setObject:timeframe forKey:@"time_group_interval"];
     }
+    
+    //Exclude all places farther than 10 mi (measured in meters)
+    [dict setObject:@"16500" forKey:@"radius"];
     
     [self.sessionManager GET:API_PLACE_BLOGS parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];

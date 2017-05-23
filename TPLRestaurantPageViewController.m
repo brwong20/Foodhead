@@ -499,9 +499,6 @@ static NSString *photoCellId = @"photoCell";
         } error:&error];
         
         if (!error) {
-            if([self.delegate respondsToSelector:@selector(restaurantPageDidUnfavorite:)]){
-                [self.delegate restaurantPageDidUnfavorite:self.selectedRestaurant.foursqId];
-            }
             _isFavorite = NO;
             [self.restControlView toggleFavoriteButton:_isFavorite];
 
@@ -519,6 +516,14 @@ static NSString *photoCellId = @"photoCell";
         }
         discoverRlm.lat = _selectedRestaurant.latitude;
         discoverRlm.lng = _selectedRestaurant.longitude;
+        discoverRlm.website = _selectedRestaurant.website;
+        
+        if (self.selectedRestaurant.address) {
+            discoverRlm.address = self.selectedRestaurant.address;
+            discoverRlm.zipCode = self.selectedRestaurant.zipCode;
+            discoverRlm.city = self.selectedRestaurant.city;
+            discoverRlm.state = self.selectedRestaurant.state;
+        }
         
         if (_selectedRestaurant.hasVideo.boolValue) {
             discoverRlm.thumbnailVideoLink = _selectedRestaurant.blogVideoLink;
@@ -546,9 +551,6 @@ static NSString *photoCellId = @"photoCell";
         } error:&error];
         
         if (!error) {
-            if ([self.delegate respondsToSelector:@selector(restaurantPageDidFavorite:atIndexPath:)]) {
-                [self.delegate restaurantPageDidFavorite:discoverRlm atIndexPath:self.indexPath];
-            }
             _isFavorite = YES;
             [self.restControlView toggleFavoriteButton:_isFavorite];
         }else{
@@ -594,9 +596,11 @@ static NSString *photoCellId = @"photoCell";
         }case 3:{
             RestaurantInfoTableViewCell *infoCell = [[RestaurantInfoTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
             infoCell.delegate = self;
-            if (self.detailsFetched) {
+            
+            //TOOD: Address gets set twice since we reload, but doesn't show - will likely change when the UI changes
+            //if (self.detailsFetched) {
                 [infoCell populateInfo:self.selectedRestaurant];
-            }
+            //}
             cell = infoCell;
             break;
         }case 4:{
@@ -670,12 +674,12 @@ static NSString *photoCellId = @"photoCell";
         case 2:
             break;
         case 3:{
-            if (self.selectedRestaurant.menu) {
-                [FoodheadAnalytics logEvent:OPEN_RESTAURANT_MENU];
-                WebViewController *menuVC = [[WebViewController alloc]init];
-                menuVC.webLink = self.selectedRestaurant.menu;
-                [self.navigationController pushViewController:menuVC animated:YES];
-            }
+//            if (self.selectedRestaurant.menu) {
+//                [FoodheadAnalytics logEvent:OPEN_RESTAURANT_MENU];
+//                WebViewController *menuVC = [[WebViewController alloc]init];
+//                menuVC.webLink = self.selectedRestaurant.menu;
+//                [self.navigationController pushViewController:menuVC animated:YES];
+//            }
             break;
         }
         default:
@@ -755,7 +759,7 @@ static NSString *photoCellId = @"photoCell";
     browser.autoHideInterface = NO;
     browser.forceHideStatusBar = YES;
     browser.usePopAnimation = YES;
-    browser.disableVerticalSwipe = YES;
+    //browser.disableVerticalSwipe = YES;
     browser.progressTintColor = APPLICATION_BLUE_COLOR;
     [browser setInitialPageIndex:indexPath.row];
     [browser trackPageCount];

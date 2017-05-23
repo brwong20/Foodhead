@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define OPEN_RESTAURANT_ADDRESS @"openRestAddress"
 #define OPEN_RESTAURANT_WEBSITE @"openRestSite"
 #define CALL_RESTAURANT @"callRestaurant"
+#define SHARE_RESTAUARNT @"shareRestaurant"
 
 //Profile
 #define PROFILE_TAB_CLICK @"profileTabClick"
@@ -61,6 +62,9 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define EXPANDED_CHART_PAGE @"openSeeAllRestaurants"
 #define END_OF_CHART_PAGE @"chartFeedEnd"
 #define END_OF_CHART @"endOfChart"//Checks if a user scrolls to end of aa specific chart.
+
+#define END_OF_DISCOVER @"discoverFeedEnd"
+#define DISCOVER_TAB_CLICK @"homeTabClick"
 
 //Camera
 #define CAMERA_CAPTURE @"photoCapture"
@@ -86,6 +90,16 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 //Search Filters
 #define SEARCH_FILTER_APPLY @"didApplySearchFilters"
 
+//Browse
+#define BROWSE_TAB_CLICK @"browseTabClick"
+#define USER_FAVORITED_VIDEO @"userFavoritedVideo"
+#define USER_UNFAVORITED_VIDEO @"userUnfavoritedVideo"
+#define USER_WATCHED_VIDEO @"userWatchedFullVideo"
+#define END_OF_BROWSE @"browseFeedEnd"
+
+//Favorite
+#define USER_FAVORITED_RESTAURANT @"userFavoritedRestaurant"
+#define USER_UNFAVORITED_RESTAURANT @"userUnfavorited"
 
 //STATUS CODES
 #define STATUS_CODE_OK @"200"
@@ -164,9 +178,9 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 //Restaurant Pages
 #define RESTAURANT_PAGE_CELL_COUNT 6
-#define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.17
+#define RESTAURANT_INFO_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.18
 #define METRIC_CELL_HEIGHT 65.0
-#define RESTAURANT_LOCATION_CELL_HEIGHT 110.0
+#define RESTAURANT_LOCATION_CELL_HEIGHT 120.0
 #define RESTAURANT_SCORE_CELL_HEIGHT 70.0
 #define RESTAURANT_HOURS_CELL_HEIGHT [[UIScreen mainScreen]bounds].size.height * 0.1
 #define ATTRIBUTION_CELL_HEIGHT 55.0

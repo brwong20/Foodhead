@@ -19,13 +19,15 @@
 #import "AssetPreviewViewController.h"
 #import "PreviewAnimation.h"
 #import "DiscoverRealm.h"
+#import "BrowseViewController.h"
+#import "UserAuthManager.h"
 
 #import "Chart.h"
 #import "Places.h"
 
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, CHTCollectionViewDelegateWaterfallLayout, DiscoverNodeDelegate, RestaurantPageDelegate>
+@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, DiscoverNodeDelegate>
 
 //UI
 @property (nonatomic, assign) BOOL canScrollToTop;
@@ -57,6 +59,9 @@
 
 //Refresh Control
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+
+//User
+@property (nonatomic, strong) UserAuthManager *authManager;
 
 @end
 
@@ -91,6 +96,8 @@
     
     self.tabBarController.delegate = self;
     self.isInitialLoad = YES;
+    
+    [self verifyCurrentUser];
     
     self.viewModel = [[TPLChartsViewModel alloc]init];
     self.collectionData = [NSMutableArray array];
@@ -143,9 +150,8 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     self.canScrollToTop = NO;
-    self.navigationController.navigationBar.hidden = NO;
+    self.locationManager.locationDelegate = nil;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
-
 }
 
 - (void)dealloc{
@@ -202,6 +208,28 @@
     }];
 }
 
+#pragma mark - User Session
+
+//Redirect and logout if credential aren't the same as last logged in user or expired auth
+- (void)verifyCurrentUser{
+    self.authManager = [UserAuthManager sharedInstance];
+    [self.authManager retrieveCurrentUser:^(id user) {
+        
+        //TODO:: Refactor this check into AuthManager and just return an error (or nil) if user ids dont match
+        NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:LAST_USER_DEFAULT];
+        User *lastUser;
+        if (data) {
+            lastUser = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        }
+        User *currentUser = (User *)user;
+        if ([currentUser.userId isEqual: lastUser.userId]) {
+            DLog(@"Same user, do nothing.");
+        }
+    }failureHandler:^(id error) {
+        //Anon login handle
+    }];
+}
+
 #pragma mark - ASCollectionDelegate methods
 - (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     DiscoverNode *node = [self.collectionNode nodeForItemAtIndexPath:indexPath];
@@ -251,9 +279,15 @@
 - (void)collectionNode:(ASCollectionNode *)collectionNode willDisplayItemWithNode:(ASCellNode *)node{
     NSIndexPath *indexPath = [self.collectionNode indexPathForNode:node];
     TPLRestaurant *restaurant = self.collectionData[indexPath.row];
+    
+    if (indexPath.row == self.collectionData.count - 1) {
+        [FoodheadAnalytics logEvent:END_OF_DISCOVER];
+    }
+    
     if (restaurant.hasVideo.boolValue) {
         DiscoverNode *vidNode = (DiscoverNode *)node;
-        //Foursquare id is used to retrieve asset link for faster lookup
+        
+        //Foursquare id is used to retrieve asset for faster lookup
         NSDictionary *assetDict = [self.videoAssets objectForKey:restaurant.foursqId];
         if (assetDict) {
             AVAsset *cachedAsset = [assetDict objectForKey:ASSET_KEY];
@@ -298,6 +332,9 @@
                         //Only play when absolutely possible and necessary
                         dispatch_async(dispatch_get_main_queue(), ^{
                             vidNode.playerNode.asset = asset;
+                            //Cache asset with its link here
+                            NSDictionary *assetDict = @{ASSET_KEY : asset, ASSET_LINK_KEY : restaurant.blogVideoLink};
+                            [self.videoAssets setObject:assetDict forKey:restaurant.foursqId];
                             if (self.isInitialLoad) {
                                 [self scrollViewDidEndScrollingAnimation:self.collectionNode.view];
                                 self.isInitialLoad = NO;
@@ -454,6 +491,10 @@
         [FoodheadAnalytics logEvent:PROFILE_TAB_CLICK];
     }else if ([root isKindOfClass:[SearchViewController class]]){
         [FoodheadAnalytics logEvent:SEARCH_TAB_CLICK];
+    }else if ([root isKindOfClass:[BrowseViewController class]]){
+        [FoodheadAnalytics logEvent:BROWSE_TAB_CLICK];
+    }else if (([root isKindOfClass:[DiscoverViewController class]])){
+        [FoodheadAnalytics logEvent:DISCOVER_TAB_CLICK];
     }
 }
 

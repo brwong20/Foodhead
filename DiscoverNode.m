@@ -11,6 +11,7 @@
 #import "UIFont+Extension.h"
 #import "NSString+IsEmpty.h"
 #import "UIImage+Utilities.h"
+#import "FoodheadAnalytics.h"
 
 @interface DiscoverNode () <ASNetworkImageNodeDelegate, ASVideoNodeDelegate>
 
@@ -317,6 +318,7 @@
             DLog(@"Failed to delete bookmark to Realm DB: %@", error);
         }else{
             [self unfavoriteNode];
+            [FoodheadAnalytics logEvent:USER_UNFAVORITED_RESTAURANT];
         }
     }else{
         DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
@@ -330,6 +332,14 @@
         }
         discoverRlm.lat = self.restaurantInfo.latitude;
         discoverRlm.lng = self.restaurantInfo.longitude;
+        discoverRlm.website = self.restaurantInfo.website;
+        
+        if (self.restaurantInfo.address) {
+            discoverRlm.address = self.restaurantInfo.address;
+            discoverRlm.zipCode = self.restaurantInfo.zipCode;
+            discoverRlm.city = self.restaurantInfo.city;
+            discoverRlm.state = self.restaurantInfo.state;
+        }
         
         if (self.restaurantInfo.hasVideo.boolValue) {
             discoverRlm.thumbnailVideoLink = self.restaurantInfo.blogVideoLink;
@@ -360,6 +370,7 @@
             DLog(@"Failed to save bookmark to Realm DB: %@", error);
         }else{
             [self favoriteNodeWithInfo:discoverRlm];
+            [FoodheadAnalytics logEvent:USER_FAVORITED_RESTAURANT];
         }
     }
 }

@@ -14,8 +14,8 @@
 
 @protocol RestaurantPageDelegate <NSObject>
 
-- (void)restaurantPageDidFavorite:(DiscoverRealm *)fav atIndexPath:(NSIndexPath *)indexPath;
-- (void)restaurantPageDidUnfavorite:(NSString *)primaryKey;
+//- (void)restaurantPageDidFavorite:(DiscoverRealm *)fav atIndexPath:(NSIndexPath *)indexPath;
+//- (void)restaurantPageDidUnfavorite:(NSString *)primaryKey;
 
 @end
 

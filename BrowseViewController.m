@@ -11,6 +11,7 @@
 #import "FoodWiseDefines.h"
 #import "BrowseContentManager.h"
 #import "BrowseVideoRealm.h"
+#import "FoodheadAnalytics.h"
 
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
@@ -109,6 +110,15 @@
     //[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    //Pause any node that's still playing just in case?
+//    for (BrowsePlayerNode *node in self.tableNode.visibleNodes) {
+//        [node.videoNode pause];
+//    }
+}
+
 #pragma mark - ASTableDataSource methods
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
@@ -142,6 +152,11 @@
 - (void)tableNode:(ASTableNode *)tableNode willDisplayRowWithNode:(ASCellNode *)node{
     NSIndexPath *indexPath = [self.tableNode indexPathForNode:node];
     BrowsePlayerNode *vidNode = (BrowsePlayerNode *)node;
+    
+    //User reached end of table
+    if (indexPath.row == self.videoArr.count - 1) {
+        [FoodheadAnalytics logEvent:END_OF_BROWSE];
+    }
     
     NSDictionary *cachedAsset = self.assetArr[indexPath.row];
     if (![cachedAsset isEqual:[NSNull null]]) {
@@ -297,9 +312,9 @@
 -(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    //[self checkVideoToPlay];
+    
+    //TODO: Sometimes a video doesn't autoplay even when most of it's showing - make sure to play something here
 }
-
 
 - (void)checkVideoToPlay{
     for(BrowsePlayerNode *node in [self.tableNode visibleNodes]){
@@ -323,14 +338,18 @@
                 [nextNode.videoNode pause];
                 
                 //Current node to play (the one "on top")
-                [node.videoNode play];
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
                 self.currentPlayingIndex = indexPath;
             }else if (self.currentPlayingIndex < indexPath && self.scrollingDown){
                 BrowsePlayerNode *prevNode = [self.tableNode nodeForRowAtIndexPath:self.currentPlayingIndex];
                 [prevNode.videoNode pause];
                 
                 //Current node to play (the one on the "bottom")
-                [node.videoNode play];
+                if (node.videoNode.videoNode.playerState != ASVideoNodePlayerStateFinished) {
+                    [node.videoNode play];
+                }
                 self.currentPlayingIndex = indexPath;
             }
         }else{
@@ -409,7 +428,9 @@
                                                     }
                                                     
                                                     UIImage *lastFrame = [UIImage imageWithCGImage:image];
-                                                    [assetDict setObject:lastFrame forKey:@"lastFrame"];
+                                                    if (lastFrame) {
+                                                        [assetDict setObject:lastFrame forKey:@"lastFrame"];
+                                                    }
                                                 }];
     
     return assetDict;
