@@ -27,7 +27,7 @@
 
 #import <CHTCollectionViewWaterfallLayout/CHTCollectionViewWaterfallLayout.h>
 
-@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, DiscoverNodeDelegate>
+@interface DiscoverViewController ()<UITabBarControllerDelegate, ASCollectionDelegate, ASCollectionDataSource, LocationManagerDelegate, DiscoverNodeDelegate, CHTCollectionViewDelegateWaterfallLayout>
 
 //UI
 @property (nonatomic, assign) BOOL canScrollToTop;
@@ -440,6 +440,7 @@
     [self.favoritedIndexes setObject:nodeIndex forKey:favorite.foursqId];
 }
 
+
 #pragma mark - ScrollViewDelegate methods
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
@@ -514,6 +515,5 @@
     statusBarBg.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:statusBarBg];
 }
-
 
 @end
