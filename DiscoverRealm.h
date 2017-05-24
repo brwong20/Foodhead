@@ -23,7 +23,6 @@
 @property NSString *website;
 
 @property NSNumber<RLMFloat> *foursq_rating;
-@property NSNumber<RLMFloat> *distance;
 @property NSNumber<RLMFloat> *lat;
 @property NSNumber<RLMFloat> *lng;
 @property NSNumber<RLMBool> *hasVideo;

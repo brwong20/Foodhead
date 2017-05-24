@@ -66,6 +66,113 @@
 		A0595F061E47BD19001BB324 /* TPLFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595F051E47BD19001BB324 /* TPLFilterScrollView.m */; };
 		A0595F0D1E47C92B001BB324 /* TPLAssetPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595F0C1E47C92B001BB324 /* TPLAssetPreviewController.m */; };
 		A06AFC6E1E3FBEE1006ED71E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A06AFC6D1E3FBEE1006ED71E /* MapKit.framework */; };
+		A07167361ED509B7004A09B9 /* RatingContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5991E7E2DF600ACA764 /* RatingContainerView.m */; };
+		A07167371ED509B7004A09B9 /* RestaurantPageScoreView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E560C81ECF9A8C00120E8D /* RestaurantPageScoreView.m */; };
+		A07167381ED509B7004A09B9 /* DiscoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D861EB53ECE00976F4A /* DiscoverViewController.m */; };
+		A07167391ED509B7004A09B9 /* BrowseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D8A1EB5B7DD00976F4A /* BrowseViewController.m */; };
+		A071673A1ED509B7004A09B9 /* TPLCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595ED81E45810E001BB324 /* TPLCameraPreviewView.m */; };
+		A071673B1ED509B7004A09B9 /* TPLExpandedChartController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE81E53CAD2003E65F3 /* TPLExpandedChartController.m */; };
+		A071673C1ED509B7004A09B9 /* RestaurantPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E560C51ECF8E9E00120E8D /* RestaurantPageControlView.m */; };
+		A071673D1ED509B7004A09B9 /* BrowseContentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A07FB4451EBA73B1001CDF89 /* BrowseContentManager.m */; };
+		A071673E1ED509B7004A09B9 /* Category.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A51E9D7B980093CE24 /* Category.m */; };
+		A071673F1ED509B7004A09B9 /* BookmarkSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = A020E9E41ECE4F2C00B3BC59 /* BookmarkSegmentControl.m */; };
+		A07167401ED509B7004A09B9 /* TPLCamPhotoCaptureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595EDB1E458124001BB324 /* TPLCamPhotoCaptureDelegate.m */; };
+		A07167411ED509B7004A09B9 /* UserFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5BE1E84B4C400ACA764 /* UserFeedbackViewController.m */; };
+		A07167421ED509B7004A09B9 /* UserProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F051E57B00E003E65F3 /* UserProfileView.m */; };
+		A07167431ED509B7004A09B9 /* ReviewCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A023D7591E8AF39800F23D85 /* ReviewCollectionViewCell.m */; };
+		A07167441ED509B7004A09B9 /* OverallRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5931E7E2DDC00ACA764 /* OverallRatingView.m */; };
+		A07167451ED509B7004A09B9 /* TPLFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595F051E47BD19001BB324 /* TPLFilterScrollView.m */; };
+		A07167461ED509B7004A09B9 /* TPLDetailedRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0C86DB41E6CFF9500FB3C0B /* TPLDetailedRestaurant.m */; };
+		A07167471ED509B7004A09B9 /* FoodheadAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = A08742D51E8DB7EE00C2AACC /* FoodheadAnalytics.m */; };
+		A07167481ED509B7004A09B9 /* NSString+Trim.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E59D1E43E74900D4B9AC /* NSString+Trim.m */; };
+		A07167491ED509B7004A09B9 /* CategoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8801E99F5280093CE24 /* CategoryCollectionViewCell.m */; };
+		A071674A1ED509B7004A09B9 /* SuggestionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99A21E74CE7E004AE07A /* SuggestionTableViewCell.m */; };
+		A071674B1ED509B7004A09B9 /* AlbumCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B9F881EC263E800E11809 /* AlbumCellNode.m */; };
+		A071674C1ED509B7004A09B9 /* TPLRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */; };
+		A071674D1ED509B7004A09B9 /* TasteFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0529A871E4AA66500150557 /* TasteFilterView.m */; };
+		A071674E1ED509B7004A09B9 /* TPLRestaurantManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A02B80BD1E6E75A6005EA0CE /* TPLRestaurantManager.m */; };
+		A071674F1ED509B7004A09B9 /* TPLRestaurantPageViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A0ED828A1E427BCB0029D96E /* TPLRestaurantPageViewModel.m */; };
+		A07167501ED509B7004A09B9 /* DiscoverNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A09338891EB3F8DA000DCD3C /* DiscoverNode.m */; };
+		A07167511ED509B7004A09B9 /* SettingsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5BB1E8393FB00ACA764 /* SettingsTableViewCell.m */; };
+		A07167521ED509B7004A09B9 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A028D5491E789FC4001C7E89 /* MenuTableViewCell.m */; };
+		A07167531ED509B7004A09B9 /* TPLChartSectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EE51E53C501003E65F3 /* TPLChartSectionView.m */; };
+		A07167541ED509B7004A09B9 /* SearchFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F89F1E9C45D80093CE24 /* SearchFilterView.m */; };
+		A07167551ED509B7004A09B9 /* TabledCollectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */; };
+		A07167561ED509B7004A09B9 /* BrowseVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = A03448AB1EB6594B00C37BE4 /* BrowseVideo.m */; };
+		A07167571ED509B7004A09B9 /* DiscoverRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F0D3BC1EC5169100B60040 /* DiscoverRealm.m */; };
+		A07167581ED509B7004A09B9 /* RestaurantReview.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99921E72676F004AE07A /* RestaurantReview.m */; };
+		A07167591ED509B7004A09B9 /* RestaurantSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B998E1E7265D0004AE07A /* RestaurantSearchViewController.m */; };
+		A071675A1ED509B7004A09B9 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D31E7A622F00D21298 /* AlbumViewController.m */; };
+		A071675B1ED509B7004A09B9 /* UserAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0D418E21E3698B0004DDC6C /* UserAuthManager.m */; };
+		A071675C1ED509B7004A09B9 /* ChartsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E8440A1E28034000BE98B1 /* ChartsViewController.m */; };
+		A071675D1ED509B7004A09B9 /* ImageCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E844211E28071200BE98B1 /* ImageCollectionCell.m */; };
+		A071675E1ED509B7004A09B9 /* UserReview.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5AB1E80806F00ACA764 /* UserReview.m */; };
+		A071675F1ED509B7004A09B9 /* RestaurantAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F0C1E580F41003E65F3 /* RestaurantAlbumViewController.m */; };
+		A07167601ED509B7004A09B9 /* PriceRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5961E7E2DE700ACA764 /* PriceRatingView.m */; };
+		A07167611ED509B7004A09B9 /* HealthFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B999C1E74ABC5004AE07A /* HealthFilterView.m */; };
+		A07167621ED509B7004A09B9 /* TPLChartCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */; };
+		A07167631ED509B7004A09B9 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5B81E83936B00ACA764 /* SettingsViewController.m */; };
+		A07167641ED509B7004A09B9 /* UsernamePromptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EEE1E5508B4003E65F3 /* UsernamePromptViewController.m */; };
+		A07167651ED509B7004A09B9 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0D418D71E3695C0004DDC6C /* LoginViewController.m */; };
+		A07167661ED509B7004A09B9 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8931E9AF45B0093CE24 /* UIDeviceHardware.m */; };
+		A07167671ED509B7004A09B9 /* HealthRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5901E7E2DD200ACA764 /* HealthRatingView.m */; };
+		A07167681ED509B7004A09B9 /* UIImage+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B9F831EC0E79800E11809 /* UIImage+Utilities.m */; };
+		A07167691ED509B7004A09B9 /* Places.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5851E7CDB8B00ACA764 /* Places.m */; };
+		A071676A1ED509B7004A09B9 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F281E5A497E003E65F3 /* UserProfileViewController.m */; };
+		A071676B1ED509B7004A09B9 /* RestaurantInfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F1F1E5A2521003E65F3 /* RestaurantInfoTableViewCell.m */; };
+		A071676C1ED509B7004A09B9 /* TPLRestaurantPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A084A6691E3D3FDF008A3DCE /* TPLRestaurantPageViewController.m */; };
+		A071676D1ED509B7004A09B9 /* AttributionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */; };
+		A071676E1ED509B7004A09B9 /* UIFont+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B996B1E7204AA004AE07A /* UIFont+Extension.m */; };
+		A071676F1ED509B7004A09B9 /* LayoutBounds.m in Sources */ = {isa = PBXBuildFile; fileRef = A028D53C1E7795F1001C7E89 /* LayoutBounds.m */; };
+		A07167701ED509B7004A09B9 /* ServiceErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A054C3561E84E3C900A3D90B /* ServiceErrorView.m */; };
+		A07167711ED509B7004A09B9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E844071E28034000BE98B1 /* AppDelegate.m */; };
+		A07167721ED509B7004A09B9 /* RestaurantDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A028D5421E7858B2001C7E89 /* RestaurantDetailsTableViewCell.m */; };
+		A07167731ED509B7004A09B9 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EFB1E566012003E65F3 /* User.m */; };
+		A07167741ED509B7004A09B9 /* ExpandedChartCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A91EA805780093CE24 /* ExpandedChartCollectionViewCell.m */; };
+		A07167751ED509B7004A09B9 /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6B31E980947007A2445 /* SearchTableViewCell.m */; };
+		A07167761ED509B7004A09B9 /* AnimationPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8841E9A0D560093CE24 /* AnimationPreviewViewController.m */; };
+		A07167771ED509B7004A09B9 /* LocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCC91E3811F0003D56A9 /* LocationManager.m */; };
+		A07167781ED509B7004A09B9 /* BrowseVideoRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F0D3BF1EC5169E00B60040 /* BrowseVideoRealm.m */; };
+		A07167791ED509B7004A09B9 /* TPLChartsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */; };
+		A071677A1ED509B7004A09B9 /* NSString+IsEmpty.m in Sources */ = {isa = PBXBuildFile; fileRef = A033E5A01E43E76300D4B9AC /* NSString+IsEmpty.m */; };
+		A071677B1ED509B7004A09B9 /* BrowsePlayerNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D8E1EB5BAB700976F4A /* BrowsePlayerNode.m */; };
+		A071677C1ED509B7004A09B9 /* Chart.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C57E1E7CDB0700ACA764 /* Chart.m */; };
+		A071677D1ED509B7004A09B9 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0EDD6AF1E9762A3007A2445 /* SearchViewController.m */; };
+		A071677E1ED509B7004A09B9 /* MetricsDisplayCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2F171E58EED1003E65F3 /* MetricsDisplayCell.m */; };
+		A071677F1ED509B7004A09B9 /* PermissionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5731E7B4C1900ACA764 /* PermissionViewController.m */; };
+		A07167801ED509B7004A09B9 /* TPLChartsViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A084A6661E3D3A3A008A3DCE /* TPLChartsViewModel.m */; };
+		A07167811ED509B7004A09B9 /* PreviewAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F88C1E9AB8D90093CE24 /* PreviewAnimation.m */; };
+		A07167821ED509B7004A09B9 /* HoursTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0282C121E5F5BB400CE089F /* HoursTableViewCell.m */; };
+		A07167831ED509B7004A09B9 /* ReviewMetricView.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5AF1E80937000ACA764 /* ReviewMetricView.m */; };
+		A07167841ED509B7004A09B9 /* BRWSearchView.m in Sources */ = {isa = PBXBuildFile; fileRef = A02D2EF11E5512FC003E65F3 /* BRWSearchView.m */; };
+		A07167851ED509B7004A09B9 /* AssetPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8871E9A0DD90093CE24 /* AssetPreviewViewController.m */; };
+		A07167861ED509B7004A09B9 /* FilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0529A841E4AA61500150557 /* FilterView.m */; };
+		A07167871ED509B7004A09B9 /* TPLAssetPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0595F0C1E47C92B001BB324 /* TPLAssetPreviewController.m */; };
+		A07167881ED509B7004A09B9 /* ResultTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A039F8A21E9D3D930093CE24 /* ResultTableViewCell.m */; };
+		A07167891ED509B7004A09B9 /* TabledCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E8441E1E2806FE00BE98B1 /* TabledCollectionCell.m */; };
+		A071678A1ED509B7004A09B9 /* TabCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99991E7480AE004AE07A /* TabCameraViewController.m */; };
+		A071678B1ED509B7004A09B9 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D61E7A7ACE00D21298 /* WebViewController.m */; };
+		A071678C1ED509B7004A09B9 /* PriceFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A04B99611E70016E004AE07A /* PriceFilterView.m */; };
+		A071678D1ED509B7004A09B9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0E844041E28034000BE98B1 /* main.m */; };
+		A071678F1ED509B7004A09B9 /* Flurry_iOS_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A08742D71E8DC72A00C2AACC /* Flurry_iOS_SDK.framework */; };
+		A07167901ED509B7004A09B9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0595F021E46F929001BB324 /* QuartzCore.framework */; };
+		A07167911ED509B7004A09B9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0595F001E46F921001BB324 /* AVFoundation.framework */; };
+		A07167921ED509B7004A09B9 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0595EFE1E46F918001BB324 /* OpenGLES.framework */; };
+		A07167931ED509B7004A09B9 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0595EFC1E46F914001BB324 /* CoreVideo.framework */; };
+		A07167941ED509B7004A09B9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0595EFA1E46F910001BB324 /* CoreMedia.framework */; };
+		A07167951ED509B7004A09B9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A06AFC6D1E3FBEE1006ED71E /* MapKit.framework */; };
+		A07167961ED509B7004A09B9 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844251E283B0200BE98B1 /* FBSDKCoreKit.framework */; };
+		A07167971ED509B7004A09B9 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844291E283B0800BE98B1 /* FBSDKShareKit.framework */; };
+		A07167981ED509B7004A09B9 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844261E283B0200BE98B1 /* FBSDKLoginKit.framework */; };
+		A07167991ED509B7004A09B9 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844231E283AEF00BE98B1 /* Bolts.framework */; };
+		A071679A1ED509B7004A09B9 /* Pods_Foodhead.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA12B69485225EB1396599E /* Pods_Foodhead.framework */; };
+		A071679C1ED509B7004A09B9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0E844111E28034000BE98B1 /* LaunchScreen.storyboard */; };
+		A071679D1ED509B7004A09B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0E8440F1E28034000BE98B1 /* Assets.xcassets */; };
+		A071679E1ED509B7004A09B9 /* Nunito-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997E1E72087A004AE07A /* Nunito-Light.ttf */; };
+		A071679F1ED509B7004A09B9 /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997B1E72087A004AE07A /* Nunito-Bold.ttf */; };
+		A07167A01ED509B7004A09B9 /* Nunito-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997F1E72087A004AE07A /* Nunito-Medium.ttf */; };
+		A07167A11ED509B7004A09B9 /* Nunito-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99811E72087A004AE07A /* Nunito-SemiBold.ttf */; };
+		A07167A21ED509B7004A09B9 /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B99801E72087A004AE07A /* Nunito-Regular.ttf */; };
 		A07FB4461EBA73B1001CDF89 /* BrowseContentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A07FB4451EBA73B1001CDF89 /* BrowseContentManager.m */; };
 		A084A6671E3D3A3A008A3DCE /* TPLChartsViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A084A6661E3D3A3A008A3DCE /* TPLChartsViewModel.m */; };
 		A084A66A1E3D3FDF008A3DCE /* TPLRestaurantPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A084A6691E3D3FDF008A3DCE /* TPLRestaurantPageViewController.m */; };
@@ -229,6 +336,8 @@
 		A0595F0B1E47C92B001BB324 /* TPLAssetPreviewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLAssetPreviewController.h; sourceTree = "<group>"; };
 		A0595F0C1E47C92B001BB324 /* TPLAssetPreviewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLAssetPreviewController.m; sourceTree = "<group>"; };
 		A06AFC6D1E3FBEE1006ED71E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		A07167A91ED509B7004A09B9 /* Foodhead Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Foodhead Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A07167AA1ED509B7004A09B9 /* Foodhead Dev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Foodhead Dev-Info.plist"; path = "/Users/Brwong 1/Desktop/Foodhead/Foodhead Dev-Info.plist"; sourceTree = "<absolute>"; };
 		A07FB4441EBA73B1001CDF89 /* BrowseContentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowseContentManager.h; sourceTree = "<group>"; };
 		A07FB4451EBA73B1001CDF89 /* BrowseContentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowseContentManager.m; sourceTree = "<group>"; };
 		A084A6651E3D3A3A008A3DCE /* TPLChartsViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPLChartsViewModel.h; sourceTree = "<group>"; };
@@ -266,6 +375,8 @@
 		A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartCollectionCell.m; sourceTree = "<group>"; };
 		A09338881EB3F8DA000DCD3C /* DiscoverNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverNode.h; sourceTree = "<group>"; };
 		A09338891EB3F8DA000DCD3C /* DiscoverNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverNode.m; sourceTree = "<group>"; };
+		A09D00431ED4E29500C84F21 /* Foodhead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Foodhead.entitlements; sourceTree = "<group>"; };
+		A09EBAD01ED50DD000A34C38 /* Foodhead Dev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "Foodhead Dev.entitlements"; path = "Foodhead Dev/Foodhead Dev.entitlements"; sourceTree = SOURCE_ROOT; };
 		A0B28F5B1E93844B00656253 /* AttributionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributionTableViewCell.h; sourceTree = "<group>"; };
 		A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributionTableViewCell.m; sourceTree = "<group>"; };
 		A0BED0D21E7A622F00D21298 /* AlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumViewController.h; sourceTree = "<group>"; };
@@ -324,6 +435,25 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A071678E1ED509B7004A09B9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A071678F1ED509B7004A09B9 /* Flurry_iOS_SDK.framework in Frameworks */,
+				A07167901ED509B7004A09B9 /* QuartzCore.framework in Frameworks */,
+				A07167911ED509B7004A09B9 /* AVFoundation.framework in Frameworks */,
+				A07167921ED509B7004A09B9 /* OpenGLES.framework in Frameworks */,
+				A07167931ED509B7004A09B9 /* CoreVideo.framework in Frameworks */,
+				A07167941ED509B7004A09B9 /* CoreMedia.framework in Frameworks */,
+				A07167951ED509B7004A09B9 /* MapKit.framework in Frameworks */,
+				A07167961ED509B7004A09B9 /* FBSDKCoreKit.framework in Frameworks */,
+				A07167971ED509B7004A09B9 /* FBSDKShareKit.framework in Frameworks */,
+				A07167981ED509B7004A09B9 /* FBSDKLoginKit.framework in Frameworks */,
+				A07167991ED509B7004A09B9 /* Bolts.framework in Frameworks */,
+				A071679A1ED509B7004A09B9 /* Pods_Foodhead.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0E843FD1E28034000BE98B1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -877,6 +1007,7 @@
 			isa = PBXGroup;
 			children = (
 				A0E844001E28034000BE98B1 /* Foodhead.app */,
+				A07167A91ED509B7004A09B9 /* Foodhead Dev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -884,9 +1015,12 @@
 		A0E844021E28034000BE98B1 /* Foodhead */ = {
 			isa = PBXGroup;
 			children = (
+				A09D00431ED4E29500C84F21 /* Foodhead.entitlements */,
+				A09EBAD01ED50DD000A34C38 /* Foodhead Dev.entitlements */,
 				A0E844111E28034000BE98B1 /* LaunchScreen.storyboard */,
 				A0E8440F1E28034000BE98B1 /* Assets.xcassets */,
 				A0E844141E28034000BE98B1 /* Info.plist */,
+				A07167AA1ED509B7004A09B9 /* Foodhead Dev-Info.plist */,
 				A0E844031E28034000BE98B1 /* Supporting Files */,
 			);
 			path = Foodhead;
@@ -951,6 +1085,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A07167331ED509B7004A09B9 /* Foodhead Dev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A07167A51ED509B7004A09B9 /* Build configuration list for PBXNativeTarget "Foodhead Dev" */;
+			buildPhases = (
+				A07167341ED509B7004A09B9 /* [CP] Check Pods Manifest.lock */,
+				A07167351ED509B7004A09B9 /* Sources */,
+				A071678E1ED509B7004A09B9 /* Frameworks */,
+				A071679B1ED509B7004A09B9 /* Resources */,
+				A07167A31ED509B7004A09B9 /* [CP] Embed Pods Frameworks */,
+				A07167A41ED509B7004A09B9 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Foodhead Dev";
+			productName = Foodhead;
+			productReference = A07167A91ED509B7004A09B9 /* Foodhead Dev.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A0E843FF1E28034000BE98B1 /* Foodhead */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0E844171E28034000BE98B1 /* Build configuration list for PBXNativeTarget "Foodhead" */;
@@ -980,6 +1134,15 @@
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Brian Wong";
 				TargetAttributes = {
+					A07167331ED509B7004A09B9 = {
+						DevelopmentTeam = 7VDPHN5N3R;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
+					};
 					A0E843FF1E28034000BE98B1 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 7VDPHN5N3R;
@@ -994,6 +1157,9 @@
 							};
 							com.apple.Maps.iOS = {
 								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 1;
 							};
 						};
 					};
@@ -1013,11 +1179,26 @@
 			projectRoot = "";
 			targets = (
 				A0E843FF1E28034000BE98B1 /* Foodhead */,
+				A07167331ED509B7004A09B9 /* Foodhead Dev */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A071679B1ED509B7004A09B9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A071679C1ED509B7004A09B9 /* LaunchScreen.storyboard in Resources */,
+				A071679D1ED509B7004A09B9 /* Assets.xcassets in Resources */,
+				A071679E1ED509B7004A09B9 /* Nunito-Light.ttf in Resources */,
+				A071679F1ED509B7004A09B9 /* Nunito-Bold.ttf in Resources */,
+				A07167A01ED509B7004A09B9 /* Nunito-Medium.ttf in Resources */,
+				A07167A11ED509B7004A09B9 /* Nunito-SemiBold.ttf in Resources */,
+				A07167A21ED509B7004A09B9 /* Nunito-Regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0E843FE1E28034000BE98B1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1065,6 +1246,51 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A07167341ED509B7004A09B9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A07167A31ED509B7004A09B9 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A07167A41ED509B7004A09B9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		B170C7F40EE513A83803A72B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1083,6 +1309,101 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A07167351ED509B7004A09B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A07167361ED509B7004A09B9 /* RatingContainerView.m in Sources */,
+				A07167371ED509B7004A09B9 /* RestaurantPageScoreView.m in Sources */,
+				A07167381ED509B7004A09B9 /* DiscoverViewController.m in Sources */,
+				A07167391ED509B7004A09B9 /* BrowseViewController.m in Sources */,
+				A071673A1ED509B7004A09B9 /* TPLCameraPreviewView.m in Sources */,
+				A071673B1ED509B7004A09B9 /* TPLExpandedChartController.m in Sources */,
+				A071673C1ED509B7004A09B9 /* RestaurantPageControlView.m in Sources */,
+				A071673D1ED509B7004A09B9 /* BrowseContentManager.m in Sources */,
+				A071673E1ED509B7004A09B9 /* Category.m in Sources */,
+				A071673F1ED509B7004A09B9 /* BookmarkSegmentControl.m in Sources */,
+				A07167401ED509B7004A09B9 /* TPLCamPhotoCaptureDelegate.m in Sources */,
+				A07167411ED509B7004A09B9 /* UserFeedbackViewController.m in Sources */,
+				A07167421ED509B7004A09B9 /* UserProfileView.m in Sources */,
+				A07167431ED509B7004A09B9 /* ReviewCollectionViewCell.m in Sources */,
+				A07167441ED509B7004A09B9 /* OverallRatingView.m in Sources */,
+				A07167451ED509B7004A09B9 /* TPLFilterScrollView.m in Sources */,
+				A07167461ED509B7004A09B9 /* TPLDetailedRestaurant.m in Sources */,
+				A07167471ED509B7004A09B9 /* FoodheadAnalytics.m in Sources */,
+				A07167481ED509B7004A09B9 /* NSString+Trim.m in Sources */,
+				A07167491ED509B7004A09B9 /* CategoryCollectionViewCell.m in Sources */,
+				A071674A1ED509B7004A09B9 /* SuggestionTableViewCell.m in Sources */,
+				A071674B1ED509B7004A09B9 /* AlbumCellNode.m in Sources */,
+				A071674C1ED509B7004A09B9 /* TPLRestaurant.m in Sources */,
+				A071674D1ED509B7004A09B9 /* TasteFilterView.m in Sources */,
+				A071674E1ED509B7004A09B9 /* TPLRestaurantManager.m in Sources */,
+				A071674F1ED509B7004A09B9 /* TPLRestaurantPageViewModel.m in Sources */,
+				A07167501ED509B7004A09B9 /* DiscoverNode.m in Sources */,
+				A07167511ED509B7004A09B9 /* SettingsTableViewCell.m in Sources */,
+				A07167521ED509B7004A09B9 /* MenuTableViewCell.m in Sources */,
+				A07167531ED509B7004A09B9 /* TPLChartSectionView.m in Sources */,
+				A07167541ED509B7004A09B9 /* SearchFilterView.m in Sources */,
+				A07167551ED509B7004A09B9 /* TabledCollectionManager.m in Sources */,
+				A07167561ED509B7004A09B9 /* BrowseVideo.m in Sources */,
+				A07167571ED509B7004A09B9 /* DiscoverRealm.m in Sources */,
+				A07167581ED509B7004A09B9 /* RestaurantReview.m in Sources */,
+				A07167591ED509B7004A09B9 /* RestaurantSearchViewController.m in Sources */,
+				A071675A1ED509B7004A09B9 /* AlbumViewController.m in Sources */,
+				A071675B1ED509B7004A09B9 /* UserAuthManager.m in Sources */,
+				A071675C1ED509B7004A09B9 /* ChartsViewController.m in Sources */,
+				A071675D1ED509B7004A09B9 /* ImageCollectionCell.m in Sources */,
+				A071675E1ED509B7004A09B9 /* UserReview.m in Sources */,
+				A071675F1ED509B7004A09B9 /* RestaurantAlbumViewController.m in Sources */,
+				A07167601ED509B7004A09B9 /* PriceRatingView.m in Sources */,
+				A07167611ED509B7004A09B9 /* HealthFilterView.m in Sources */,
+				A07167621ED509B7004A09B9 /* TPLChartCollectionCell.m in Sources */,
+				A07167631ED509B7004A09B9 /* SettingsViewController.m in Sources */,
+				A07167641ED509B7004A09B9 /* UsernamePromptViewController.m in Sources */,
+				A07167651ED509B7004A09B9 /* LoginViewController.m in Sources */,
+				A07167661ED509B7004A09B9 /* UIDeviceHardware.m in Sources */,
+				A07167671ED509B7004A09B9 /* HealthRatingView.m in Sources */,
+				A07167681ED509B7004A09B9 /* UIImage+Utilities.m in Sources */,
+				A07167691ED509B7004A09B9 /* Places.m in Sources */,
+				A071676A1ED509B7004A09B9 /* UserProfileViewController.m in Sources */,
+				A071676B1ED509B7004A09B9 /* RestaurantInfoTableViewCell.m in Sources */,
+				A071676C1ED509B7004A09B9 /* TPLRestaurantPageViewController.m in Sources */,
+				A071676D1ED509B7004A09B9 /* AttributionTableViewCell.m in Sources */,
+				A071676E1ED509B7004A09B9 /* UIFont+Extension.m in Sources */,
+				A071676F1ED509B7004A09B9 /* LayoutBounds.m in Sources */,
+				A07167701ED509B7004A09B9 /* ServiceErrorView.m in Sources */,
+				A07167711ED509B7004A09B9 /* AppDelegate.m in Sources */,
+				A07167721ED509B7004A09B9 /* RestaurantDetailsTableViewCell.m in Sources */,
+				A07167731ED509B7004A09B9 /* User.m in Sources */,
+				A07167741ED509B7004A09B9 /* ExpandedChartCollectionViewCell.m in Sources */,
+				A07167751ED509B7004A09B9 /* SearchTableViewCell.m in Sources */,
+				A07167761ED509B7004A09B9 /* AnimationPreviewViewController.m in Sources */,
+				A07167771ED509B7004A09B9 /* LocationManager.m in Sources */,
+				A07167781ED509B7004A09B9 /* BrowseVideoRealm.m in Sources */,
+				A07167791ED509B7004A09B9 /* TPLChartsDataSource.m in Sources */,
+				A071677A1ED509B7004A09B9 /* NSString+IsEmpty.m in Sources */,
+				A071677B1ED509B7004A09B9 /* BrowsePlayerNode.m in Sources */,
+				A071677C1ED509B7004A09B9 /* Chart.m in Sources */,
+				A071677D1ED509B7004A09B9 /* SearchViewController.m in Sources */,
+				A071677E1ED509B7004A09B9 /* MetricsDisplayCell.m in Sources */,
+				A071677F1ED509B7004A09B9 /* PermissionViewController.m in Sources */,
+				A07167801ED509B7004A09B9 /* TPLChartsViewModel.m in Sources */,
+				A07167811ED509B7004A09B9 /* PreviewAnimation.m in Sources */,
+				A07167821ED509B7004A09B9 /* HoursTableViewCell.m in Sources */,
+				A07167831ED509B7004A09B9 /* ReviewMetricView.m in Sources */,
+				A07167841ED509B7004A09B9 /* BRWSearchView.m in Sources */,
+				A07167851ED509B7004A09B9 /* AssetPreviewViewController.m in Sources */,
+				A07167861ED509B7004A09B9 /* FilterView.m in Sources */,
+				A07167871ED509B7004A09B9 /* TPLAssetPreviewController.m in Sources */,
+				A07167881ED509B7004A09B9 /* ResultTableViewCell.m in Sources */,
+				A07167891ED509B7004A09B9 /* TabledCollectionCell.m in Sources */,
+				A071678A1ED509B7004A09B9 /* TabCameraViewController.m in Sources */,
+				A071678B1ED509B7004A09B9 /* WebViewController.m in Sources */,
+				A071678C1ED509B7004A09B9 /* PriceFilterView.m in Sources */,
+				A071678D1ED509B7004A09B9 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0E843FC1E28034000BE98B1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1245,11 +1566,13 @@
 			baseConfigurationReference = 3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Foodhead/Foodhead.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
 				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
-				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1275,12 +1598,150 @@
 					"\"SDWebImage\"",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Development;
+		};
+		A07167A61ED509B7004A09B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Foodhead Dev/Foodhead Dev.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_ACTIVITY_MODE = "";
+				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = Foodhead/Foodhead_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"DEVELOPMENT=1",
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Foodhead Dev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"AFNetworking\"",
+					"-framework",
+					"\"Mantle\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		A07167A71ED509B7004A09B9 /* Development */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Foodhead Dev/Foodhead Dev.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_ACTIVITY_MODE = "";
+				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = Foodhead/Foodhead_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"DEVELOPMENT=1",
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Foodhead Dev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"AFNetworking\"",
+					"-framework",
+					"\"Mantle\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Development;
+		};
+		A07167A81ED509B7004A09B9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Foodhead Dev/Foodhead Dev.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_ACTIVITY_MODE = "";
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = Foodhead/Foodhead_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"PRODUCTION=0",
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Foodhead Dev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"AFNetworking\"",
+					"-framework",
+					"\"Mantle\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
 		};
 		A0E844151E28034000BE98B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1352,7 +1813,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1380,9 +1842,11 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Foodhead/Foodhead.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
 				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
-				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1391,7 +1855,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
-					"PRODUCTION=1",
+					"DEVELOPMENT=1",
 				);
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Foodhead/Info.plist;
@@ -1410,6 +1874,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
@@ -1422,8 +1888,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Foodhead/Foodhead.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
-				DEVELOPMENT_TEAM = 7VDPHN5N3R;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1451,6 +1919,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -1458,6 +1928,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A07167A51ED509B7004A09B9 /* Build configuration list for PBXNativeTarget "Foodhead Dev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A07167A61ED509B7004A09B9 /* Debug */,
+				A07167A71ED509B7004A09B9 /* Development */,
+				A07167A81ED509B7004A09B9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A0E843FB1E28034000BE98B1 /* Build configuration list for PBXProject "Foodhead" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

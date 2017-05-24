@@ -178,6 +178,7 @@ static NSString *exploreCellId = @"exploreCell";
 - (void)setupNavBar{
     self.navigationController.extendedLayoutIncludesOpaqueBars = YES;//Must set this or search bar goes off-screen when presented
     self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]};
 }
 
 - (void)resetNavBar{
