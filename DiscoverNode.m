@@ -325,7 +325,6 @@
         discoverRlm.name = self.restaurantInfo.name;
         discoverRlm.foursq_rating = self.restaurantInfo.foursq_rating;
         discoverRlm.foursqId = self.restaurantInfo.foursqId;
-        discoverRlm.distance = self.restaurantInfo.distance;
         discoverRlm.hasVideo = self.restaurantInfo.hasVideo;
         if (self.restaurantInfo.categories.count > 0) {
             discoverRlm.primaryCategory = [self.restaurantInfo.categories firstObject];

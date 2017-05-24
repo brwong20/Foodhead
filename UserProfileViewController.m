@@ -130,6 +130,16 @@
     [self addObservers];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
+}
+
 
 - (void)dealloc{
     [self removeObservers];
@@ -139,6 +149,7 @@
     [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]};
 //    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
 //    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     
@@ -600,7 +611,6 @@
     restInfo.latitude = savedInfo.lat;
     restInfo.longitude = savedInfo.lng;
     restInfo.name = savedInfo.name;
-    restInfo.distance = savedInfo.distance;
     restInfo.website = savedInfo.website;
     
     if (savedInfo.address) {

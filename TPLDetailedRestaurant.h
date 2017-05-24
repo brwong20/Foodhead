@@ -10,14 +10,14 @@
 
 @interface TPLDetailedRestaurant : MTLModel <MTLJSONSerializing>
 
-//@property (nonatomic, copy) NSString *address;
-//@property (nonatomic, copy) NSString *city;
-//@property (nonatomic, copy) NSString *state;
-//@property (nonatomic, copy) NSString *zipCode;
-//@property (nonatomic, copy) NSString *phoneNumber;
+@property (nonatomic, copy) NSString *address;
+@property (nonatomic, copy) NSString *city;
+@property (nonatomic, copy) NSString *state;
+@property (nonatomic, copy) NSString *zipCode;
+@property (nonatomic, copy) NSString *phoneNumber;
 @property (nonatomic, copy) NSString *mobileMenu;
 @property (nonatomic, copy) NSString *menu;
-//@property (nonatomic, copy) NSString *website;
+@property (nonatomic, copy) NSString *website;
 
 //@property (nonatomic, copy) NSNumber *foursq_num_ratings;
 //@property (nonatomic, copy) NSNumber *foursq_rating;

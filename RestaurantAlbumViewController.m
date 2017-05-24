@@ -30,15 +30,20 @@
 
 @interface RestaurantAlbumViewController ()<UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, IDMPhotoBrowserDelegate, UIViewControllerTransitioningDelegate, ASCollectionDelegate, ASCollectionDataSource>
 
+@property (nonatomic, strong) TPLRestaurant *restaurant;
+
 //Texture
 @property (nonatomic, strong) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) ASCollectionNode *collectionNode;
 
 //Data source
+@property (nonatomic, strong) NSString *nextPg;
+@property (nonatomic, strong) NSMutableArray *media;
 @property (nonatomic, strong) TPLRestaurantPageViewModel *viewModel;
-@property (nonatomic, strong) AVAsset *asset;
-@property (nonatomic, strong) NSMutableArray *videoAssets;//Cache video assets to prevent reloading of videos for ASVideoNode
+//@property (nonatomic, strong) AVAsset *asset;
+//@property (nonatomic, strong) NSMutableArray *videoAssets;//Cache video assets to prevent reloading of videos for ASVideoNode
 @property (nonatomic, strong) NSMutableArray *idmPhotos;
+@property (nonatomic, strong) ASBatchContext *batchContext;
 
 //Hold to preview
 @property (nonatomic, strong) AnimationPreviewViewController *previewVC;
@@ -67,6 +72,7 @@ static NSString *loadingCellId = @"loadingCell";
     _collectionNode.delegate = self;
     _collectionNode.dataSource = self;
     
+    //Important: Must create a new object here so both the restaurant page and album don't hold the same reference. This is important now because the restaurant page refreshes the media each time it appears so if the user swipes in and out, the restaurant page could remove all the media and refresh this album with an invalid number of items (i.e. Invalid number of items assertion will be thrown).
     _media = media;
     _nextPg = nextPg;
     _restaurant = restaurant;
@@ -109,9 +115,13 @@ static NSString *loadingCellId = @"loadingCell";
     [self setupNavBar];
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [self.batchContext cancelBatchFetching];
+}
+
 - (void)setupNavBar{
     self.navigationItem.title = self.restaurant.name;
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.06]};
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantAlbum)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
 }
@@ -185,11 +195,11 @@ static NSString *loadingCellId = @"loadingCell";
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self insertItemsInCollection:moreMedia];
-                [context completeBatchFetching:YES];
+                [self.batchContext completeBatchFetching:YES];
             });
         } failureHandler:^(id failureHandler) {
             DLog(@"Failed to get more images: %@", failureHandler);
-            [context cancelBatchFetching];
+            [self.batchContext cancelBatchFetching];
         }];
     }
 }
@@ -362,14 +372,9 @@ static NSString *loadingCellId = @"loadingCell";
 }
 
 - (void)collectionNode:(ASCollectionNode *)collectionNode willBeginBatchFetchWithContext:(ASBatchContext *)context{
-    [self loadMoreImagesWithContext:context];
+    self.batchContext = context;
+    [self loadMoreImagesWithContext:self.batchContext];
 }
-
-- (void)collectionView:(ASCollectionView *)collectionView willDisplayNodeForItemAtIndexPath:(NSIndexPath *)indexPath{
-
-}
-
-#pragma mark - ScrollViewDelegate methods
 
 
 @end

@@ -21,6 +21,7 @@
 #import "DiscoverRealm.h"
 #import "BrowseViewController.h"
 #import "UserAuthManager.h"
+#import "UIFont+Extension.h"
 
 #import "Chart.h"
 #import "Places.h"
@@ -112,6 +113,7 @@
     [self.locationManager retrieveCurrentLocation];
     
     [self setupUI];
+    [self setupNavBar];
     
     self.favoritedRestaurants = [DiscoverRealm allObjects];
     
@@ -152,6 +154,10 @@
     self.canScrollToTop = NO;
     self.locationManager.locationDelegate = nil;
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:YES];
+}
+
+- (void)setupNavBar{
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]};
 }
 
 - (void)dealloc{

@@ -139,25 +139,27 @@ static NSString *photoCellId = @"photoCell";
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self setupNavBar];
-    
     self.locationManager.locationDelegate = self;
-    //We should only load images/metrics once in viewDidLoad. If details have already been fetched, this means the user either reopened the app or submitted a review while on the restaurant page.
     [[LocationManager sharedLocationInstance]retrieveCurrentLocation];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    //We should only load images/metrics once in viewDidLoad. Refresh images here so this request isn't being called if user swipes in/out halfway. This also takes care of the media reference bug noted in RestaurantAlbumView
     if (self.detailsFetched) {
-        [self refreshMetrics];
+        //[self refreshMetrics];
         [self loadRestaurantImages];
     }
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [self.navigationController.navigationBar setHidden:NO];
     self.locationManager.locationDelegate = nil;
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
-    //[self.navigationController.navigationBar setHidden:NO];
 }
 
 - (void)loadRestaurantDetails{
@@ -191,25 +193,25 @@ static NSString *photoCellId = @"photoCell";
     [self loadRestaurantImages];
 }
 
-- (void)refreshMetrics{
-    [self.pageViewModel retrieveReviewsForRestaurant:self.selectedRestaurant completionHandler:^(id completionHandler) {
-        NSArray *userReviews = completionHandler;
-
-#warning Is this the best way to handle photos and review refreshing? Need to revisit this logic later on
-        if (self.userReviews.count == userReviews.count) {
-            //No need to refresh in number of reviews didn't change
-            return;
-        }
-        [self.userReviews removeAllObjects];
-        [self.userReviews addObjectsFromArray:completionHandler];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-        });
-
-    } failureHandler:^(id failureHandler) {
-        DLog(@"Failed to refresh metrics");
-    }];
-}
+//- (void)refreshMetrics{
+//    [self.pageViewModel retrieveReviewsForRestaurant:self.selectedRestaurant completionHandler:^(id completionHandler) {
+//        NSArray *userReviews = completionHandler;
+//
+//#warning Is this the best way to handle photos and review refreshing? Need to revisit this logic later on
+//        if (self.userReviews.count == userReviews.count) {
+//            //No need to refresh in number of reviews didn't change
+//            return;
+//        }
+//        [self.userReviews removeAllObjects];
+//        [self.userReviews addObjectsFromArray:completionHandler];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+//        });
+//
+//    } failureHandler:^(id failureHandler) {
+//        DLog(@"Failed to refresh metrics");
+//    }];
+//}
 
 - (void)loadRestaurantImages{
     [self.pageViewModel retrieveImagesForRestaurant:self.selectedRestaurant
@@ -271,7 +273,7 @@ static NSString *photoCellId = @"photoCell";
 - (void)setupNavBar{
     //Still need navigation bar for pushing/popping so just completely hide it so it doesn't get in the way of our animations
     self.navigationItem.title = @"";
-    [self.navigationController.navigationBar setHidden:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage new] style:UIBarButtonItemStylePlain target:self action:@selector(exitRestaurantPage)];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;//Preserves swipe back gesture
     
@@ -315,13 +317,13 @@ static NSString *photoCellId = @"photoCell";
     [fakeNavBar addSubview:backButton];
     
     
-    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(fakeNavBar.frame.size.width/2 - fakeNavBar.frame.size.width * 0.39, fakeNavBar.frame.size.height/2.7 - fakeNavBar.frame.size.height * 0.25, fakeNavBar.frame.size.width * 0.78, fakeNavBar.frame.size.height * 0.5)];
+    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(fakeNavBar.frame.size.width/2 - fakeNavBar.frame.size.width * 0.39, fakeNavBar.frame.size.height/2.7 - fakeNavBar.frame.size.height * 0.24, fakeNavBar.frame.size.width * 0.78, fakeNavBar.frame.size.height * 0.48)];
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.numberOfLines = 1;
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.text = self.selectedRestaurant.name;
-    [titleLabel setFont:[UIFont nun_fontWithSize:22.0]];
+    [titleLabel setFont:[UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]];
     [fakeNavBar addSubview:titleLabel];
     
     NSString *categoriesStr = @"";
@@ -336,13 +338,13 @@ static NSString *photoCellId = @"photoCell";
         titleFrame.origin.y = fakeNavBar.frame.size.height/2 - fakeNavBar.frame.size.height * 0.25;
         titleLabel.frame = titleFrame;
     }else{
-        UILabel *categoryLabel = [[UILabel alloc]initWithFrame:CGRectMake(fakeNavBar.frame.size.width/2 - fakeNavBar.frame.size.width * 0.39, CGRectGetMaxY(titleLabel.frame) + 1.0, fakeNavBar.frame.size.width * 0.78, fakeNavBar.frame.size.height * 0.3)];
+        UILabel *categoryLabel = [[UILabel alloc]initWithFrame:CGRectMake(fakeNavBar.frame.size.width/2 - fakeNavBar.frame.size.width * 0.39, CGRectGetMaxY(titleLabel.frame), fakeNavBar.frame.size.width * 0.78, fakeNavBar.frame.size.height * 0.34)];
         categoryLabel.backgroundColor = [UIColor clearColor];
         categoryLabel.numberOfLines = 1;
         categoryLabel.textAlignment = NSTextAlignmentCenter;
         categoryLabel.textColor = UIColorFromRGB(0x505254);
         categoryLabel.text = categoriesStr;
-        [categoryLabel setFont:[UIFont nun_fontWithSize:16.0]];
+        [categoryLabel setFont:[UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE]];
         [fakeNavBar addSubview:categoryLabel];
     }
 }
@@ -509,7 +511,6 @@ static NSString *photoCellId = @"photoCell";
         DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
         discoverRlm.name = _selectedRestaurant.name;
         discoverRlm.foursqId = _selectedRestaurant.foursqId;
-        discoverRlm.distance = _selectedRestaurant.distance;
         discoverRlm.hasVideo = _selectedRestaurant.hasVideo;
         if (_selectedRestaurant.categories.count > 0) {
             discoverRlm.primaryCategory = [_selectedRestaurant.categories firstObject];
@@ -587,20 +588,23 @@ static NSString *photoCellId = @"photoCell";
             break;
         }case 2:{
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             self.restControlView = [[RestaurantPageControlView alloc]initWithFrame:CGRectMake(0, 0, APPLICATION_FRAME.size.width, METRIC_CELL_HEIGHT)];
             [self.restControlView setTextForPrice:self.selectedRestaurant.foursq_price_tier];
             [self.restControlView toggleFavoriteButton:self.isFavorite];
+            if (!self.selectedRestaurant.phoneNumber) {
+                [self.restControlView.callButton setEnabled:NO];
+            }
+            
             self.restControlView.delegate = self;
             [cell addSubview:self.restControlView];
             break;
         }case 3:{
             RestaurantInfoTableViewCell *infoCell = [[RestaurantInfoTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
             infoCell.delegate = self;
-            
-            //TOOD: Address gets set twice since we reload, but doesn't show - will likely change when the UI changes
-            //if (self.detailsFetched) {
+            if (self.detailsFetched) {
                 [infoCell populateInfo:self.selectedRestaurant];
-            //}
+            }
             cell = infoCell;
             break;
         }case 4:{
@@ -771,11 +775,7 @@ static NSString *photoCellId = @"photoCell";
 
 - (void)didTapSeeAllButton{
     [FoodheadAnalytics logEvent:OPEN_RESTAURANT_ALBUM];
-    
     RestaurantAlbumViewController *albumVC = [[RestaurantAlbumViewController alloc] initWithMedia:self.restaurantPhotos nextPage:self.nextPg forRestuarant:self.selectedRestaurant];
-    albumVC.media = self.restaurantPhotos;
-    albumVC.nextPg = self.nextPg;
-    albumVC.restaurant = self.selectedRestaurant;
     [self.navigationController pushViewController:albumVC animated:YES];
 }
 
