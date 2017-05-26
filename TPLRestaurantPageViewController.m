@@ -169,7 +169,8 @@ static NSString *photoCellId = @"photoCell";
             self.selectedRestaurant = fullRestaurant;
             self.dynamicHoursHeight = [self calculateDynamicHoursHeight];
             dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0],
+                    [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0],
+                                                                    [NSIndexPath indexPathForRow:1 inSection:0],
                                                                     [NSIndexPath indexPathForRow:3 inSection:0],
                                                                     [NSIndexPath indexPathForRow:4 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
             });
@@ -564,14 +565,15 @@ static NSString *photoCellId = @"photoCell";
 #pragma mark - UTableViewDataSource Methods
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = nil;
+    UITableViewCell *cell;
     switch (indexPath.row) {
         case 0:{
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             RestaurantPageScoreView *scoreView = [[RestaurantPageScoreView alloc]initWithFrame:CGRectMake(0.0, 0.0, APPLICATION_FRAME.size.width, RESTAURANT_SCORE_CELL_HEIGHT)];
-            NSString *convertedScore;
-            if (self.selectedRestaurant.foursq_rating) {
+            
+            if (self.detailsFetched && self.selectedRestaurant.foursq_rating) {
+                NSString *convertedScore;
                 NSNumber *rating = @(self.selectedRestaurant.foursq_rating.doubleValue * 10.0);
                 convertedScore = rating.stringValue;
                 scoreView.scoreLabel.text = [NSString stringWithFormat:@"%ld%%", (long)convertedScore.integerValue];

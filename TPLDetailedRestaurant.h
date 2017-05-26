@@ -19,9 +19,9 @@
 @property (nonatomic, copy) NSString *menu;
 @property (nonatomic, copy) NSString *website;
 
-//@property (nonatomic, copy) NSNumber *foursq_num_ratings;
-//@property (nonatomic, copy) NSNumber *foursq_rating;
-//@property (nonatomic, copy) NSNumber *foursq_price_tier;
+@property (nonatomic, copy) NSNumber *foursq_num_ratings;
+@property (nonatomic, copy) NSNumber *foursq_rating;
+@property (nonatomic, copy) NSNumber *foursq_price_tier;
 @property (nonatomic, copy) NSNumber *distance;
 
 @property (nonatomic, copy) NSArray *hours;
