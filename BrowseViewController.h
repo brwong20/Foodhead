@@ -10,4 +10,6 @@
 
 @interface BrowseViewController : UIViewController
 
+- (void)refreshContent;
+
 @end

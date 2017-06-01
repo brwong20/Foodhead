@@ -22,6 +22,8 @@
 - (void)browsePlayerNode:(BrowsePlayerNode *)node wasFavorited:(BrowseVideoRealm *)favorite;
 - (void)browsePlayerNode:(BrowsePlayerNode *)node didChangePlayerState:(ASVideoNodePlayerState)state;
 
+- (void)promptUserSignup;
+
 @end
 
 @interface BrowsePlayerNode : ASCellNode

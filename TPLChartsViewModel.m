@@ -33,7 +33,7 @@
 
 - (RACSignal *)getChartsAtLocation:(CLLocationCoordinate2D)coordinate{
     return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-        @weakify(self);
+        //@weakify(self);
         [[[self signalForIncompleteCharts:coordinate] flattenMap:^__kindof RACSignal * _Nullable(NSMutableArray *incompleteCharts) {
             NSMutableArray *requestSignals = [NSMutableArray array];
             
@@ -60,13 +60,8 @@
             
             return chartsSignals;
         }]subscribeError:^(id  _Nullable x) {
-            @strongify(self)
-            DLog(@"Error loading chart info: %@", x);
-            self.chartsLoadFailed = YES;
-            self.finishedLoading = YES;
+            [subscriber sendError:x];
         }completed:^{
-            self.finishedLoading = NO;
-            self.chartsLoadFailed = NO;
             DLog(@"Chart info loaded");
         }];
         return nil;

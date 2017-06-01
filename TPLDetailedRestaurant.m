@@ -29,6 +29,11 @@
              @"foursq_num_ratings" : @"rating_signals",
              @"foursq_price_tier" : @"price",
              @"foursq_rating" : @"rating",
+             @"thumbnail" : @"avatar",
+             @"thumbnailPrefix" : @"fs_avatar_prefix",
+             @"thumbnailPrefix" : @"fs_avatar_suffix",
+             @"thumbnailWidth" : @"fs_avatar_width",
+             @"thumbnailHeight" : @"fs_avatar_height"
              };
 }
 

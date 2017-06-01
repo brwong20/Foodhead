@@ -57,11 +57,11 @@ static NSString *cellId = @"settingCell";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     SettingsTableViewCell *cell = (SettingsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellId];
-    if (indexPath.row == 0) {
-        cell.titleLabel.text = @"Submit feedback";
-    }else if (indexPath.row == 1){
+    //if (indexPath.row == 0) {
+    //    cell.titleLabel.text = @"Submit feedback";
+    if (indexPath.row == 0){
         cell.titleLabel.text = @"Privacy policy";
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 1){
         cell.titleLabel.text = @"Terms of service";
     }
     return cell;
@@ -71,7 +71,7 @@ static NSString *cellId = @"settingCell";
 #pragma mark - UITableViewDelegate 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 3;
+    return 2;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -79,15 +79,17 @@ static NSString *cellId = @"settingCell";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 0) {
-        UserFeedbackViewController *feedbackVC = [[UserFeedbackViewController alloc]init];
-        [self.navigationController pushViewController:feedbackVC animated:YES];
-    }else if (indexPath.row == 1){
+    //if (indexPath.row == 0) {
+    //    UserFeedbackViewController *feedbackVC = [[UserFeedbackViewController alloc]init];
+    //    [self.navigationController pushViewController:feedbackVC animated:YES];
+    if (indexPath.row == 0){
         WebViewController *webVC = [[WebViewController alloc]init];
+        webVC.popupView = NO;
         webVC.webLink = FOODHEAD_PRIVACY_URL;
         [self.navigationController pushViewController:webVC animated:YES];
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 1){
         WebViewController *webVC = [[WebViewController alloc]init];
+        webVC.popupView = NO;
         webVC.webLink = FOODHEAD_TERMS_URL;
         [self.navigationController pushViewController:webVC animated:YES];
     }

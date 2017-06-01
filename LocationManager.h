@@ -16,6 +16,7 @@
 //Since it takes a bit of time to retrieve the current location, implement a delegate that will signal the delegate class when a location is available for use.
 - (void)didGetCurrentLocation:(CLLocationCoordinate2D)coordinate;
 - (void)locationWasAuthorizedWithStatus:(CLAuthorizationStatus)status;
+- (void)didGetCurrentCity:(NSString *)locationString;
 
 @end
 

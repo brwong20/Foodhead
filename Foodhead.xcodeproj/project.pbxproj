@@ -10,6 +10,8 @@
 		A0084D871EB53ECE00976F4A /* DiscoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D861EB53ECE00976F4A /* DiscoverViewController.m */; };
 		A0084D8B1EB5B7DD00976F4A /* BrowseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D8A1EB5B7DD00976F4A /* BrowseViewController.m */; };
 		A0084D8F1EB5BAB700976F4A /* BrowsePlayerNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A0084D8E1EB5BAB700976F4A /* BrowsePlayerNode.m */; };
+		A00D17EF1EDF4F41005D584F /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = A00D17EE1EDF4F41005D584F /* Timer.m */; };
+		A00D17F01EDF4F41005D584F /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = A00D17EE1EDF4F41005D584F /* Timer.m */; };
 		A020E9E51ECE4F2C00B3BC59 /* BookmarkSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = A020E9E41ECE4F2C00B3BC59 /* BookmarkSegmentControl.m */; };
 		A023D75A1E8AF39800F23D85 /* ReviewCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A023D7591E8AF39800F23D85 /* ReviewCollectionViewCell.m */; };
 		A0282C131E5F5BB400CE089F /* HoursTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0282C121E5F5BB400CE089F /* HoursTableViewCell.m */; };
@@ -165,7 +167,6 @@
 		A07167971ED509B7004A09B9 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844291E283B0800BE98B1 /* FBSDKShareKit.framework */; };
 		A07167981ED509B7004A09B9 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844261E283B0200BE98B1 /* FBSDKLoginKit.framework */; };
 		A07167991ED509B7004A09B9 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0E844231E283AEF00BE98B1 /* Bolts.framework */; };
-		A071679A1ED509B7004A09B9 /* Pods_Foodhead.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA12B69485225EB1396599E /* Pods_Foodhead.framework */; };
 		A071679C1ED509B7004A09B9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0E844111E28034000BE98B1 /* LaunchScreen.storyboard */; };
 		A071679D1ED509B7004A09B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0E8440F1E28034000BE98B1 /* Assets.xcassets */; };
 		A071679E1ED509B7004A09B9 /* Nunito-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04B997E1E72087A004AE07A /* Nunito-Light.ttf */; };
@@ -192,6 +193,8 @@
 		A088C5BF1E84B4C400ACA764 /* UserFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A088C5BE1E84B4C400ACA764 /* UserFeedbackViewController.m */; };
 		A08B823E1E5FA7AD00132F6B /* TPLChartCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A08B823D1E5FA7AD00132F6B /* TPLChartCollectionCell.m */; };
 		A093388A1EB3F8DA000DCD3C /* DiscoverNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A09338891EB3F8DA000DCD3C /* DiscoverNode.m */; };
+		A0B04D4D1ED9E86000591B6A /* OnboardingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0B04D4C1ED9E86000591B6A /* OnboardingView.m */; };
+		A0B04D4E1ED9E86000591B6A /* OnboardingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0B04D4C1ED9E86000591B6A /* OnboardingView.m */; };
 		A0B28F5D1E93844B00656253 /* AttributionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */; };
 		A0BED0D41E7A622F00D21298 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D31E7A622F00D21298 /* AlbumViewController.m */; };
 		A0BED0D71E7A7ACE00D21298 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BED0D61E7A7ACE00D21298 /* WebViewController.m */; };
@@ -220,17 +223,25 @@
 		A0F4CCCD1E3836B7003D56A9 /* TPLRestaurant.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCCC1E3836B7003D56A9 /* TPLRestaurant.m */; };
 		A0F4CCD11E383873003D56A9 /* TPLChartsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */; };
 		A0F4CCD81E38408C003D56A9 /* TabledCollectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */; };
-		C4811BDA920F39627F0B8191 /* Pods_Foodhead.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA12B69485225EB1396599E /* Pods_Foodhead.framework */; };
+		A0FDDC2C1ED7856A005D3711 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = A0FDDC2B1ED7856A005D3711 /* logo.gif */; };
+		A0FDDC2D1ED7856A005D3711 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = A0FDDC2B1ED7856A005D3711 /* logo.gif */; };
+		E2835759200F448091E90FA2 /* Pods_Foodhead_Dev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B76D512AAAD06615B0CDDC9E /* Pods_Foodhead_Dev.framework */; };
+		F28538B77DFC7F5BC929AB76 /* Pods_Foodhead.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA12B69485225EB1396599E /* Pods_Foodhead.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.development.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.development.xcconfig"; sourceTree = "<group>"; };
+		0BA802C845DD58D02BBF2CA2 /* Pods-Foodhead.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.release.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.release.xcconfig"; sourceTree = "<group>"; };
+		524AC7F9B4884BEEB49F00B7 /* Pods-Foodhead.development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.development.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.development.xcconfig"; sourceTree = "<group>"; };
+		69E506074612728F5EB2325B /* Pods-Foodhead Dev.development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead Dev.development.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead Dev/Pods-Foodhead Dev.development.xcconfig"; sourceTree = "<group>"; };
+		742FB4091DA543779F08503E /* Pods-Foodhead Dev.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead Dev.release.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead Dev/Pods-Foodhead Dev.release.xcconfig"; sourceTree = "<group>"; };
 		A0084D851EB53ECE00976F4A /* DiscoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverViewController.h; sourceTree = "<group>"; };
 		A0084D861EB53ECE00976F4A /* DiscoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverViewController.m; sourceTree = "<group>"; };
 		A0084D891EB5B7DD00976F4A /* BrowseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowseViewController.h; sourceTree = "<group>"; };
 		A0084D8A1EB5B7DD00976F4A /* BrowseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowseViewController.m; sourceTree = "<group>"; };
 		A0084D8D1EB5BAB700976F4A /* BrowsePlayerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowsePlayerNode.h; sourceTree = "<group>"; };
 		A0084D8E1EB5BAB700976F4A /* BrowsePlayerNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsePlayerNode.m; sourceTree = "<group>"; };
+		A00D17ED1EDF4F41005D584F /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		A00D17EE1EDF4F41005D584F /* Timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Timer.m; sourceTree = "<group>"; };
 		A020E9E31ECE4F2C00B3BC59 /* BookmarkSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkSegmentControl.h; sourceTree = "<group>"; };
 		A020E9E41ECE4F2C00B3BC59 /* BookmarkSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkSegmentControl.m; sourceTree = "<group>"; };
 		A023D7581E8AF39800F23D85 /* ReviewCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReviewCollectionViewCell.h; sourceTree = "<group>"; };
@@ -377,6 +388,8 @@
 		A09338891EB3F8DA000DCD3C /* DiscoverNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverNode.m; sourceTree = "<group>"; };
 		A09D00431ED4E29500C84F21 /* Foodhead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Foodhead.entitlements; sourceTree = "<group>"; };
 		A09EBAD01ED50DD000A34C38 /* Foodhead Dev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "Foodhead Dev.entitlements"; path = "Foodhead Dev/Foodhead Dev.entitlements"; sourceTree = SOURCE_ROOT; };
+		A0B04D4B1ED9E86000591B6A /* OnboardingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingView.h; sourceTree = "<group>"; };
+		A0B04D4C1ED9E86000591B6A /* OnboardingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingView.m; sourceTree = "<group>"; };
 		A0B28F5B1E93844B00656253 /* AttributionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributionTableViewCell.h; sourceTree = "<group>"; };
 		A0B28F5C1E93844B00656253 /* AttributionTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributionTableViewCell.m; sourceTree = "<group>"; };
 		A0BED0D21E7A622F00D21298 /* AlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumViewController.h; sourceTree = "<group>"; };
@@ -429,9 +442,11 @@
 		A0F4CCD01E383873003D56A9 /* TPLChartsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPLChartsDataSource.m; sourceTree = "<group>"; };
 		A0F4CCD61E38408C003D56A9 /* TabledCollectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabledCollectionManager.h; sourceTree = "<group>"; };
 		A0F4CCD71E38408C003D56A9 /* TabledCollectionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabledCollectionManager.m; sourceTree = "<group>"; };
-		CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.debug.xcconfig"; sourceTree = "<group>"; };
+		A0FDDC2B1ED7856A005D3711 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
+		B486F949C619BB0DA8960CD0 /* Pods-Foodhead Dev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead Dev.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead Dev/Pods-Foodhead Dev.debug.xcconfig"; sourceTree = "<group>"; };
+		B76D512AAAD06615B0CDDC9E /* Pods_Foodhead_Dev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Foodhead_Dev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA12B69485225EB1396599E /* Pods_Foodhead.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Foodhead.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.release.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.release.xcconfig"; sourceTree = "<group>"; };
+		F8883F99728610D96F58BA29 /* Pods-Foodhead.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Foodhead.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -450,7 +465,7 @@
 				A07167971ED509B7004A09B9 /* FBSDKShareKit.framework in Frameworks */,
 				A07167981ED509B7004A09B9 /* FBSDKLoginKit.framework in Frameworks */,
 				A07167991ED509B7004A09B9 /* Bolts.framework in Frameworks */,
-				A071679A1ED509B7004A09B9 /* Pods_Foodhead.framework in Frameworks */,
+				E2835759200F448091E90FA2 /* Pods_Foodhead_Dev.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +484,7 @@
 				A0E8442A1E283B0800BE98B1 /* FBSDKShareKit.framework in Frameworks */,
 				A0E844281E283B0200BE98B1 /* FBSDKLoginKit.framework in Frameworks */,
 				A0E844241E283AEF00BE98B1 /* Bolts.framework in Frameworks */,
-				C4811BDA920F39627F0B8191 /* Pods_Foodhead.framework in Frameworks */,
+				F28538B77DFC7F5BC929AB76 /* Pods_Foodhead.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +506,7 @@
 				A0E844261E283B0200BE98B1 /* FBSDKLoginKit.framework */,
 				A0E844231E283AEF00BE98B1 /* Bolts.framework */,
 				DDA12B69485225EB1396599E /* Pods_Foodhead.framework */,
+				B76D512AAAD06615B0CDDC9E /* Pods_Foodhead_Dev.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -498,9 +514,12 @@
 		08669A2478414E9BFB0E44CC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */,
-				E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */,
-				3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */,
+				B486F949C619BB0DA8960CD0 /* Pods-Foodhead Dev.debug.xcconfig */,
+				69E506074612728F5EB2325B /* Pods-Foodhead Dev.development.xcconfig */,
+				742FB4091DA543779F08503E /* Pods-Foodhead Dev.release.xcconfig */,
+				F8883F99728610D96F58BA29 /* Pods-Foodhead.debug.xcconfig */,
+				524AC7F9B4884BEEB49F00B7 /* Pods-Foodhead.development.xcconfig */,
+				0BA802C845DD58D02BBF2CA2 /* Pods-Foodhead.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -521,6 +540,15 @@
 				A0084D8E1EB5BAB700976F4A /* BrowsePlayerNode.m */,
 			);
 			name = Browse;
+			sourceTree = "<group>";
+		};
+		A00D17E91EDF4F17005D584F /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				A00D17ED1EDF4F41005D584F /* Timer.h */,
+				A00D17EE1EDF4F41005D584F /* Timer.m */,
+			);
+			name = Timer;
 			sourceTree = "<group>";
 		};
 		A023D7571E8AF36A00F23D85 /* Profile */ = {
@@ -770,6 +798,8 @@
 				A088C5731E7B4C1900ACA764 /* PermissionViewController.m */,
 				A054C3551E84E3C900A3D90B /* ServiceErrorView.h */,
 				A054C3561E84E3C900A3D90B /* ServiceErrorView.m */,
+				A0B04D4B1ED9E86000591B6A /* OnboardingView.h */,
+				A0B04D4C1ED9E86000591B6A /* OnboardingView.m */,
 			);
 			name = Login/Onboarding;
 			sourceTree = "<group>";
@@ -811,6 +841,7 @@
 		A08742D01E8DB7DD00C2AACC /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				A00D17E91EDF4F17005D584F /* Timer */,
 				A08742D41E8DB7EE00C2AACC /* FoodheadAnalytics.h */,
 				A08742D51E8DB7EE00C2AACC /* FoodheadAnalytics.m */,
 			);
@@ -1029,6 +1060,7 @@
 		A0E844031E28034000BE98B1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A0FDDC2B1ED7856A005D3711 /* logo.gif */,
 				A039F88E1E9AB8E00093CE24 /* PreviewAnimation */,
 				A08742D01E8DB7DD00C2AACC /* Analytics */,
 				A039F8921E9AF45B0093CE24 /* UIDeviceHardware.h */,
@@ -1089,12 +1121,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A07167A51ED509B7004A09B9 /* Build configuration list for PBXNativeTarget "Foodhead Dev" */;
 			buildPhases = (
-				A07167341ED509B7004A09B9 /* [CP] Check Pods Manifest.lock */,
+				97E25ACB3970C501790453F9 /* [CP] Check Pods Manifest.lock */,
 				A07167351ED509B7004A09B9 /* Sources */,
 				A071678E1ED509B7004A09B9 /* Frameworks */,
 				A071679B1ED509B7004A09B9 /* Resources */,
-				A07167A31ED509B7004A09B9 /* [CP] Embed Pods Frameworks */,
-				A07167A41ED509B7004A09B9 /* [CP] Copy Pods Resources */,
+				F0313A2FC8C2F10A98C2C8B9 /* [CP] Embed Pods Frameworks */,
+				F195495A33BCAE9AF6D7264E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1109,12 +1141,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0E844171E28034000BE98B1 /* Build configuration list for PBXNativeTarget "Foodhead" */;
 			buildPhases = (
-				B170C7F40EE513A83803A72B /* [CP] Check Pods Manifest.lock */,
+				AA1CB978627D8A6C24BB0305 /* [CP] Check Pods Manifest.lock */,
 				A0E843FC1E28034000BE98B1 /* Sources */,
 				A0E843FD1E28034000BE98B1 /* Frameworks */,
 				A0E843FE1E28034000BE98B1 /* Resources */,
-				33435853DF16A1FB67EAA8AF /* [CP] Embed Pods Frameworks */,
-				93F9ECA1DC75D5DDD8CEBB86 /* [CP] Copy Pods Resources */,
+				90A615DB96D045080E8E11BC /* [CP] Embed Pods Frameworks */,
+				B34B8DEBCEE4EAB2F46D848E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1194,6 +1226,7 @@
 				A071679E1ED509B7004A09B9 /* Nunito-Light.ttf in Resources */,
 				A071679F1ED509B7004A09B9 /* Nunito-Bold.ttf in Resources */,
 				A07167A01ED509B7004A09B9 /* Nunito-Medium.ttf in Resources */,
+				A0FDDC2D1ED7856A005D3711 /* logo.gif in Resources */,
 				A07167A11ED509B7004A09B9 /* Nunito-SemiBold.ttf in Resources */,
 				A07167A21ED509B7004A09B9 /* Nunito-Regular.ttf in Resources */,
 			);
@@ -1208,6 +1241,7 @@
 				A04B998B1E720B6C004AE07A /* Nunito-Light.ttf in Resources */,
 				A04B99871E720A61004AE07A /* Nunito-Bold.ttf in Resources */,
 				A04B99881E720A61004AE07A /* Nunito-Medium.ttf in Resources */,
+				A0FDDC2C1ED7856A005D3711 /* logo.gif in Resources */,
 				A04B99891E720A61004AE07A /* Nunito-SemiBold.ttf in Resources */,
 				A04B99861E720A51004AE07A /* Nunito-Regular.ttf in Resources */,
 			);
@@ -1216,7 +1250,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		33435853DF16A1FB67EAA8AF /* [CP] Embed Pods Frameworks */ = {
+		90A615DB96D045080E8E11BC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1231,22 +1265,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		93F9ECA1DC75D5DDD8CEBB86 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A07167341ED509B7004A09B9 /* [CP] Check Pods Manifest.lock */ = {
+		97E25ACB3970C501790453F9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1261,7 +1280,37 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		A07167A31ED509B7004A09B9 /* [CP] Embed Pods Frameworks */ = {
+		AA1CB978627D8A6C24BB0305 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B34B8DEBCEE4EAB2F46D848E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F0313A2FC8C2F10A98C2C8B9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1273,10 +1322,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead Dev/Pods-Foodhead Dev-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A07167A41ED509B7004A09B9 /* [CP] Copy Pods Resources */ = {
+		F195495A33BCAE9AF6D7264E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1288,22 +1337,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead/Pods-Foodhead-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B170C7F40EE513A83803A72B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Foodhead Dev/Pods-Foodhead Dev-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1324,9 +1358,11 @@
 				A071673E1ED509B7004A09B9 /* Category.m in Sources */,
 				A071673F1ED509B7004A09B9 /* BookmarkSegmentControl.m in Sources */,
 				A07167401ED509B7004A09B9 /* TPLCamPhotoCaptureDelegate.m in Sources */,
+				A0B04D4E1ED9E86000591B6A /* OnboardingView.m in Sources */,
 				A07167411ED509B7004A09B9 /* UserFeedbackViewController.m in Sources */,
 				A07167421ED509B7004A09B9 /* UserProfileView.m in Sources */,
 				A07167431ED509B7004A09B9 /* ReviewCollectionViewCell.m in Sources */,
+				A00D17F01EDF4F41005D584F /* Timer.m in Sources */,
 				A07167441ED509B7004A09B9 /* OverallRatingView.m in Sources */,
 				A07167451ED509B7004A09B9 /* TPLFilterScrollView.m in Sources */,
 				A07167461ED509B7004A09B9 /* TPLDetailedRestaurant.m in Sources */,
@@ -1419,9 +1455,11 @@
 				A039F8A61E9D7B980093CE24 /* Category.m in Sources */,
 				A020E9E51ECE4F2C00B3BC59 /* BookmarkSegmentControl.m in Sources */,
 				A0595EDC1E458124001BB324 /* TPLCamPhotoCaptureDelegate.m in Sources */,
+				A0B04D4D1ED9E86000591B6A /* OnboardingView.m in Sources */,
 				A088C5BF1E84B4C400ACA764 /* UserFeedbackViewController.m in Sources */,
 				A02D2F061E57B00E003E65F3 /* UserProfileView.m in Sources */,
 				A023D75A1E8AF39800F23D85 /* ReviewCollectionViewCell.m in Sources */,
+				A00D17EF1EDF4F41005D584F /* Timer.m in Sources */,
 				A088C5941E7E2DDC00ACA764 /* OverallRatingView.m in Sources */,
 				A0595F061E47BD19001BB324 /* TPLFilterScrollView.m in Sources */,
 				A0C86DB51E6CFF9500FB3C0B /* TPLDetailedRestaurant.m in Sources */,
@@ -1563,7 +1601,7 @@
 		};
 		A05B9CDC1E971211000296BF /* Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */;
+			baseConfigurationReference = 524AC7F9B4884BEEB49F00B7 /* Pods-Foodhead.development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1572,7 +1610,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
 				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1604,12 +1642,13 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Development;
 		};
 		A07167A61ED509B7004A09B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */;
+			baseConfigurationReference = B486F949C619BB0DA8960CD0 /* Pods-Foodhead Dev.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
@@ -1646,7 +1685,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE = "09fbda01-ea4b-4b86-b414-0d416c78bb12";
 				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
@@ -1655,7 +1694,7 @@
 		};
 		A07167A71ED509B7004A09B9 /* Development */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3139FE4D95A83584004CB270 /* Pods-Foodhead.development.xcconfig */;
+			baseConfigurationReference = 69E506074612728F5EB2325B /* Pods-Foodhead Dev.development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
@@ -1692,7 +1731,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE = "09fbda01-ea4b-4b86-b414-0d416c78bb12";
 				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
@@ -1701,7 +1740,7 @@
 		};
 		A07167A81ED509B7004A09B9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */;
+			baseConfigurationReference = 742FB4091DA543779F08503E /* Pods-Foodhead Dev.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
@@ -1737,7 +1776,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dev.gotaplet.Foodhead;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ef3afc3b-8c3b-4ad1-b11a-83798be3c8be";
+				PROVISIONING_PROFILE = "09fbda01-ea4b-4b86-b414-0d416c78bb12";
 				PROVISIONING_PROFILE_SPECIFIER = "Foodhead Development";
 				SWIFT_VERSION = 3.0;
 			};
@@ -1821,6 +1860,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1837,7 +1877,7 @@
 		};
 		A0E844181E28034000BE98B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CB7693394A98CCDE854D60F6 /* Pods-Foodhead.debug.xcconfig */;
+			baseConfigurationReference = F8883F99728610D96F58BA29 /* Pods-Foodhead.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1846,7 +1886,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
 				"DEBUG_ACTIVITY_MODE[sdk=iphonesimulator*]" = disable;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1878,12 +1918,13 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		A0E844191E28034000BE98B1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E63E27DEE3A519B2AF1E6772 /* Pods-Foodhead.release.xcconfig */;
+			baseConfigurationReference = 0BA802C845DD58D02BBF2CA2 /* Pods-Foodhead.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1891,7 +1932,7 @@
 				CODE_SIGN_ENTITLEMENTS = Foodhead/Foodhead.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_ACTIVITY_MODE = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7VDPHN5N3R;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1922,6 +1963,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

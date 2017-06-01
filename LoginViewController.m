@@ -19,6 +19,7 @@
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <SDWebImage/UIImage+GIF.h>
 
 #import "UIFont+Extension.h"
 
@@ -63,12 +64,16 @@
     [self.splashImage setImage:[UIImage imageNamed:@"login_background"]];
     [self.view addSubview:self.splashImage];
     
-    self.owlImage = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.224, self.view.frame.size.height * 0.157, self.view.frame.size.width * 0.448, self.view.frame.size.height * 0.27)];
-    self.owlImage.backgroundColor = [UIColor clearColor];
+    if (self.isOnboarding) {
+        self.owlImage = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.29, self.view.frame.size.height * 0.15, self.view.frame.size.width * 0.58, self.view.frame.size.height * 0.3)];
+    }else{
+        self.owlImage = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.225, self.view.frame.size.height * 0.15, self.view.frame.size.width * 0.45, self.view.frame.size.height * 0.28)];
+    }
     self.owlImage.contentMode = UIViewContentModeScaleAspectFit;
+    self.owlImage.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.owlImage];
     
-    self.loginCaption = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.45, CGRectGetMaxY(self.owlImage.frame) + self.view.frame.size.height * 0.02, self.view.frame.size.width * 0.9, self.view.frame.size.height * 0.1)];
+    self.loginCaption = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.45, CGRectGetMaxY(self.owlImage.frame), self.view.frame.size.width * 0.9, self.view.frame.size.height * 0.1)];
     self.loginCaption.backgroundColor = [UIColor clearColor];
     self.loginCaption.textAlignment = NSTextAlignmentCenter;
     self.loginCaption.numberOfLines = 0;
@@ -93,30 +98,29 @@
     [self.view addSubview:self.skipLoginButton];
     
     if (self.isOnboarding) {
-        self.loginCaption.text = @"Curated restaurants & food topics";
-        [self.owlImage setImage:[UIImage imageNamed:@"owl_full"]];
+        
+        UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - self.view.frame.size.width * 0.3, self.view.frame.size.height * 0.04, self.view.frame.size.width * 0.6, self.view.frame.size.height * 0.08)];
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleLabel.text = @"Foodhead";
+        titleLabel.font = [UIFont nun_boldFontWithSize:self.view.frame.size.height * 0.06];
+        titleLabel.textColor = [UIColor whiteColor];
+        [self.view addSubview:titleLabel];
+        
+        self.loginCaption.text = @"Mouth orgasms, delivered daily";
+        [self.loginCaption sizeToFit];
+        self.loginCaption.center = CGPointMake(self.view.frame.size.width/2, CGRectGetMaxY(self.owlImage.frame) + self.loginCaption.frame.size.height * 0.5);
+        [self.owlImage setImage:[UIImage sd_animatedGIFNamed:@"logo"]];
         [self.skipLoginButton setTitle:@"Skip" forState:UIControlStateNormal];
-
     }else{
         self.loginCaption.font = [UIFont nun_mediumFontWithSize:self.loginCaption.frame.size.height * 0.3];
-        self.loginCaption.text = @"Almost there! Sign up now\nto post your food memories!";
+        self.loginCaption.text = @"Create a free account to favorite\nrestaurants, videos, & more";
+        [self.loginCaption sizeToFit];
+        self.loginCaption.center = CGPointMake(self.view.frame.size.width/2, CGRectGetMaxY(self.owlImage.frame) + self.loginCaption.frame.size.height * 0.5);
         [self.owlImage setImage:[UIImage imageNamed:@"owl_openarms"]];
         [self.skipLoginButton setTitle:@"Go back" forState:UIControlStateNormal];
       }
-    
-//    UIButton *instaButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 200.0, 50.0)];
-//    instaButton.backgroundColor = [UIColor purpleColor];
-//    instaButton.center = CGPointMake(self.view.frame.size.width/2, CGRectGetMaxY(self.fbLoginButton.frame) + 30.0);
-//    [instaButton setTitle:@"Insta" forState:UIControlStateNormal];
-//    [instaButton addTarget:self action:@selector(instaLogin) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:instaButton];
 }
-
-
-//- (void)loginWasSuccessful{
-//    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-//    [appDelegate changeRootViewControllerFor:RootViewTypeCharts withAnimation:YES];
-//}
 
 #pragma LoginViewDelegate methods
 

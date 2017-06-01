@@ -67,14 +67,14 @@
     self.restaurantName.backgroundColor = [UIColor clearColor];
     self.restaurantName.textColor = [UIColor blackColor];
     self.restaurantName.numberOfLines = 1;
-    self.restaurantName.font = [UIFont nun_mediumFontWithSize:20.0];
+    self.restaurantName.font = [UIFont nun_fontWithSize:self.infoContainer.bounds.size.height * 0.12];
     [self.infoContainer addSubview:self.restaurantName];
     
     self.categoryLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.restaurantName.frame), CGRectGetMaxY(self.restaurantName.frame) + self.infoContainer.bounds.size.height * 0.01, self.infoContainer.bounds.size.width * 0.5, self.infoContainer.bounds.size.height * 0.12)];
     self.categoryLabel.backgroundColor = [UIColor clearColor];
     self.categoryLabel.textColor = UIColorFromRGB(0x505254);
     self.categoryLabel.numberOfLines = 1;
-    self.categoryLabel.font = [UIFont nun_fontWithSize:14.0];
+    self.categoryLabel.font = [UIFont nun_fontWithSize:REST_PAGE_DETAIL_FONT_SIZE];
     [self.infoContainer addSubview:self.categoryLabel];
     
 //    self.sepLine = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(self.categoryLabel.frame) + self.infoContainer.bounds.size.height * 0.02, self.infoContainer.bounds.size.width, 1.0)];
@@ -193,7 +193,7 @@
     if ([restaurant.foursq_price_tier isEqual: @(1)]) {
         self.priceLabel.text = @"<12";
     }else if ([restaurant.foursq_price_tier isEqual: @(2)]){
-        self.priceLabel.text = @"15-25";
+        self.priceLabel.text = @"15-30";
     }else if ([restaurant.foursq_price_tier isEqual: @(3)]){
         self.priceLabel.text = @"30-60";
     }else if ([restaurant.foursq_price_tier isEqual: @(4)]){

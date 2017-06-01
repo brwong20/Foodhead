@@ -47,6 +47,15 @@
 - (void)retrieveUserReviews:(void (^)(id reviews))completionHandler
              failureHandler:(void (^)(id error))failureHandler;
 
+- (void)subscribeUserForAPNSWithToken:(NSString *)deviceToken
+                         withUniqueId:(NSString *)uid
+                    completionHandler:(void (^)(id user))completionHandler
+                       failureHandler:(void (^)(id error))failureHandler;
+
+- (void)updateUserSubscriptionToBeEnabled:(BOOL)enabled
+                             withUniqueId:(NSString *)uid
+                        completionHandler:(void (^)(id user))completionHandler
+                           failureHandler:(void (^)(id error))failureHandler;
 
 - (void)logoutUser:(void (^)(id completed))completionHandler
     failureHandler:(void (^)(id error))failureHandler;

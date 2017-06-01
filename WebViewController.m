@@ -24,12 +24,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitWebView)];
+    if (self.popupView) {
+        self.navigationItem.title = @"Become a Foodhead";
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"filter_exit_btn"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitWebView)];
+    }else{
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"arrow_back"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(exitWebView)];
+    }
+
     
     self.webView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     UIEdgeInsets adjustForTabbarInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0);//Adjust for tab bar height covering views
     self.webView.scrollView.contentInset = adjustForTabbarInsets;
     self.webView.scrollView.scrollIndicatorInsets = adjustForTabbarInsets;
+    self.webView.scrollView.showsVerticalScrollIndicator = NO;
     self.webView.navigationDelegate = self;
     self.webView.allowsBackForwardNavigationGestures = YES;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.webLink]]];
@@ -49,7 +56,11 @@
 
 - (void)exitWebView
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    if (_popupView) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }else{
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 
@@ -62,7 +73,5 @@
 {
     [SVProgressHUD dismiss];
 }
-
-
 
 @end

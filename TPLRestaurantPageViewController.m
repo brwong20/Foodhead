@@ -8,7 +8,6 @@
 
 #import "TPLRestaurantPageViewController.h"
 #import "FoodWiseDefines.h"
-
 #import "ImageCollectionCell.h"
 #import "TabledCollectionCell.h"
 #import "MetricsDisplayCell.h"
@@ -34,11 +33,14 @@
 #import "DiscoverRealm.h"
 #import "RestaurantPageControlView.h"
 #import "RestaurantPageScoreView.h"
+#import "UserAuthManager.h"
+#import "LoginViewController.h"
 
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <TTTAttributedLabel/TTTAttributedLabel.h>
+#import <SexyToolTip/SexyTooltip.h>
 
 @interface TPLRestaurantPageViewController ()<UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, UIViewControllerTransitioningDelegate, RestaurantInfoCellDelegate, IDMPhotoBrowserDelegate, ImageCollectionCellDelegate, LocationManagerDelegate, RestaurantPageControlViewDelegate>
 
@@ -47,6 +49,7 @@
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, assign) CGFloat dynamicHoursHeight;//For dynamic resizing of hours cell height
 @property (nonatomic, strong) RestaurantPageControlView *restControlView;
+@property (nonatomic, strong) SexyTooltip *hootscoreTip;
 
 //Photos
 @property (nonatomic, strong) UICollectionView *photoCollection;
@@ -106,7 +109,7 @@ static NSString *photoCellId = @"photoCell";
     __weak typeof(self) weakSelf = self;
     self.favNotif = [self.favRestaurants addNotificationBlock:^(RLMResults * _Nullable results, RLMCollectionChange * _Nullable change, NSError * _Nullable error) {
         if (error) {
-            NSLog(@"Couldn't create discover realm token");
+            DLog(@"Couldn't create discover realm token");
         }
         
         //Change is nil for the intial run of realm query, so just load whatever we have
@@ -174,14 +177,12 @@ static NSString *photoCellId = @"photoCell";
                                                                     [NSIndexPath indexPathForRow:3 inSection:0],
                                                                     [NSIndexPath indexPathForRow:4 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
             });
-
             //Must load reviews after we retrieve details because restaurant might not be cached in our db
             [self.pageViewModel retrieveReviewsForRestaurant:fullRestaurant completionHandler:^(id completionHandler) {
                 [self.userReviews addObjectsFromArray:completionHandler];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.detailsTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                 });
-                
             } failureHandler:^(id failureHandler) {
                 DLog(@"Failed to get user reviews");
             }];
@@ -494,6 +495,20 @@ static NSString *photoCellId = @"photoCell";
 }
 
 - (void)toggleFavoriteButton{
+    //Don't allow user to bookmark if they don't sign up
+    if (![[UserAuthManager sharedInstance]getCurrentUser]) {
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.selectedRestaurant];
+        [[NSUserDefaults standardUserDefaults]setObject:data forKey:@"favoritedRestaurant"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        
+        LoginViewController *loginVC = [[LoginViewController alloc]init];
+        loginVC.isOnboarding = NO;
+        UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:loginVC];
+        [self presentViewController:navController animated:YES completion:nil];
+        
+        return;
+    }
+    
     RLMRealm *realm = [RLMRealm defaultRealm];
     if (_isFavorite) {
         NSError *error;
@@ -572,12 +587,35 @@ static NSString *photoCellId = @"photoCell";
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             RestaurantPageScoreView *scoreView = [[RestaurantPageScoreView alloc]initWithFrame:CGRectMake(0.0, 0.0, APPLICATION_FRAME.size.width, RESTAURANT_SCORE_CELL_HEIGHT)];
             
-            if (self.detailsFetched && self.selectedRestaurant.foursq_rating) {
-                NSString *convertedScore;
-                NSNumber *rating = @(self.selectedRestaurant.foursq_rating.doubleValue * 10.0);
-                convertedScore = rating.stringValue;
-                scoreView.scoreLabel.text = [NSString stringWithFormat:@"%ld%%", (long)convertedScore.integerValue];
+            if (self.detailsFetched){
+                if(self.selectedRestaurant.foursq_rating) {
+                    NSString *convertedScore;
+                    NSNumber *rating = @(self.selectedRestaurant.foursq_rating.doubleValue * 10.0);
+                    convertedScore = rating.stringValue;
+                    scoreView.scoreLabel.text = [NSString stringWithFormat:@"%ld%%", (long)convertedScore.integerValue];
+                    
+                    if ([[NSUserDefaults standardUserDefaults]boolForKey:HOOTSCORE_TOOLTIP]) {
+                        UILabel *tipLabel = [[UILabel alloc]initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width * 0.8, self.view.frame.size.height * 0.1)];
+                        tipLabel.textAlignment = NSTextAlignmentCenter;
+                        tipLabel.backgroundColor = [UIColor clearColor];
+                        tipLabel.text = @"Hootscore is an average of multiple\n ratings from across the web";
+                        tipLabel.numberOfLines = 2;
+                        tipLabel.font = [UIFont nun_mediumFontWithSize:REST_PAGE_HEADER_FONT_SIZE];
+
+                        self.hootscoreTip = [[SexyTooltip alloc]initWithContentView:tipLabel];
+                        self.hootscoreTip.permittedArrowDirections = @[@(SexyTooltipArrowDirectionUp)];
+                        self.hootscoreTip.cornerRadius = 7.0;
+                        [self.hootscoreTip presentFromPoint:CGPointMake(self.view.bounds.size.width/2, FAKE_NAV_BAR_HEIGHT + RESTAURANT_SCORE_CELL_HEIGHT + [UIApplication sharedApplication].statusBarFrame.size.height + 1.0) inView:self.view];
+                        
+                        [[NSUserDefaults standardUserDefaults]setBool:NO forKey:HOOTSCORE_TOOLTIP];
+                    }
+                }else{
+                    scoreView.scoreLabel.text = @"(%)";
+                    scoreView.scoreCaption.text = @"no hootscore";
+                }
             }
+            
+            
             [cell addSubview:scoreView];
             break;
         }
@@ -633,6 +671,14 @@ static NSString *photoCellId = @"photoCell";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return RESTAURANT_PAGE_CELL_COUNT;
+}
+
+#pragma mark - ScrollViewDelegate methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if ([self.hootscoreTip superview]) {
+        [self.hootscoreTip dismissAnimated:YES];
+    }
 }
 
 #pragma mark - UITableViewDelegate Methods

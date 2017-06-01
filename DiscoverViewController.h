@@ -12,6 +12,6 @@
 
 @interface DiscoverViewController : UIViewController
 
-
+- (void)refreshData;
 
 @end

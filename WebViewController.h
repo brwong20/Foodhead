@@ -12,4 +12,6 @@
 
 @property (nonatomic, strong) NSString *webLink;
 
+@property (nonatomic, assign) BOOL popupView;
+
 @end

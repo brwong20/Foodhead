@@ -50,7 +50,7 @@
         [restaurant mergeValuesForKeysFromModel:detailedRestaurant];
         completionHandler(restaurant);
     } failureHandler:^(id error) {
-        NSLog(@"Couldnt get restaurant details:%@", error);
+        DLog(@"Couldnt get restaurant details:%@", error);
         failureHandler(error);
     }];
 }

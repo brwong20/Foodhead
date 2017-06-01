@@ -147,7 +147,7 @@ static NSString *exploreCellId = @"exploreCell";
     self.indicatorView.center = CGPointMake(self.resultsTableView.center.x, self.resultsTableView.center.y - CGRectGetHeight(self.tabBarController.tabBar.frame));
     [self.resultsTableView addSubview:self.indicatorView];
     
-    self.errorLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.3, self.view.bounds.size.height * 0.2, self.view.bounds.size.width * 0.6, self.view.bounds.size.height * 0.15)];
+    self.errorLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.38, self.view.bounds.size.height * 0.2, self.view.bounds.size.width * 0.76, self.view.bounds.size.height * 0.15)];
     self.errorLabel.numberOfLines = 2;
     self.errorLabel.backgroundColor = [UIColor clearColor];
     self.errorLabel.textAlignment = NSTextAlignmentCenter;

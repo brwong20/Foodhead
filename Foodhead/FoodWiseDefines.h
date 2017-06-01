@@ -21,6 +21,13 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
     ServiceErrorTypeData,
 };
 
+//Onboarding Flow
+typedef NS_ENUM(NSInteger, OnboardingPage) {
+    OnboardingPageHome,
+    OnboardingPageFavorite,
+    OnboardingPageBrowse
+};
+
 //SAMKeychain
 #define KEYCHAIN_ACCOUNT @"com.Brwong.Foodwise"
 #define YUM_SERVICE @"YUM_API_SERVICE"
@@ -30,9 +37,14 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define CAMERA_CAPTURE_TOOLTIP @"com.gotaplet.Foodhead.cameraCapture"
 #define CAMERA_RATING_TOOLTIP @"com.gotaplet.Foodhead.cameraRating"
 
+#define MAIN_PAGE_TOOLTIP @"com.gotaplet.Foodhead.homePage"
+#define FAVORITE_TOOLTIP @"com.gotaplet.Foodhead.favorite"
+#define BROWSE_TOOLTIP @"com.gotaplet.Foodhead.browse"
+#define HOOTSCORE_TOOLTIP @"com.gotaplet.Foodhead.hootscore"
+
 //Privacy/Terms
-#define FOODHEAD_TERMS_URL @"http://www.foodheadapp.com/terms"
-#define FOODHEAD_PRIVACY_URL @"http://www.foodheadapp.com/privacy"
+#define FOODHEAD_TERMS_URL @"https://www.foodheadapp.com/terms-of-use/"
+#define FOODHEAD_PRIVACY_URL @"https://www.foodheadapp.com/privacy-policy/"
 
 
 //Flurry Analytics
@@ -99,7 +111,14 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 
 //Favorite
 #define USER_FAVORITED_RESTAURANT @"userFavoritedRestaurant"
-#define USER_UNFAVORITED_RESTAURANT @"userUnfavorited"
+#define USER_UNFAVORITED_RESTAURANT @"userUnfavoritedRestaurant"
+
+//Timed Analytics
+#define TIME_SPENT_HOME @"userTimeSpentHome"
+#define TIME_SPENT_BROWSE @"userTimeSpentBrowse"
+
+//Push Notifications
+#define USER_CLICKED_PUSH @"userClickedPush"
 
 //STATUS CODES
 #define STATUS_CODE_OK @"200"
@@ -116,43 +135,44 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define AUTH_TOKEN_PARAM @"AUTHTOKEN"
 
 //Users
-#define API_USER [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users"]
+#define API_USER [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"users"]
+#define API_USER_PUSH_NOTIFICATION [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"devices"]
 #define ANON_USER @"anon"
 #define SIGNUP_NOTIFICATION @"signup"
 
 //Sessions
-#define API_SESSION_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions"]
-#define API_SERVER_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/sessions/health"]
-#define API_SESSION_AUTHORIZE [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/auth/%@/callback"]
+#define API_SESSION_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"sessions"]
+#define API_SERVER_STATUS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"sessions/health"]
+#define API_SESSION_AUTHORIZE [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"auth/%@/callback"]
 
 //Reviews
-#define API_REVIEW [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/reviews"]
-#define API_USER_REVIEWS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/users/reviews"]
+#define API_REVIEW [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/%@/reviews"]
+#define API_USER_REVIEWS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"users/reviews"]
 
 //Places
-#define API_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places"]
-#define API_PLACE_DETAIL [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@"]
-#define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/suggestions"]
-#define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/%@/images"]
-#define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/search"]
-#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/places/instagram_places_new"]
+#define API_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places"]
+#define API_PLACE_DETAIL [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/%@"]
+#define API_PLACE_SUGGESTIONS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/suggestions"]
+#define API_PLACE_MEDIA [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/%@/images"]
+#define API_PLACE_SEARCH [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/search"]
+#define API_PLACE_BLOGS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"places/instagram_places"]
 
 //Browse
-#define API_PLACES_BROWSE_POSTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/posts"]
+#define API_PLACES_BROWSE_POSTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"posts"]
 
 //Charts
-#define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/charts"]
+#define API_CHARTS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"charts"]
 
 //Categories
-#define API_CATEGORIES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/categories"]
+#define API_CATEGORIES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"categories"]
 
 
 //Workers
-#define API_WORKER_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/explorer"]
-#define API_WORKER_DETAILS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/workers/%@/details"]
+#define API_WORKER_PLACES [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"workers/%@/explorer"]
+#define API_WORKER_DETAILS [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"workers/%@/details"]
 
 //User Feedback
-#define API_FEEDBACK [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"/feedbacks"]
+#define API_FEEDBACK [NSString stringWithFormat:@"%@/%@", API_BASE_URL, @"feedbacks"]
 
 //Images Types
 #define IMG_TYPE_FOURSQ @"foursquare_photo"
@@ -171,7 +191,7 @@ typedef NS_ENUM(NSInteger, ServiceErrorType) {
 #define CHART_PADDING_PERCENTAGE 0.04
 #define CHART_SPACING 0.025
 
-#define DISCOVER_NODE_SPACING 28.0
+#define DISCOVER_NODE_SPACING 25.0
 
 #define ASSET_KEY @"asset"
 #define ASSET_LINK_KEY @"assetLink"

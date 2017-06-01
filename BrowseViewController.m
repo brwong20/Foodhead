@@ -12,6 +12,9 @@
 #import "BrowseContentManager.h"
 #import "BrowseVideoRealm.h"
 #import "FoodheadAnalytics.h"
+#import "OnboardingView.h"
+#import "LoginViewController.h"
+#import "Timer.h"
 
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
@@ -22,6 +25,8 @@
 
 //UI
 @property (nonatomic, strong) ASTableNode *tableNode;
+@property (nonatomic, strong) OnboardingView *onboardView;
+@property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 
 //Data source
 @property (nonatomic, strong) BrowseContentManager *contentManager;
@@ -94,6 +99,7 @@
     self.tableNode.view.contentInset = adjustForBarInsets;
     self.tableNode.view.scrollIndicatorInsets = adjustForBarInsets;
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableNode.view.showsVerticalScrollIndicator = NO;
     //self.tableNode.view.bounces = NO;
     [self.view addSubnode:self.tableNode];
     
@@ -101,23 +107,36 @@
     UIView *statusBarBg = [[UIView alloc]initWithFrame:[UIApplication sharedApplication].statusBarFrame];
     statusBarBg.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:statusBarBg];
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(applicationBecameActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    //Necessary to play background media along with videos
-    //[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
+    [[Timer sharedInstance]startTrackingBrowseTime];
+    if ([[NSUserDefaults standardUserDefaults]boolForKey:BROWSE_TOOLTIP]) {
+        self.onboardView = [[OnboardingView alloc]initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height + self.tabBarController.tabBar.frame.size.height) onPage:OnboardingPageBrowse];
+        [self.view.window addSubview:self.onboardView];
+        
+        self.tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissOnboardView)];
+        self.tapGesture.numberOfTapsRequired = 1;
+        [self.onboardView addGestureRecognizer:self.tapGesture];
+        
+        [[NSUserDefaults standardUserDefaults]setBool:NO forKey:BROWSE_TOOLTIP];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
-    //Pause any node that's still playing just in case?
-//    for (BrowsePlayerNode *node in self.tableNode.visibleNodes) {
-//        [node.videoNode pause];
-//    }
+    [[Timer sharedInstance]stopTrackingBrowseTime];
 }
+
+- (void)applicationBecameActive{
+    if (self.tabBarController.selectedIndex == 1) {
+        [[Timer sharedInstance]startTrackingBrowseTime];
+    }
+}
+
 
 #pragma mark - ASTableDataSource methods
 
@@ -199,7 +218,7 @@
             
             [[XCDYouTubeClient defaultClient] getVideoWithIdentifier:video.videoLink completionHandler:^(XCDYouTubeVideo * _Nullable video, NSError * _Nullable error) {
                 if (error) {
-                    NSLog(@"%@", error);
+                    DLog(@"%@", error);
                 }else{
                     //TODO: Eventually load 720p only if fullscreen?
                     NSURL *vidURL = [video.streamURLs objectForKey:@(XCDYouTubeVideoQualityMedium360)];
@@ -410,6 +429,13 @@
     }
 }
 
+- (void)promptUserSignup{
+    LoginViewController *loginVC = [[LoginViewController alloc]init];
+    loginVC.isOnboarding = NO;
+    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:loginVC];
+    [self presentViewController:navController animated:YES completion:nil];
+}
+
 #pragma mark - Helper Methods
 
 - (NSMutableDictionary *)saveAssetWithTime:(BrowsePlayerNode *)playerNode{
@@ -482,5 +508,23 @@
     }
 }
 
+- (void)dismissOnboardView{
+    if ([self.onboardView superview]) {
+        [self.onboardView removeFromSuperview];
+    }
+}
+
+- (void)refreshContent{
+    [self.videoArr removeAllObjects];
+    [self.assetArr removeAllObjects];
+    [self.favoriteIndexes removeAllObjects];
+    self.isInitialLoad = YES;
+    
+    [self.tableNode reloadDataWithCompletion:^{
+        [self getBrowseContent];
+    }];
+    
+    
+}
 
 @end
