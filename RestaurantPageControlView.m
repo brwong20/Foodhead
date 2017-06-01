@@ -16,7 +16,14 @@
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        self.priceLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width * 0.02, self.frame.size.height/2 - self.frame.size.height * 0.31, self.frame.size.width * 0.25, self.frame.size.height * 0.37)];
+        
+        self.callButton = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width/2 - frame.size.width * 0.125, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.25, self.frame.size.height * 0.7)];
+        self.callButton.backgroundColor = [UIColor clearColor];
+        [self.callButton setImage:[UIImage imageNamed:@"call_btn"] forState:UIControlStateNormal];
+        [self.callButton addTarget:self action:@selector(callButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:self.callButton];
+        
+        self.priceLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.callButton.frame) - frame.size.width * 0.32, self.frame.size.height/2 - self.frame.size.height * 0.31, self.frame.size.width * 0.25, self.frame.size.height * 0.37)];
         self.priceLabel.backgroundColor = [UIColor clearColor];
         self.priceLabel.textAlignment = NSTextAlignmentCenter;
         [self.priceLabel setFont:[UIFont nun_mediumFontWithSize:self.frame.size.height * 0.35]];
@@ -30,18 +37,12 @@
         [self.priceTitle setTextColor:UIColorFromRGB(0x9B9B9B)];
         [self addSubview:self.priceTitle];
         
-        self.callButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.priceLabel.frame) + self.frame.size.width * 0.04, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.2, self.frame.size.height * 0.7)];
-        self.callButton.backgroundColor = [UIColor clearColor];
-        [self.callButton setImage:[UIImage imageNamed:@"call_btn"] forState:UIControlStateNormal];
-        [self.callButton addTarget:self action:@selector(callButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:self.callButton];
+//        self.shareButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.callButton.frame) + self.frame.size.width * 0.04, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.2, self.frame.size.height * 0.7)];
+//        self.shareButton.backgroundColor = [UIColor clearColor];
+//        [self.shareButton setImage:[UIImage imageNamed:@"share_button"] forState:UIControlStateNormal];
+//        [self addSubview:self.shareButton];
         
-        self.shareButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.callButton.frame) + self.frame.size.width * 0.04, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.2, self.frame.size.height * 0.7)];
-        self.shareButton.backgroundColor = [UIColor clearColor];
-        [self.shareButton setImage:[UIImage imageNamed:@"share_button"] forState:UIControlStateNormal];
-        [self addSubview:self.shareButton];
-        
-        self.favoriteButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.shareButton.frame) + self.frame.size.width * 0.04, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.2, self.frame.size.height * 0.7)];
+        self.favoriteButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.callButton.frame) + self.frame.size.width * 0.07, self.frame.size.height/2 - self.frame.size.height * 0.35, self.frame.size.width * 0.2, self.frame.size.height * 0.7)];
         self.favoriteButton.backgroundColor = [UIColor clearColor];
         self.favoriteButton.contentMode = UIViewContentModeScaleAspectFit;
         [self.favoriteButton addTarget:self action:@selector(favoriteButtonClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -59,7 +60,7 @@
     if ([price isEqual: @(1)]) {
         self.priceLabel.text = @"<$12";
     }else if ([price isEqual: @(2)]){
-        self.priceLabel.text = @"$15-25";
+        self.priceLabel.text = @"$15-30";
     }else if ([price isEqual: @(3)]){
         self.priceLabel.text = @"$30-60";
     }else if ([price isEqual: @(4)]){
@@ -78,9 +79,9 @@
 
 - (void)toggleFavoriteButton:(BOOL)favorite{
     if (favorite) {
-        [self.favoriteButton setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+        [self.favoriteButton setImage:[UIImage imageNamed:@"favorite_fill_page"] forState:UIControlStateNormal];
     }else{
-        [self.favoriteButton setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+        [self.favoriteButton setImage:[UIImage imageNamed:@"favorite_page"] forState:UIControlStateNormal];
     }
 }
 

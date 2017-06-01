@@ -1,0 +1,6 @@
+framework module Pods_Foodhead_Dev {
+  umbrella header "Pods-Foodhead Dev-umbrella.h"
+
+  export *
+  module * { export * }
+}

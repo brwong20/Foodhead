@@ -166,7 +166,7 @@
         if ([restaurant.foursq_price_tier isEqual: @(1)]) {
             self.avgPriceLabel.text = @"<$12";
         }else if ([restaurant.foursq_price_tier isEqual: @(2)]){
-            self.avgPriceLabel.text = @"$15-25";
+            self.avgPriceLabel.text = @"$15-30";
         }else if ([restaurant.foursq_price_tier isEqual: @(3)]){
             self.avgPriceLabel.text = @"$30-60";
         }else if ([restaurant.foursq_price_tier isEqual: @(4)]){

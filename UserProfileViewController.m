@@ -29,6 +29,8 @@
 #import "BookmarkSegmentControl.h"
 #import "LayoutBounds.h"
 #import "TPLRestaurantPageViewController.h"
+#import "UserFeedbackViewController.h"
+#import "WebViewController.h"
 
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <IDMPhotoBrowser/IDMPhotoBrowser.h>
@@ -94,6 +96,8 @@
 
 
 #define NUM_COLUMNS 2
+#define RESTAURANT_COLLECTION_TAG 1
+#define VIDEO_COLLECTION_TAG 2
 
 @implementation UserProfileViewController
 
@@ -148,12 +152,39 @@
 - (void)setupNavBar{
     [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.05]};
-//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-//    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor blackColor], NSFontAttributeName : [UIFont nun_fontWithSize:APPLICATION_FRAME.size.width * 0.042]};
     
+    UIBarButtonItem *settings = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"settings"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSettings)];
+    settings.imageInsets = UIEdgeInsetsMake(0.0, -self.view.frame.size.width * 0.01, 0.0, self.view.frame.size.width * 0.01);
+    
+    //Evens out our nav bar's title offset
+    UIBarButtonItem *blank = [[UIBarButtonItem alloc]initWithImage:[UIImage new] style:UIBarButtonItemStylePlain target:self action:nil];
+    blank.imageInsets = UIEdgeInsetsMake(0.0, -self.view.frame.size.width * 0.04, 0.0, self.view.frame.size.width * 0.04);
+    
+    self.navigationItem.rightBarButtonItems = @[settings, blank];
+
+    UIBarButtonItem *feedback = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"feedback"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(submitFeedback)];
+    feedback.imageInsets = UIEdgeInsetsMake(0.0, -self.view.frame.size.width * 0.01, 0.0, self.view.frame.size.width * 0.01);
+    
+    UIBarButtonItem *interest = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"mouth"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(userInterest)];
+    interest.imageInsets = UIEdgeInsetsMake(0.0, -self.view.frame.size.width * 0.04, 0.0, self.view.frame.size.width * 0.04);
+    
+    self.navigationItem.leftBarButtonItems = @[feedback, interest];
 }
+
+- (void)submitFeedback{
+    UserFeedbackViewController *feedbackVC = [[UserFeedbackViewController alloc]init];
+    [self.navigationController pushViewController:feedbackVC animated:YES];
+}
+
+- (void)userInterest{
+    WebViewController *webVC = [[WebViewController alloc]init];
+    webVC.webLink = @"https://www.foodheadapp.com/apply/";
+    webVC.popupView = YES;
+    UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:webVC];
+    [self presentViewController:nav animated:YES completion:nil];
+}
+
 
 - (void)setupUI{
     self.view.backgroundColor = [UIColor whiteColor];
@@ -183,12 +214,12 @@
     [self.usernameLabel setFont:[UIFont nun_mediumFontWithSize:self.view.frame.size.width * 0.055]];
     [self.profileView addSubview:self.usernameLabel];
      
-    self.locationLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMaxY(self.usernameLabel.frame) + 2.0, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.03)];
-    self.locationLabel.backgroundColor = [UIColor clearColor];
-    self.locationLabel.textColor = [UIColor grayColor];
-    self.locationLabel.textAlignment = NSTextAlignmentLeft;
-    self.locationLabel.font = [UIFont nun_fontWithSize:self.view.frame.size.height * 0.02];
-    [self.profileView addSubview:self.locationLabel];
+//    self.locationLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width * 0.04, CGRectGetMaxY(self.usernameLabel.frame) + 2.0, self.view.frame.size.width * 0.4, self.view.frame.size.height * 0.03)];
+//    self.locationLabel.backgroundColor = [UIColor clearColor];
+//    self.locationLabel.textColor = [UIColor grayColor];
+//    self.locationLabel.textAlignment = NSTextAlignmentLeft;
+//    self.locationLabel.font = [UIFont nun_fontWithSize:self.view.frame.size.height * 0.02];
+//    [self.profileView addSubview:self.locationLabel];
     
     self.segmentedControl = [[BookmarkSegmentControl alloc]initWithFrame:CGRectMake(self.view.bounds.size.width/2 - self.view.bounds.size.width * 0.47, CGRectGetMaxY(self.profileView.frame), self.view.bounds.size.width * 0.94, self.view.bounds.size.height * 0.065)];
     self.segmentedControl.delegate = self;
@@ -238,6 +269,12 @@
             NSLog(@"Couldn't create restaurants realm token");
         }
         
+        if (results.count == 0) {
+            [weakSelf showNoFavoritesForNode:weakSelf.restaurantCollectionNode];
+        }else{
+            [weakSelf removeNoFavoritesViewForTag:RESTAURANT_COLLECTION_TAG];
+        }
+        
         //Change is nil for the intial run of realm query, so just load whatever we have
         if (!change) {
             return;
@@ -250,16 +287,22 @@
         [weakSelf.restaurantCollectionNode endUpdatesAnimated:YES];
         
         //Delete the cached asset if deleted from bookmarks
-        for (NSIndexPath *index in [change deletionsInSection:0]) {
+        //for (NSIndexPath *index in [change deletionsInSection:0]) {
             //Remove cached asset for deleted video
             //[weakSelf.thumbAssets removeObjectAtIndex:index.row];
-        }
+        //}
     }];
     
     
     self.videosNotif = [self.savedVideos addNotificationBlock:^(RLMResults * _Nullable results, RLMCollectionChange * _Nullable change, NSError * _Nullable error) {
         if (error) {
             NSLog(@"Couldn't create videos realm token");
+        }
+        
+        if (results.count == 0) {
+            [weakSelf showNoFavoritesForNode:weakSelf.videoTableNode];
+        }else{
+            [weakSelf removeNoFavoritesViewForTag:VIDEO_COLLECTION_TAG];
         }
         
         //Change is nil for the intial run of realm query, so just load whatever we have
@@ -413,6 +456,8 @@
 - (void)addObservers{
     //Update user info and photos if they login from profile
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(populateUserData) name:SIGNUP_NOTIFICATION object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(saveFavorites) name:SIGNUP_NOTIFICATION object:nil];
+    
     //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateUserPhotos) name:SIGNUP_NOTIFICATION object:nil];
 }
 
@@ -828,6 +873,104 @@
     return assetDict;
 }
 
+- (void)saveFavorites{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSData *favRest = [defaults objectForKey:@"favoritedRestaurant"];
+    NSData *favVid = [defaults objectForKey:@"favoritedVideo"];
+    
+    TPLRestaurant *restInfo = [NSKeyedUnarchiver unarchiveObjectWithData:favRest];
+    if (restInfo) [self favoriteRestaurantWithInfo:restInfo];
+    
+    BrowseVideo *vidInfo  = [NSKeyedUnarchiver unarchiveObjectWithData:favVid];
+    if (vidInfo) [self favoriteVideoWithInfo:vidInfo];
+    
+    [defaults removeObjectForKey:@"favoritedRestaurant"];
+    [defaults removeObjectForKey:@"favoritedVideo"];
+    [defaults synchronize];
+}
+
+- (void)favoriteRestaurantWithInfo:(TPLRestaurant *)info{
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    
+    DiscoverRealm *discoverRlm = [[DiscoverRealm alloc]init];
+    discoverRlm.name = info.name;
+    discoverRlm.foursq_rating = info.foursq_rating;
+    discoverRlm.foursqId = info.foursqId;
+    discoverRlm.hasVideo = info.hasVideo;
+    if (info.categories.count > 0) {
+        discoverRlm.primaryCategory = [info.categories firstObject];
+    }
+    discoverRlm.lat = info.latitude;
+    discoverRlm.lng = info.longitude;
+    discoverRlm.website = info.website;
+    
+    if (info.address) {
+        discoverRlm.address = info.address;
+        discoverRlm.zipCode = info.zipCode;
+        discoverRlm.city = info.city;
+        discoverRlm.state = info.state;
+    }
+    
+    if (info.hasVideo.boolValue) {
+        discoverRlm.thumbnailVideoLink = info.blogVideoLink;
+        discoverRlm.thumbnailVideoWidth = info.blogVideoWidth;
+        discoverRlm.thumbnailVideoHeight = info.blogVideoHeight;
+    }else{
+        if(info.blogPhotoLink){
+            discoverRlm.thumbnailPhotoLink = info.blogPhotoLink;
+            discoverRlm.thumbnailPhotoWidth = info.blogPhotoWidth;
+            discoverRlm.thumbnailPhotoHeight = info.blogPhotoHeight;
+        }else{
+            discoverRlm.thumbnailPhotoLink = info.thumbnail;
+            discoverRlm.thumbnailPhotoWidth = info.thumbnailWidth;
+            discoverRlm.thumbnailPhotoHeight = info.thumbnailHeight;
+        }
+    }
+    
+    discoverRlm.sourceBlogName = info.blogTitle;
+    discoverRlm.sourceBlogProfilePhoto = info.blogPhotoLink;
+    discoverRlm.creationDate = [NSDate date];
+    
+    NSError *error;
+    [realm transactionWithBlock:^{
+        [realm addObject:discoverRlm];
+    } error:&error];
+    
+    if (error) {
+        NSLog(@"Failed to add video to Realm: %@", error);
+    }else{
+        [FoodheadAnalytics logEvent:USER_FAVORITED_RESTAURANT];
+    }
+}
+
+- (void)favoriteVideoWithInfo:(BrowseVideo *)info{
+    BrowseVideoRealm *videoRealm = [[BrowseVideoRealm alloc]init];
+    videoRealm.videoId = info.videoId;
+    videoRealm.profileURLStr = info.profileURLStr;
+    videoRealm.uploaderName = info.uploaderName;
+    videoRealm.caption = info.caption;
+    videoRealm.tag = info.tag;
+    videoRealm.videoLink = info.videoLink;
+    videoRealm.thumbnailLink = info.thumbnailLink;
+    videoRealm.height = info.height;
+    videoRealm.width = info.width;
+    videoRealm.isYoutubeVideo = info.isYoutubeVideo;
+    videoRealm.viewCount = info.viewCount;
+    videoRealm.creationDate = [NSDate date];
+    
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    NSError *err;
+    [realm transactionWithBlock:^{
+        [realm addObject:videoRealm];
+    } error:&err];
+    
+    if (err) {
+        NSLog(@"Failed to add video to Realm: %@", err);
+    }else{
+        [FoodheadAnalytics logEvent:USER_FAVORITED_VIDEO withParameters:@{@"videoSource" : info.uploaderName, @"videoTitle" : info.caption, @"videoLink" : info.videoLink}];
+    }
+}
+
 #pragma mark - ScrollViewDelegate methods
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -959,5 +1102,44 @@
     }
 }
 
+#pragma mark - No Favorites
+
+- (void)showNoFavoritesForNode:(ASDisplayNode *)node{
+    UIView *noFavView = [[UIView alloc]initWithFrame:CGRectMake(0.0, 0.0, self.restaurantCollectionNode.bounds.size.width, self.restaurantCollectionNode.bounds.size.height)];
+    noFavView.backgroundColor = [UIColor whiteColor];
+    
+    if([node isKindOfClass:[ASTableNode class]]){
+        noFavView.tag = VIDEO_COLLECTION_TAG;
+    }else{
+        noFavView.tag = RESTAURANT_COLLECTION_TAG;
+    }
+    [node.view addSubview:noFavView];
+    
+    UIView *napkinView = [[UIView alloc]initWithFrame:CGRectMake(noFavView.frame.size.width/2 - noFavView.bounds.size.width * 0.145, noFavView.bounds.size.height * 0.09, noFavView.bounds.size.width * 0.29, noFavView.bounds.size.width * 0.29)];
+    napkinView.backgroundColor = APPLICATION_BLUE_COLOR;
+    napkinView.layer.cornerRadius = 6.0;
+    napkinView.transform = CGAffineTransformMakeRotation(M_PI/4);
+    [noFavView addSubview:napkinView];
+    
+    UIImageView *noFavImg = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMidX(napkinView.frame) - noFavView.bounds.size.width * 0.215, CGRectGetMidY(napkinView.frame) - noFavView.bounds.size.height * 0.08, noFavView.bounds.size.width * 0.425, noFavView.bounds.size.height * 0.16)];
+    noFavImg.backgroundColor = [UIColor clearColor];
+    noFavImg.contentMode = UIViewContentModeScaleAspectFit;
+    [noFavImg setImage:[UIImage imageNamed:@"no_favorites"]];
+    [noFavView addSubview:noFavImg];
+    
+    UILabel *noFavLabel = [[UILabel alloc]initWithFrame:CGRectMake(noFavView.bounds.size.width/2 - noFavView.bounds.size.width * 0.35, CGRectGetMaxY(napkinView.frame) + noFavView.bounds.size.height * 0.02, noFavView.bounds.size.width * 0.7, noFavView.bounds.size.height * 0.06)];
+    noFavLabel.backgroundColor = [UIColor clearColor];
+    noFavLabel.textColor = [UIColor lightGrayColor];
+    noFavLabel.text = @"Favorites will display here.\nTap a fork to start!";
+    noFavLabel.font = [UIFont nun_fontWithSize:REST_PAGE_HEADER_FONT_SIZE];
+    noFavLabel.numberOfLines = 2;
+    noFavLabel.textAlignment = NSTextAlignmentCenter;
+    [noFavView addSubview:noFavLabel];
+}
+
+- (void)removeNoFavoritesViewForTag:(NSUInteger)tag{
+    UIView *favView = [self.view viewWithTag:tag];
+    [favView removeFromSuperview];
+}
 
 @end

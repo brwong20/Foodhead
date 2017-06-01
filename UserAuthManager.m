@@ -154,8 +154,12 @@
     
     [self.sessionManager GET:API_USER parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.currentUser = [MTLJSONAdapter modelOfClass:[User class] fromJSONDictionary:responseObject error:nil];
-        self.currentUser.avatarImg = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.currentUser.avatarURL]]];
-        completionHandler(self.currentUser);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^(void) {
+            self.currentUser.avatarImg = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.currentUser.avatarURL]]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionHandler(self.currentUser);
+            });
+        });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSDictionary *userInfo = [error userInfo];
         NSString* errorCode = userInfo[NSLocalizedDescriptionKey];
@@ -204,6 +208,34 @@
     }];
 }
 
+- (void)subscribeUserForAPNSWithToken:(NSString *)deviceToken
+                         withUniqueId:(NSString *)uid
+                    completionHandler:(void (^)(id))completionHandler
+                       failureHandler:(void (^)(id))failureHandler{
+    NSDictionary *params = @{@"token" : deviceToken, @"uid": uid};
+    NSString *authToken = [SAMKeychain passwordForService:YUM_SERVICE account:KEYCHAIN_ACCOUNT];
+    [self.sessionManager.requestSerializer setValue:authToken forHTTPHeaderField:AUTH_TOKEN_PARAM];
+    [self.sessionManager POST:API_USER_PUSH_NOTIFICATION parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        completionHandler(responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        //Error subscribing for push
+        failureHandler(error);
+    }];
+}
+
+- (void)updateUserSubscriptionToBeEnabled:(BOOL)enabled
+                             withUniqueId:(NSString *)uid
+                        completionHandler:(void (^)(id))completionHandler
+                           failureHandler:(void (^)(id))failureHandler{
+    NSDictionary *params = @{@"enabled" : @(enabled)};
+    NSString *updateURL = [API_USER_PUSH_NOTIFICATION stringByAppendingString:[NSString stringWithFormat:@"/%@", uid]];
+    [self.sessionManager PATCH:updateURL parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        completionHandler(responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        failureHandler(error);
+    }];
+}
+
 #pragma mark - Helper Methods
 
 - (User *)getCurrentUser{
@@ -211,8 +243,13 @@
 }
 
 - (void)addTooltipDefaults{
-    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:CAMERA_CAPTURE_TOOLTIP];
-    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:CAMERA_RATING_TOOLTIP];
+//    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:CAMERA_CAPTURE_TOOLTIP];
+//    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:CAMERA_RATING_TOOLTIP];
+    
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:MAIN_PAGE_TOOLTIP];
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:BROWSE_TOOLTIP];
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:FAVORITE_TOOLTIP];
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:HOOTSCORE_TOOLTIP];
 }
 
 @end

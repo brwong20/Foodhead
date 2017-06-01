@@ -53,7 +53,7 @@
         NSData* errorData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
         if (errorData) {
             NSDictionary *err = [NSJSONSerialization JSONObjectWithData:errorData options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"%@", err);
+            DLog(@"%@", err);
         }
         failureHandler(error);
     }];
@@ -119,11 +119,11 @@
     }
 
     [self.sessionManager GET:API_PLACES parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSHTTPURLResponse *response = (NSHTTPURLResponse *)[task response];
-        if(response){
-            NSDictionary *httpHeaders = response.allHeaderFields;
-            DLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
-        }
+//        NSHTTPURLResponse *response = (NSHTTPURLResponse *)[task response];
+//        if(response){
+//            NSDictionary *httpHeaders = response.allHeaderFields;
+//            DLog(@"Chart: %@ | X-APILOG-ID: %@", chart.name, httpHeaders[@"X-APILOG-ID"]);
+//        }
         
         Places *places = [MTLJSONAdapter modelOfClass:[Places class] fromJSONDictionary:responseObject error:nil];
         completionHandler(places);

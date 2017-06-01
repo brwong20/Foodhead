@@ -11,6 +11,7 @@
 @interface LocationManager() <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) CLGeocoder *geoCoder;
 
 @end
 
@@ -38,6 +39,7 @@
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
         self.authorizedStatus = [CLLocationManager authorizationStatus];
         self.locationManager.delegate = self;
+        self.geoCoder = [[CLGeocoder alloc]init];
     }
     return self;
 }
@@ -119,10 +121,31 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
     self.currentLocation = [locations lastObject].coordinate;
+    [self getCityFromLocation:[locations lastObject]];
     if([self.locationDelegate respondsToSelector:@selector(didGetCurrentLocation:)]){
         [self.locationDelegate didGetCurrentLocation:self.currentLocation];
     }
     [self stopUpdatingLocation];
+}
+
+#pragma mark - Geocoding
+
+- (void)getCityFromLocation:(CLLocation *)location{
+    [self.geoCoder reverseGeocodeLocation:location completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
+        CLPlacemark *placemark = placemarks[0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([self.locationDelegate respondsToSelector:@selector(didGetCurrentCity:)]) {
+                if (placemark.subLocality) {
+                    NSString *trimmed = [placemark.subLocality stringByReplacingOccurrencesOfString:@" District" withString:@""];
+                    [self.locationDelegate didGetCurrentCity:[NSString stringWithFormat:@"%@ - %@", placemark.locality, trimmed]];
+                }else if(placemark.locality){
+                    [self.locationDelegate didGetCurrentCity:[NSString stringWithFormat:@"%@", placemark.locality]];
+                }else{
+                    [self.locationDelegate didGetCurrentCity:@"Near you"];
+                }
+            }
+        });
+    }];
 }
 
 @end

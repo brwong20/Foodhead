@@ -16,6 +16,8 @@
 
 - (void)discoverNode:(DiscoverNode *)node didClickVideoWithRestaurant:(TPLRestaurant *)restInfo;
 
+- (void)promptUserSignup;
+
 @end
 
 @interface DiscoverNode : ASCellNode

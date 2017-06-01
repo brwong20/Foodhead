@@ -30,6 +30,13 @@
 
 @property (nonatomic, copy) NSNumber *openNow;
 
+//Avatar can be retrieved here as well if using a suggestion restaurant (search)
+@property (nonatomic, copy) NSString *thumbnail;
+@property (nonatomic, copy) NSString *thumbnailPrefix;
+@property (nonatomic, copy) NSString *thumbnailSuffix;
+@property (nonatomic, copy) NSNumber *thumbnailWidth;
+@property (nonatomic, copy) NSNumber *thumbnailHeight;
+
 //User metrics
 @property (nonatomic, copy) NSNumber *userOverall;
 @property (nonatomic, copy) NSNumber *userAvgPrice;

@@ -16,8 +16,13 @@ def essential_pods
 	pod 'Texture', '>= 2.0'
 	pod "XCDYouTubeKit", "~> 2.5"
 	pod 'Realm'
-end 
+	pod ‘SexyTooltip’
+end
 
 target 'Foodhead' do
+    essential_pods
+end
+
+target 'Foodhead Dev' do
     essential_pods
 end

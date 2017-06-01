@@ -12,6 +12,7 @@
 #import "NSString+IsEmpty.h"
 #import "UIImage+Utilities.h"
 #import "FoodheadAnalytics.h"
+#import "UserAuthManager.h"
 
 @interface DiscoverNode () <ASNetworkImageNodeDelegate, ASVideoNodeDelegate>
 
@@ -20,6 +21,7 @@
 @property (nonatomic, strong) ASTextNode *titleNode;
 @property (nonatomic, strong) ASNetworkImageNode *sourceImgNode;
 @property (nonatomic, strong) ASTextNode *sourceNode;
+@property (nonatomic, strong) ASTextNode *categoryNode;
 
 
 //IMPORTANT : need to do this because we can't acess our RLMObject's properties on different threads (which layoutAspecThatFits run on) so create a copy of our RLMObject's properties to be used on any thread we want...
@@ -89,34 +91,35 @@
         _titleNode.maximumNumberOfLines = 2;
         _titleNode.layerBacked = YES;
         
+        _categoryNode = [[ASTextNode alloc]init];
+        _categoryNode.backgroundColor = [UIColor clearColor];
+        _categoryNode.maximumNumberOfLines = 1;
+        _categoryNode.layerBacked = YES;
+        if(_restaurantInfo.categories.count > 0){
+            _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:[_restaurantInfo.categories firstObject] attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        }
+        
         _sourceNode = [[ASTextNode alloc]init];
         _sourceNode.backgroundColor = [UIColor clearColor];
         _sourceNode.maximumNumberOfLines = 1;
         _sourceNode.layerBacked = YES;
         
-        NSString *sourceName;
         NSString *sourceImg;
         if (_restaurantInfo.blogTitle) {
-            sourceName = _restaurantInfo.blogTitle;
             sourceImg = _restaurantInfo.blogProfileLink;
+            _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:_restaurantInfo.blogTitle attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : [UIColor blackColor]}];
             _isBlogContent = YES;
         }else{
-            if(_restaurantInfo.categories.count > 0){
-                sourceName = [_restaurantInfo.categories firstObject];
-            }else{
-                sourceName = @"";
-            }
             _isBlogContent = NO;
         }
-        _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:sourceName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
         _sourceImgNode.backgroundColor = [UIColor clearColor];
         _sourceImgNode.URL = [NSURL URLWithString:sourceImg];
         _sourceImgNode.contentMode = UIViewContentModeScaleAspectFit;
-        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
-            return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.width/2];
-        }];
+//        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
+//            return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.width/2];
+//        }];
         _sourceImgNode.layerBacked = YES;
         _sourceImgNode.shouldRasterizeDescendants = YES;
         
@@ -133,8 +136,17 @@
     [super didLoad];
     _playerNode.cornerRadius = 8.0;
     _playerNode.clipsToBounds = YES;
+    
     _thumbnailImageNode.cornerRadius = 7.0;
     _thumbnailImageNode.clipsToBounds = YES;
+    
+    _sourceImgNode.clipsToBounds = YES;
+    _sourceImgNode.cornerRadius = 14.0;
+    _sourceImgNode.borderColor = UIColorFromRGB(0x979797).CGColor;
+    _sourceImgNode.borderWidth = 0.6;
+    _sourceImgNode.contentMode = UIViewContentModeCenter;
+    _sourceImgNode.layer.shouldRasterize = YES;
+    _sourceImgNode.layer.rasterizationScale = [[UIScreen mainScreen]scale];
 }
 
 #warning This isn't all necessary - just use the original TPLRestaurant, but check if it matches with an entry in Realm then set bookmark to be filled..
@@ -201,27 +213,33 @@
         _titleNode.maximumNumberOfLines = 2;
         _titleNode.layerBacked = YES;
         
+        _categoryNode = [[ASTextNode alloc]init];
+        _categoryNode.backgroundColor = [UIColor clearColor];
+        _categoryNode.maximumNumberOfLines = 1;
+        _categoryNode.layerBacked = YES;
+        if(_savedRestaurantInfo.primaryCategory){
+            _categoryNode.attributedText = [[NSAttributedString alloc]initWithString:_savedRestaurantInfo.primaryCategory attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+        }
+        
         _sourceNode = [[ASTextNode alloc]init];
         _sourceNode.backgroundColor = [UIColor clearColor];
         _sourceNode.maximumNumberOfLines = 1;
         _sourceNode.layerBacked = YES;
         
-        NSString *sourceName;
         NSString *sourceImg;
         if (_savedRestaurantInfo.sourceBlogName) {
-            sourceName = _savedRestaurantInfo.sourceBlogName;
             sourceImg = _savedRestaurantInfo.sourceBlogProfilePhoto;
+            _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:_savedRestaurantInfo.sourceBlogName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : [UIColor blackColor]}];
             _isBlogContent = YES;
         }else{
-            sourceName = _savedRestaurantInfo.primaryCategory;
             _isBlogContent = NO;
         }
-        _sourceNode.attributedText = [[NSAttributedString alloc]initWithString:sourceName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_DETAIL_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
+    
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
         _sourceImgNode.backgroundColor = [UIColor clearColor];
         _sourceImgNode.URL = [NSURL URLWithString:sourceImg];
         _sourceImgNode.contentMode = UIViewContentModeScaleAspectFit;
-        
+
         if (_savedRestaurantInfo.thumbnailPhotoLink) {
             _mediaHeight = _savedRestaurantInfo.thumbnailPhotoHeight.floatValue;
             _mediaWidth = _savedRestaurantInfo.thumbnailPhotoWidth.floatValue;
@@ -230,11 +248,10 @@
             _mediaWidth = _savedRestaurantInfo.thumbnailVideoWidth.floatValue;
         }
         
-        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
-            return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.width/2];
-        }];
+//        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
+//            return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.width/2];
+//        }];
         _sourceImgNode.layerBacked = YES;
-        _sourceImgNode.shouldRasterizeDescendants = YES;
         
         self.restPrimaryKey = _savedRestaurantInfo.foursqId;
         self.automaticallyManagesSubnodes = YES;
@@ -276,48 +293,59 @@
     ASOverlayLayoutSpec *imageSpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:mediaRatioSpec overlay:relativeSpec];
     
     UIEdgeInsets detailsInsets = UIEdgeInsetsMake(0.0, 6.0, 0.0, 6.0);
-    UIEdgeInsets blogInsets = UIEdgeInsetsMake(4.0, 6.0, 0.0, 6.0);
+    UIEdgeInsets blogInsets = UIEdgeInsetsMake(3.0, 6.0, 0.0, 6.0);
     
     ASStackLayoutSpec *sourceStack = [ASStackLayoutSpec horizontalStackLayoutSpec];
     sourceStack.style.flexShrink = 1.0;
-    sourceStack.spacing = 1.0;
     sourceStack.alignSelf = ASStackLayoutAlignSelfStart;
     sourceStack.alignItems = ASStackLayoutAlignItemsCenter;
-    _sourceImgNode.style.preferredSize = CGSizeMake(25.0, 25.0);
-    
-    if (self.isBlogContent) {
-        sourceStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:blogInsets child:_sourceImgNode], [ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsMake(5.0, 0.0, 0.0, 0.0) child:_sourceNode]];
-    }else{
-        sourceStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_sourceNode]];
-    }
+    _sourceImgNode.style.preferredSize = CGSizeMake(28.0, 28.0);
+    sourceStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:blogInsets child:_sourceImgNode], _sourceNode];
     
     ASStackLayoutSpec *detailStack = [ASStackLayoutSpec verticalStackLayoutSpec];
     detailStack.spacingBefore = 4.0;
     detailStack.spacingAfter = DISCOVER_NODE_SPACING;
     detailStack.style.flexShrink = 1.0;
     detailStack.alignSelf = ASStackLayoutAlignSelfStart;
-    detailStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_titleNode], sourceStack];
+    
+    if (self.isBlogContent) {
+        if (_categoryNode.attributedText) {
+            detailStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_titleNode], [ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_categoryNode], sourceStack];
+        }else{
+            detailStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_titleNode], sourceStack];
+        }
+    }else{
+        detailStack.children = @[[ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_titleNode], [ASInsetLayoutSpec insetLayoutSpecWithInsets:detailsInsets child:_categoryNode]];
+    }
 
     verticalStack.justifyContent = ASStackLayoutJustifyContentStart;
     verticalStack.children = @[imageSpec, detailStack];
-    
     return verticalStack;
 }
 
 - (void)bookmarkClicked{
-    RLMRealm *realm = [RLMRealm defaultRealm];
+    //Don't allow user to bookmark if they don't sign up
+    if (![[UserAuthManager sharedInstance]getCurrentUser]) {
+        if([self.delegate respondsToSelector:@selector(promptUserSignup)]){
+            [self.delegate promptUserSignup];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.restaurantInfo];
+            [[NSUserDefaults standardUserDefaults]setObject:data forKey:@"favoritedRestaurant"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        return;
+    }
     
+    RLMRealm *realm = [RLMRealm defaultRealm];
     //If we have a primary key stored, the restaurant is a favorite so delete it from Realm.
     if (self.restPrimaryKey) {
         NSError *error;
-        [realm transactionWithBlock:^{
-            [realm deleteObject:[DiscoverRealm objectForPrimaryKey:self.restPrimaryKey]];
-        } error:&error];
-        
+        [realm beginWriteTransaction];
+        [realm deleteObject:[DiscoverRealm objectForPrimaryKey:self.restPrimaryKey]];
+        [realm commitWriteTransaction:&error];
         if (error) {
             DLog(@"Failed to delete bookmark to Realm DB: %@", error);
         }else{
-            [self unfavoriteNode];
+            //[self unfavoriteNode];
             [FoodheadAnalytics logEvent:USER_UNFAVORITED_RESTAURANT];
         }
     }else{
@@ -361,14 +389,14 @@
         discoverRlm.creationDate = [NSDate date];
         
         NSError *error;
-        [realm transactionWithBlock:^{
-            [realm addObject:discoverRlm];
-        } error:&error];
-        
+        [realm beginWriteTransaction];
+        [realm addObject:discoverRlm];
+        [realm commitWriteTransaction:&error];
         if (error) {
             DLog(@"Failed to save bookmark to Realm DB: %@", error);
         }else{
-            [self favoriteNodeWithInfo:discoverRlm];
+            //Not needed since our discover VC for when Realm adds an objects (method takes care of UI update)
+            //[self favoriteNodeWithInfo:discoverRlm];
             [FoodheadAnalytics logEvent:USER_FAVORITED_RESTAURANT];
         }
     }
@@ -383,7 +411,14 @@
 }
 
 - (void)favoriteNodeWithInfo:(DiscoverRealm *)fav {
-    [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark_filled"] forState:UIControlStateNormal];
+    [UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        _bookmarkNode.view.transform = CGAffineTransformMakeScale(1.2, 1.2);
+    } completion:^(BOOL finished) {
+        [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark_filled"] forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.1 animations:^{
+            _bookmarkNode.view.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        }];
+    }];
     self.savedRestaurantInfo = fav;
     self.restPrimaryKey = _savedRestaurantInfo.foursqId;
 }

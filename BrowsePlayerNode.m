@@ -11,6 +11,8 @@
 #import "UIFont+Extension.h"
 #import "UIImage+Utilities.h"
 #import "FoodheadAnalytics.h"
+#import "UserAuthManager.h"
+#import "LoginViewController.h"
 
 @interface BrowsePlayerNode () <ASVideoPlayerNodeDelegate>
 
@@ -37,6 +39,9 @@
 
 @property (nonatomic, assign) CGFloat videoWidth;
 @property (nonatomic, assign) CGFloat videoHeight;
+
+//Checks to see if user started wataching a video and didn't just autoplay
+@property (nonatomic, assign) BOOL watchedVideo;
 
 @end
 
@@ -67,13 +72,13 @@
         
         _sourceImgNode = [[ASNetworkImageNode alloc]init];
         _sourceImgNode.URL = [NSURL URLWithString:videoInfo.profileURLStr];
-        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
-            return [UIImage drawRoundedCornersForImage:image withCornerRadius:image.size.height/2];
-        }];
+//        [_sourceImgNode setImageModificationBlock:^UIImage *(UIImage *image) {
+//            return [UIImage drawRoundedCornersForImage:image withCornerRadius:16.5];
+//        }];
         _sourceImgNode.contentMode = UIViewContentModeScaleAspectFit;
         _sourceImgNode.layerBacked = YES;
         _sourceImgNode.backgroundColor = [UIColor whiteColor];
-        
+
         _sourceNameNode = [[ASTextNode alloc]init];
         _sourceNameNode.attributedText = [[NSAttributedString alloc]initWithString:videoInfo.uploaderName attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Medium" size:REST_PAGE_HEADER_FONT_SIZE], NSForegroundColorAttributeName : UIColorFromRGB(0x585858)}];
         _sourceNameNode.maximumNumberOfLines = 1;
@@ -93,9 +98,9 @@
         _bookmarkNode.contentMode = UIViewContentModeScaleAspectFit;
         
         if (primaryKey) {
-            [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+            [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark_filled"] forState:UIControlStateNormal];
         }else{
-            [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+            [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark"] forState:UIControlStateNormal];
         }
         [_bookmarkNode addTarget:self action:@selector(bookmarkClicked) forControlEvents:ASControlNodeEventTouchUpInside];
         
@@ -121,6 +126,13 @@
 
     _placeholderImageNode.cornerRadius = 10.0;
     _placeholderImageNode.clipsToBounds = YES;
+    
+    _sourceImgNode.clipsToBounds = YES;
+    _sourceImgNode.cornerRadius = 17.5;
+    _sourceImgNode.borderColor = UIColorFromRGB(0x979797).CGColor;
+    _sourceImgNode.borderWidth = 0.6;
+    _sourceImgNode.layer.shouldRasterize = YES;
+    _sourceImgNode.layer.rasterizationScale = [[UIScreen mainScreen]scale];
     
     //        _bookmarkCountNode.backgroundColor = [UIColor grayColor];
     //        _viewCountNode.backgroundColor = [UIColor grayColor];
@@ -181,7 +193,7 @@
         _bookmarkNode = [[ASButtonNode alloc]init];
         _bookmarkNode.backgroundColor = [UIColor clearColor];
         _bookmarkNode.contentMode = UIViewContentModeScaleAspectFit;
-        [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+        [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark_filled"] forState:UIControlStateNormal];
         [_bookmarkNode addTarget:self action:@selector(bookmarkClicked) forControlEvents:ASControlNodeEventTouchUpInside];
         
         _viewsImgNode = [[ASImageNode alloc]init];
@@ -205,21 +217,15 @@
     
     ASStackLayoutSpec *headerStack = [ASStackLayoutSpec verticalStackLayoutSpec];
     headerStack.alignSelf = ASStackLayoutAlignSelfStart;
-    headerStack.flexShrink = 1.0;
+    headerStack.spacing = 1.0;
     headerStack.children = @[_sourceNameNode, _categoryNode];
     
     ASStackLayoutSpec *sourceStack = [ASStackLayoutSpec horizontalStackLayoutSpec];
     sourceStack.alignItems = ASStackLayoutAlignItemsCenter;
     sourceStack.spacing = 10.0;
     _sourceImgNode.preferredFrameSize = CGSizeMake(35, 35);
-    _bookmarkNode.preferredFrameSize = CGSizeMake(35.0, 35.0);
-    _bookmarkNode.alignSelf = ASStackLayoutAlignSelfEnd;
-    
-    //Add spacer to push favorite button to the end
-    ASLayoutSpec *spec = [ASLayoutSpec new];
-    spec.style.flexGrow = 1.0;
 
-    sourceStack.children = @[_sourceImgNode, headerStack, spec, _bookmarkNode];
+    sourceStack.children = @[_sourceImgNode, headerStack];
     
     //Height & Width are changed when dealing with portrait mode
     CGFloat ratio = _videoHeight / _videoWidth;
@@ -228,27 +234,30 @@
                                          child:self.videoNode];
     videoRatioSpec.alignSelf = ASStackLayoutAlignSelfCenter;
     
-    ASRatioLayoutSpec *placeHolderRatioSpec = [ASRatioLayoutSpec ratioLayoutSpecWithRatio:ratio child:self.placeholderImageNode];
-    ASOverlayLayoutSpec *placeholderOverlaySpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:videoRatioSpec overlay:placeHolderRatioSpec];
-    placeholderOverlaySpec.alignSelf = ASStackLayoutAlignSelfCenter;
-    placeholderOverlaySpec.spacingAfter = 6.0;
-    placeholderOverlaySpec.spacingBefore = 1.5;
+    ASRatioLayoutSpec *placeHolderRatioSpec = [ASRatioLayoutSpec ratioLayoutSpecWithRatio:ratio child:self.placeholderImageNode];    
+    ASOverlayLayoutSpec *placeHolderOverlayspec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:videoRatioSpec overlay:placeHolderRatioSpec];
+    placeHolderOverlayspec.alignSelf = ASStackLayoutAlignSelfCenter;
+
+    //Overlay the bookmark button on top of the overlaid placeholder
+    _bookmarkNode.preferredFrameSize = CGSizeMake(40.0, 40.0);
+    ASRelativeLayoutSpec *relativeSpec = [ASRelativeLayoutSpec relativePositionLayoutSpecWithHorizontalPosition:ASRelativeLayoutSpecPositionEnd verticalPosition:ASRelativeLayoutSpecPositionEnd sizingOption:ASRelativeLayoutSpecSizingOptionDefault child:_bookmarkNode];
+    ASOverlayLayoutSpec *bookmarkOverlaySpec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:placeHolderOverlayspec overlay:relativeSpec];
+    bookmarkOverlaySpec.spacingAfter = 6.0;
+    bookmarkOverlaySpec.spacingBefore = 2.5;
 
     //Video details and metrics layout
     ASStackLayoutSpec *vidDetailsStack = [ASStackLayoutSpec verticalStackLayoutSpec];
     vidDetailsStack.alignSelf = ASStackLayoutAlignSelfStart;
-    //vidDetailsStack.spacing = 5.0;
 
-    ASStackLayoutSpec *viewStack = [ASStackLayoutSpec horizontalStackLayoutSpec];
-    viewStack.alignSelf = ASStackLayoutAlignSelfStart;
-    viewStack.alignItems = ASStackLayoutAlignItemsCenter;
-    viewStack.flexShrink = 1.0;
-    viewStack.spacing = 7.0;
-    _viewCountNode.flexShrink = 1.0;
-    _viewsImgNode.style.preferredSize = CGSizeMake(26.0, 18.0);
+//    ASStackLayoutSpec *viewStack = [ASStackLayoutSpec horizontalStackLayoutSpec];
+//    viewStack.alignSelf = ASStackLayoutAlignSelfStart;
+//    viewStack.alignItems = ASStackLayoutAlignItemsCenter;
+//    viewStack.flexShrink = 1.0;
+//    viewStack.spacing = 7.0;
+//    _viewCountNode.flexShrink = 1.0;
+//    _viewsImgNode.style.preferredSize = CGSizeMake(26.0, 18.0);
+    //viewStack.children = @[_viewsImgNode, _viewCountNode];
     
-    viewStack.children = @[_viewsImgNode, _viewCountNode];
-
     vidDetailsStack.children = @[_titleNode];
     
     //Place all elements into a vertical layout spec
@@ -257,38 +266,12 @@
     verticalStack.spacingAfter = 25.0;
 
     [verticalChildren addObject:[ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsMake(0.0, 6.0, 0.0, 6.0) child:sourceStack]];
-    [verticalChildren addObject:placeholderOverlaySpec];
+    [verticalChildren addObject:bookmarkOverlaySpec];
     [verticalChildren addObject:[ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsMake(0.0, 6.0, 0.0, 6.0) child:vidDetailsStack]];
     
     verticalStack.children = verticalChildren;
     verticalStack.justifyContent = ASStackLayoutJustifyContentStart;
     return [ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsMake(0.0, 15.0, 20.0, 15.0) child:verticalStack];
-    
-//    }else{
-//        self.backgroundColor = [UIColor blackColor];
-//        [UIView animateWithDuration:0.3 animations:^{
-//            self.videoNode.transform = CATransform3DMakeRotation(90.0 / 180.0 * M_PI, 0.0, 0.0, 1.0);
-//        }];
-//        
-//        ASStackLayoutSpec *videoStack = [ASStackLayoutSpec horizontalStackLayoutSpec];
-//        videoStack.style.preferredSize = CGSizeMake(APPLICATION_FRAME.size.height, APPLICATION_FRAME.size.width);
-//        _videoNode.backgroundColor = [UIColor greenColor];
-//        
-//        CGFloat ratio = self.videoInfo.height.floatValue / self.videoInfo.width.floatValue;
-//        ASRatioLayoutSpec *videoRatioSpec = [ASRatioLayoutSpec
-//                                             ratioLayoutSpecWithRatio:ratio
-//                                             child:self.videoNode];
-//        videoRatioSpec.alignSelf = ASStackLayoutAlignSelfCenter;
-//        videoRatioSpec.style.flexBasis = ASDimensionMake(@"100%");
-//        
-//        videoStack.alignItems = ASStackLayoutAlignItemsCenter;
-//        videoStack.justifyContent = ASStackLayoutJustifyContentCenter;
-//        videoStack.children = @[videoRatioSpec];
-//        
-//        NSLog(@"%@", videoStack.asciiArtString);
-//        
-//        return videoStack;
-//    }
 }
 
 #pragma mark ASVideoPlayerNodeDelegate methods
@@ -314,6 +297,17 @@
 #pragma mark - Helper methods
 
 - (void)bookmarkClicked{
+    //Don't allow user to bookmark if they don't sign up
+    if (![[UserAuthManager sharedInstance]getCurrentUser]) {
+        if([self.delegate respondsToSelector:@selector(promptUserSignup)]){
+            [self.delegate promptUserSignup];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.videoInfo];
+            [[NSUserDefaults standardUserDefaults]setObject:data forKey:@"favoritedVideo"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        return;
+    }
+    
     if (self.primaryKey) {
         RLMRealm *realm = [RLMRealm defaultRealm];
         [realm beginWriteTransaction];
@@ -321,7 +315,7 @@
         NSError *err;
         [realm commitWriteTransaction:&err];
         if (err) {
-            NSLog(@"Failed to remove video from Realm: %@", err);
+            DLog(@"Failed to remove video from Realm: %@", err);
         }else{
             [self toggleUnfavorite];
             [FoodheadAnalytics logEvent:USER_UNFAVORITED_VIDEO];
@@ -342,14 +336,21 @@
         videoRealm.creationDate = [NSDate date];
         
         RLMRealm *realm = [RLMRealm defaultRealm];
-        [realm beginWriteTransaction];
-        [realm addObject:videoRealm];
         NSError *err;
-        [realm commitWriteTransaction:&err];
+        [realm transactionWithBlock:^{
+            [realm addObject:videoRealm];
+        } error:&err];
         if (err) {
             NSLog(@"Failed to add video to Realm: %@", err);
         }else{
-            [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse_fill"] forState:UIControlStateNormal];
+            [UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                _bookmarkNode.view.transform = CGAffineTransformMakeScale(1.2, 1.2);
+            } completion:^(BOOL finished) {
+                [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark_filled"] forState:UIControlStateNormal];
+                [UIView animateWithDuration:0.1 animations:^{
+                    _bookmarkNode.view.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                }];
+            }];
             if ([self.delegate respondsToSelector:@selector(browsePlayerNode:wasFavorited:)]) {
                 [self.delegate browsePlayerNode:self wasFavorited:videoRealm];
             }
@@ -378,8 +379,6 @@
 }
 
 - (void)videoPlayerNodeDidFinishInitialLoading:(ASVideoPlayerNode *)videoPlayer{
-//    [self.placeholderImageNode.layer removeAllAnimations];
-    
     [UIView animateWithDuration:0.25 animations:^{
         _placeholderImageNode.alpha = 0.0;
     }completion:^(BOOL finished) {
@@ -404,17 +403,17 @@
 }
 
 - (void)toggleUnfavorite{
-    [_bookmarkNode setImage:[UIImage imageNamed:@"favorite_browse"] forState:UIControlStateNormal];
+    [_bookmarkNode setImage:[UIImage imageNamed:@"bookmark"] forState:UIControlStateNormal];
     self.primaryKey = nil;
     self.savedVideoInfo = nil;
 }
 
-- (void)videoPlayerNodeDidPlayToEnd:(ASVideoPlayerNode *)videoPlayer{
-    NSUInteger totalSeconds = CMTimeGetSeconds(videoPlayer.duration);
-    NSUInteger minutes = floor(totalSeconds % 3600 / 60);
-    NSUInteger seconds = floor(totalSeconds % 3600 % 60);
-    NSString *str = [NSString stringWithFormat:@"%02lu:%02lu", (unsigned long)minutes, (unsigned long)seconds];
-    [FoodheadAnalytics logEvent:USER_WATCHED_VIDEO withParameters:@{@"videoDuration" : str}];
+- (void)videoPlayerNode:(ASVideoPlayerNode *)videoPlayer didPlayToTime:(CMTime)time{
+    NSUInteger seconds = CMTimeGetSeconds(time);
+    if(seconds == 5 && !self.watchedVideo){
+        self.watchedVideo = YES;
+        [FoodheadAnalytics logEvent:USER_WATCHED_VIDEO];
+    }
 }
 
 @end

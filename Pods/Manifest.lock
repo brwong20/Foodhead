@@ -50,6 +50,8 @@ PODS:
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
+  - SexyTooltip (1.2.4):
+    - pop (~> 1.0)
   - SVProgressHUD (2.1.2)
   - Texture (2.3.1):
     - Texture/PINRemoteImage (= 2.3.1)
@@ -71,6 +73,7 @@ DEPENDENCIES:
   - Realm
   - SAMKeychain
   - SDWebImage (~> 3.8)
+  - SexyTooltip
   - SVProgressHUD
   - Texture (>= 2.0)
   - TTTAttributedLabel
@@ -91,11 +94,12 @@ SPEC CHECKSUMS:
   Realm: 29222766425b9f831228f81b63f0e38a97a4d700
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SexyTooltip: 29db17bed73347f5df0e86bf8e5d18876a64a1ce
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
   Texture: 839c52ecab07007fade582a01f77224b076ad960
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   XCDYouTubeKit: 86f4e7a9c2baa7b7adf6abfc28ac3ab34927be2d
 
-PODFILE CHECKSUM: 3f32c4e183f02b8362342584492c918e416e1eb6
+PODFILE CHECKSUM: c37e7f682150df2f82ddd631676f762577426261
 
 COCOAPODS: 1.2.0

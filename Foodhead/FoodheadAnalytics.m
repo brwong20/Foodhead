@@ -17,8 +17,7 @@
                                         withLogLevel:FlurryLogLevelCriticalOnly]
                                        withCrashReporting:YES]
                                       withSessionContinueSeconds:10]
-                                     withAppVersion:@"1.1.2"];
-    
+                                     withAppVersion:@"1.2"];
     [Flurry setBackgroundSessionEnabled:NO];
     [Flurry startSession:FLURRY_API_KEY withSessionBuilder:builder];
 }
